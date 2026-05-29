@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>勾股定理 · Pythagorean Theorem</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">GEOMETRY</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">勾股定理</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动三角形的顶点，用正方形的真实面积验证 a² + b² = c²。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="680"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                  style="aspect-ratio: 900 / 680;"></canvas>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">面积关系</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-4 katex-formula"></div>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">测量值</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-emerald-400" data-i18n="leg_a">直角边 a</span><span id="ra" class="font-mono text-emerald-300"></span></li>
+              <li class="flex justify-between"><span class="text-sky-400" data-i18n="leg_b">直角边 b</span><span id="rb" class="font-mono text-sky-300"></span></li>
+              <li class="flex justify-between"><span class="text-amber-400" data-i18n="hyp_c">斜边 c</span><span id="rc" class="font-mono text-amber-300"></span></li>
+              <li class="border-t border-slate-700 pt-2 flex justify-between"><span class="text-slate-400">a² + b²</span><span id="rab" class="font-mono text-slate-200"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">c²</span><span id="rc2" class="font-mono text-slate-200"></span></li>
+            </ul>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "三角形的秘密暗号 · HSSIM", nav_title: "三角形暗号", nav_subtitle: "a²+b²=c² 的真相",
+        kicker: "古希腊冷知识", title: "三角形的秘密暗号",
+        intro: "拖黄点和蓝点，改改两条直角边。三个正方形的真实面积会直接摊牌：两个小的加起来，刚好等于那个大的。",
+        formula_title: "面积对账单", readout_title: "量一量（单位）",
+        leg_a: "直角边 a", leg_b: "直角边 b", hyp_c: "斜边 c（最长）",
+        concept_title: "说人话就是",
+        concept: "只要是直角三角形，两条直角边 a、b 和最长的斜边 c 永远满足 a² + b² = c²。这里的 a²、b²、c² 不是抽象符号——就是画在三条边上的正方形的真实面积。随你怎么拖，绿色加蓝色永远等于橙色。这条两千多年前的“暗号”，今天的 GPS、盖房子都还在用。",
+      },
+      en: {
+        page_title: "The triangle's secret handshake · HSSIM", nav_title: "Secret handshake", nav_subtitle: "a²+b²=c², proven",
+        kicker: "ANCIENT GREEK FLEX", title: "The triangle's secret handshake",
+        intro: "Drag the yellow and blue dots to resize the two short sides. The real areas of three squares spill the secret: the two small ones add up to the big one.",
+        formula_title: "Area receipt", readout_title: "Measurements (units)",
+        leg_a: "Short side a", leg_b: "Short side b", hyp_c: "Longest side c",
+        concept_title: "OK, the gist",
+        concept: "For any right triangle, the two short sides a, b and the longest side c always obey a² + b² = c². And a², b², c² aren't abstract — they're the actual areas of squares drawn on each side. Drag however you like: green + blue always equals orange. A 2,000-year-old handshake we still lean on today (GPS, building houses, all of it).",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const UNIT = 46;                 // pixels per unit
+    const C = { x: 360, y: 380 };    // right-angle corner (fixed)
+    let a = 4, b = 5;                // leg lengths in units
+    let drag = null;
+
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+    const A = () => ({ x: C.x, y: C.y - a * UNIT });   // top vertex (controls a)
+    const B = () => ({ x: C.x + b * UNIT, y: C.y });   // right vertex (controls b)
+
+    function squareOutward(p1, p2, awayFrom, fill, stroke) {
+      // square on segment p1->p2, on the side opposite to awayFrom
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      let nx = -dy, ny = dx;                       // normal
+      const mx = (p1.x + p2.x) / 2, my = (p1.y + p2.y) / 2;
+      if ((nx) * (awayFrom.x - mx) + (ny) * (awayFrom.y - my) > 0) { nx = -nx; ny = -ny; }
+      const c3 = { x: p2.x + nx, y: p2.y + ny }, c4 = { x: p1.x + nx, y: p1.y + ny };
+      ctx.fillStyle = fill; ctx.strokeStyle = stroke; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(c3.x, c3.y); ctx.lineTo(c4.x, c4.y); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      return { cx: (p1.x + p2.x + c3.x + c4.x) / 4, cy: (p1.y + p2.y + c3.y + c4.y) / 4 };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const a1 = A(), b1 = B();
+      // squares (areas)
+      const ca = squareOutward(C, a1, b1, 'rgba(52,211,153,0.22)', '#34d399');   // a²
+      const cb = squareOutward(C, b1, a1, 'rgba(56,189,248,0.22)', '#38bdf8');   // b²
+      const cc = squareOutward(a1, b1, C, 'rgba(251,191,36,0.22)', '#fbbf24');   // c²
+
+      // triangle
+      ctx.fillStyle = 'rgba(148,163,184,0.12)'; ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(C.x, C.y); ctx.lineTo(a1.x, a1.y); ctx.lineTo(b1.x, b1.y); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+
+      // right-angle marker
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
+      ctx.strokeRect(C.x, C.y - 14, 14, 14);
+
+      // area labels
+      ctx.font = '600 18px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#6ee7b7'; ctx.fillText('a² = ' + fmt(a * a), ca.cx, ca.cy);
+      ctx.fillStyle = '#7dd3fc'; ctx.fillText('b² = ' + fmt(b * b), cb.cx, cb.cy);
+      ctx.fillStyle = '#fcd34d'; ctx.fillText('c² = ' + fmt(a * a + b * b), cc.cx, cc.cy);
+
+      // handles
+      ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(a1.x, a1.y, 10, 0, 7); ctx.fill();
+      ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(b1.x, b1.y, 10, 0, 7); ctx.fill();
+    }
+
+    function render() {
+      const c = Math.sqrt(a * a + b * b);
+      document.getElementById('ra').textContent = fmt(a);
+      document.getElementById('rb').textContent = fmt(b);
+      document.getElementById('rc').textContent = fmt(c);
+      document.getElementById('rab').textContent = fmt(a * a + b * b);
+      document.getElementById('rc2').textContent = fmt(a * a + b * b);
+      katex.render(`a^2 + b^2 = ${fmt(a * a)} + ${fmt(b * b)} = ${fmt(a * a + b * b)} = c^2`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+      draw();
+    }
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+    }
+    function hit(e) {
+      const p = pos(e), a1 = A(), b1 = B();
+      if (Math.hypot(p.x - a1.x, p.y - a1.y) < 22) return 'a';
+      if (Math.hypot(p.x - b1.x, p.y - b1.y) < 22) return 'b';
+      return null;
+    }
+    function move(e) {
+      const p = pos(e);
+      if (drag === 'a') a = Math.max(1, Math.min(7, Math.round((C.y - p.y) / UNIT * 2) / 2));
+      if (drag === 'b') b = Math.max(1, Math.min(9, Math.round((p.x - C.x) / UNIT * 2) / 2));
+      render();
+    }
+    canvas.addEventListener('mousedown', e => { drag = hit(e); });
+    window.addEventListener('mousemove', e => { if (drag) move(e); });
+    window.addEventListener('mouseup', () => drag = null);
+    canvas.addEventListener('touchstart', e => { drag = hit(e.touches[0]); if (drag) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (drag) { move(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => drag = null);
+
+    window.onLangChange = render;
+    HSSIM.mount({ icon: 'fa-vector-square', gradient: 'from-amber-500 to-orange-500' });
+    render();
+  </script>
+</body>
+</html>

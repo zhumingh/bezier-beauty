@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抛物线与二次函数 · Parabolas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">QUADRATIC FUNCTIONS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">抛物线与二次函数</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动顶点或调节滑块，看二次函数如何随之改变。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="640"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                  style="aspect-ratio: 900 / 640;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="vertex_form">顶点式</div>
+                <div id="f-vertex" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="standard_form">标准式</div>
+                <div id="f-standard" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">参数</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_a">a（开口）</span><span id="va" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sa" min="-3" max="3" step="0.1" value="0.5" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_h">h（左右）</span><span id="vh" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sh" min="-7" max="7" step="0.1" value="0" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_k">k（上下）</span><span id="vk" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sk" min="-7" max="7" step="0.1" value="-3" class="w-full">
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="drag_hint">提示：也可以直接在图上拖动白色顶点。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_vertex">顶点</span><span id="r-vertex" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_axis">对称轴</span><span id="r-axis" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_open">开口方向</span><span id="r-open" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_roots">实根</span><span id="r-roots" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_yint">y 轴截距</span><span id="r-yint" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">每个二次函数的图像都是抛物线。</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "为啥扔出去的东西都这么飞 · HSSIM", nav_title: "会飞的弧线", nav_subtitle: "投篮喷泉都靠它",
+        kicker: "为啥东西都这么飞", title: "为啥扔出去的东西都这么飞",
+        intro: "拖那个白点，或者拨拨滑块。投篮、喷泉、跳水……所有被扔出去的东西，划出来的都是这条线。",
+        formula_title: "现场公式", vertex_form: "顶点式", standard_form: "展开式",
+        controls: "三个旋钮", param_a: "a：胖瘦 & 朝上还朝下", param_h: "h：往左往右挪", param_k: "k：往上往下挪",
+        drag_hint: "偷懒提示：白点可以直接拖。",
+        readout_title: "当前战况", r_vertex: "最高/最低点", r_axis: "中线", r_open: "开口朝", r_roots: "落地点", r_yint: "撞 y 轴的地方",
+        open_up: "朝上", open_down: "朝下", no_real: "不落地（飞太高啦）",
+        concept_title: "说人话就是",
+        concept: "任何二次函数画出来都是这种弧线，名字叫抛物线。顶点式 y = a(x−h)² + k 特别贴心：直接告诉你最高/最低点在 (h, k)。h 管左右、k 管上下、a 管开口朝哪儿和胖瘦。展开一下就是课本里那个 y = ax² + bx + c。弧线碰到横轴的地方，就是方程的“解”（也叫根）。",
+      },
+      en: {
+        page_title: "Why everything you throw flies like this · HSSIM", nav_title: "The flying arc", nav_subtitle: "every throw, ever",
+        kicker: "WHY THINGS FLY LIKE THIS", title: "Why everything you throw flies like this",
+        intro: "Drag the white dot, or mess with the sliders. Free throws, fountains, belly-flops — anything you toss traces this exact curve.",
+        formula_title: "Live formula", vertex_form: "Vertex form", standard_form: "Expanded form",
+        controls: "Three knobs", param_a: "a: chunky vs skinny (and which way it opens)", param_h: "h: slide left / right", param_k: "k: slide up / down",
+        drag_hint: "Lazy tip: just drag the white dot.",
+        readout_title: "Live stats", r_vertex: "Tip (top/bottom)", r_axis: "Middle line", r_open: "Opens", r_roots: "Landing spots", r_yint: "Hits the y-axis at",
+        open_up: "up", open_down: "down", no_real: "never lands (flying too high)",
+        concept_title: "OK, the gist",
+        concept: "Every quadratic draws this same arc — a parabola. Vertex form y = a(x−h)² + k is the friendly one: it straight-up tells you the highest/lowest point is at (h, k). h moves it sideways, k moves it up/down, and a decides which way it opens and how chunky it is. Expand it and you get the textbook y = ax² + bx + c. Where the arc touches the x-axis = the answers (a.k.a. roots).",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const XMIN = -10, XMAX = 10, YMIN = -8, YMAX = 8;
+    const sx = W / (XMAX - XMIN), sy = H / (YMAX - YMIN);
+    const px = x => (x - XMIN) * sx;
+    const py = y => H - (y - YMIN) * sy;
+    const wx = X => X / sx + XMIN;
+    const wy = Y => (H - Y) / sy + YMIN;
+
+    let a = 0.5, h = 0, k = -3;
+    let dragging = false;
+
+    function fmt(n) { return (Math.round(n * 100) / 100).toString(); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(XMIN); x <= XMAX; x++) { ctx.beginPath(); ctx.moveTo(px(x), 0); ctx.lineTo(px(x), H); ctx.stroke(); }
+      for (let y = Math.ceil(YMIN); y <= YMAX; y++) { ctx.beginPath(); ctx.moveTo(0, py(y)); ctx.lineTo(W, py(y)); ctx.stroke(); }
+      // axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py(0)); ctx.lineTo(W, py(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px(0), 0); ctx.lineTo(px(0), H); ctx.stroke();
+
+      // axis of symmetry
+      ctx.strokeStyle = 'rgba(244,114,182,0.5)'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(px(h), 0); ctx.lineTo(px(h), H); ctx.stroke(); ctx.setLineDash([]);
+
+      // parabola
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+      ctx.shadowColor = 'rgba(56,189,248,0.4)'; ctx.shadowBlur = 16;
+      ctx.beginPath();
+      let started = false;
+      for (let X = 0; X <= W; X += 3) {
+        const xv = wx(X), yv = a * (xv - h) * (xv - h) + k;
+        const Y = py(yv);
+        if (!started) { ctx.moveTo(X, Y); started = true; } else ctx.lineTo(X, Y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+
+      // roots
+      const disc = -k / a;
+      if (a !== 0 && disc >= 0) {
+        const r = Math.sqrt(disc);
+        [h - r, h + r].forEach(rx => {
+          ctx.fillStyle = '#fbbf24';
+          ctx.beginPath(); ctx.arc(px(rx), py(0), 6, 0, 7); ctx.fill();
+        });
+      }
+      // y-intercept
+      const yint = a * h * h + k;
+      ctx.fillStyle = '#34d399';
+      ctx.beginPath(); ctx.arc(px(0), py(yint), 5, 0, 7); ctx.fill();
+
+      // vertex
+      ctx.fillStyle = '#f472b6';
+      ctx.beginPath(); ctx.arc(px(h), py(k), 11, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(px(h), py(k), 5, 0, 7); ctx.fill();
+    }
+
+    function renderFormulas() {
+      const b = -2 * a * h, c = a * h * h + k;
+      katex.render(`y = ${fmt(a)}\\,(x ${h <= 0 ? '+' : '-'} ${fmt(Math.abs(h))})^2 ${k < 0 ? '-' : '+'} ${fmt(Math.abs(k))}`,
+        document.getElementById('f-vertex'), { throwOnError: false, displayMode: true });
+      katex.render(`y = ${fmt(a)}x^2 ${b < 0 ? '-' : '+'} ${fmt(Math.abs(b))}x ${c < 0 ? '-' : '+'} ${fmt(Math.abs(c))}`,
+        document.getElementById('f-standard'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      document.getElementById('va').textContent = fmt(a);
+      document.getElementById('vh').textContent = fmt(h);
+      document.getElementById('vk').textContent = fmt(k);
+      document.getElementById('r-vertex').textContent = `(${fmt(h)}, ${fmt(k)})`;
+      document.getElementById('r-axis').textContent = `x = ${fmt(h)}`;
+      document.getElementById('r-open').textContent = a >= 0 ? HSSIM.t('open_up') : HSSIM.t('open_down');
+      const disc = -k / a;
+      if (a !== 0 && disc >= 0) {
+        const r = Math.sqrt(disc);
+        document.getElementById('r-roots').textContent = `${fmt(h - r)}, ${fmt(h + r)}`;
+      } else { document.getElementById('r-roots').textContent = HSSIM.t('no_real'); }
+      document.getElementById('r-yint').textContent = fmt(a * h * h + k);
+      draw(); renderFormulas();
+    }
+
+    function syncSliders() {
+      document.getElementById('sa').value = a;
+      document.getElementById('sh').value = h;
+      document.getElementById('sk').value = k;
+    }
+
+    document.getElementById('sa').oninput = e => { a = parseFloat(e.target.value) || 0.0001; update(); };
+    document.getElementById('sh').oninput = e => { h = parseFloat(e.target.value); update(); };
+    document.getElementById('sk').oninput = e => { k = parseFloat(e.target.value); update(); };
+
+    function vertexHit(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      return Math.hypot(mx - px(h), my - py(k)) < 22;
+    }
+    function moveVertex(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      h = Math.max(XMIN, Math.min(XMAX, Math.round(wx(mx) * 2) / 2));
+      k = Math.max(YMIN, Math.min(YMAX, Math.round(wy(my) * 2) / 2));
+      syncSliders(); update();
+    }
+    canvas.addEventListener('mousedown', e => { if (vertexHit(e)) { dragging = true; } });
+    window.addEventListener('mousemove', e => { if (dragging) moveVertex(e); });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { if (vertexHit(e.touches[0])) { dragging = true; e.preventDefault(); } }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { moveVertex(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-cyan-500' });
+    syncSliders(); update();
+  </script>
+</body>
+</html>

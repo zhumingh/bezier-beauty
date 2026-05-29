@@ -1,0 +1,71 @@
+/* ===================================================================
+   HSSIM · Help Sunday Sharply Improve Math
+   Shared design system for every lesson page.
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.font-display {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+}
+
+canvas {
+  touch-action: none;
+  border-radius: 16px;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+/* KaTeX tuning to match dark theme */
+.katex-formula { font-size: 1.05rem; padding: 4px 0; }
+.katex { color: #e0e7ff !important; }
+.katex-display { margin: 0 !important; }
+
+/* HSSIM badge subtle pulse */
+.hssim-badge {
+  box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.45);
+  animation: hssim-pulse 2.6s ease-out infinite;
+  cursor: help;
+}
+@keyframes hssim-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0.45); }
+  70%  { box-shadow: 0 0 0 6px rgba(167, 139, 250, 0);    }
+  100% { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0);    }
+}
+
+/* Card hover lift */
+.control-card {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.control-card:hover {
+  border-color: rgb(71 85 105 / 0.9);
+}
+
+/* Lesson hub cards */
+.lesson-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.lesson-card:hover {
+  transform: translateY(-4px);
+  border-color: rgb(139 92 246 / 0.6);
+  box-shadow: 0 20px 40px -20px rgba(139, 92, 246, 0.45);
+}
+
+/* Pretty range sliders everywhere */
+input[type="range"] { accent-color: #8b5cf6; }
+
+/* Fade-in helper */
+.fade-in { animation: fade-in 0.5s ease both; }
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

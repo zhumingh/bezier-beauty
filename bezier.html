@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贝塞尔曲线之美 · Bézier Beauty</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- KaTeX for beautiful math formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+
+    body {
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+    .font-display {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+    }
+
+    canvas {
+      touch-action: none;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+    }
+
+    .control-point {
+      transition: transform 0.1s ease;
+    }
+
+    .bezier-label {
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .curve-shadow {
+      filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.3));
+    }
+
+    /* KaTeX formula styling */
+    .katex-formula {
+      font-size: 1.05rem;
+      padding: 4px 0;
+    }
+    .katex {
+      color: #e0e7ff !important;
+    }
+    .katex-display {
+      margin: 0 !important;
+    }
+
+    /* HSSIM badge subtle pulse */
+    .hssim-badge {
+      box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.45);
+      animation: hssim-pulse 2.6s ease-out infinite;
+      cursor: help;
+    }
+    @keyframes hssim-pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0.45); }
+      70%  { box-shadow: 0 0 0 6px rgba(167, 139, 250, 0);    }
+      100% { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0);    }
+    }
+
+    /* Card hover lift */
+    .control-card {
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .control-card:hover {
+      border-color: rgb(71 85 105 / 0.9); /* slate-600 */
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <div class="border-b border-slate-800 bg-slate-900/70 backdrop-blur-lg sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-x-4">
+        <div class="flex items-center gap-x-3 min-w-0">
+          <div class="w-10 h-10 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg shadow-violet-500/30">
+            <i class="fa-solid fa-infinity text-white text-2xl"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-x-2 flex-wrap">
+              <div class="font-display text-2xl font-semibold tracking-tighter truncate" data-i18n="brand_title">会拐弯的魔法线</div>
+              <span class="hssim-badge font-mono font-bold text-[10px] tracking-[0.18em] px-2 py-0.5 rounded-md bg-gradient-to-r from-violet-500/25 to-fuchsia-500/25 text-violet-200 border border-violet-400/50 ring-1 ring-violet-500/10 shrink-0"
+                    title="Help Sunday Sharply Improve Math">HSSIM</span>
+            </div>
+            <div class="text-[10px] text-slate-500 -mt-0.5 truncate" data-i18n="brand_subtitle">Bézier Curves • 数学的优雅</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-x-2 text-sm shrink-0">
+          <!-- Back to all lessons -->
+          <a href="index.html"
+             class="hidden sm:flex px-3 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm items-center gap-x-2 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span data-i18n="nav_home">全部课程</span>
+          </a>
+          <!-- Language Switcher -->
+          <div class="flex items-center bg-slate-900 border border-slate-700 rounded-2xl p-0.5 text-xs">
+            <button onclick="switchLanguage('zh')" id="lang-zh"
+                    class="px-3 py-1 rounded-[14px] transition-colors bg-violet-600 text-white">中文</button>
+            <button onclick="switchLanguage('en')" id="lang-en"
+                    class="px-3 py-1 rounded-[14px] transition-colors hover:bg-slate-700 text-slate-400">EN</button>
+          </div>
+
+          <div class="hidden md:flex px-3 py-1.5 rounded-2xl bg-slate-900 border border-slate-700 text-slate-400 text-xs items-center gap-x-2">
+            <i class="fa-solid fa-mouse"></i>
+            <span data-i18n="drag_hint">拖拽控制点</span>
+          </div>
+          <button onclick="resetPoints()"
+                  class="px-3 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm flex items-center gap-x-2 transition-colors">
+            <i class="fa-solid fa-undo"></i>
+            <span class="hidden sm:inline" data-i18n="reset">重置</span>
+          </button>
+        </div>
+      </div>
+      <!-- decorative accent strip -->
+      <div class="h-px bg-gradient-to-r from-transparent via-violet-500/40 to-transparent"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto w-full px-6 pt-8 pb-12 flex-1">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Canvas + Math Formulas (left column) -->
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <div class="relative">
+            <canvas id="canvas" width="900" height="700" 
+                    class="w-full h-auto max-w-full bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                    style="aspect-ratio: 900 / 700;"></canvas>
+            
+            <!-- Canvas overlay info -->
+            <div class="absolute top-4 left-4 px-3 py-1.5 bg-slate-900/80 backdrop-blur rounded-2xl text-xs border border-slate-700 flex items-center gap-x-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+              <span id="curve-info" class="text-emerald-300">n 次贝塞尔曲线</span>
+            </div>
+
+            <div class="absolute top-4 right-4 flex gap-2 z-20">
+              <button onclick="toggleDeCasteljau()" id="decasteljau-btn"
+                      class="px-3 py-1.5 text-xs rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 flex items-center gap-x-2 transition-colors active:bg-slate-600">
+                <i class="fa-solid fa-project-diagram"></i>
+                <span data-i18n="construction_lines">构造线</span>
+              </button>
+              <button onclick="toggleAnimation()" id="anim-btn"
+                      class="px-3 py-1.5 text-xs rounded-2xl bg-violet-600 hover:bg-violet-500 flex items-center gap-x-2 transition-colors">
+                <i class="fa-solid fa-play" id="play-icon"></i>
+                <span id="overlay-anim-text" data-i18n="play_animation">播放动画</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mathematical Formulas - directly under the canvas -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 relative overflow-hidden">
+            <!-- decorative gradient blob -->
+            <div class="absolute -top-16 -right-16 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between mb-4 relative">
+              <div class="flex items-center gap-x-2">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20 border border-violet-500/30 flex items-center justify-center">
+                  <i class="fa-solid fa-square-root-variable text-violet-300 text-sm"></i>
+                </div>
+                <span class="font-semibold text-base tracking-tight" data-i18n="math_formulas">数学公式</span>
+              </div>
+              <div class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-950 border border-slate-700">
+                t = <span id="formula-t-value" class="text-emerald-400">0.500</span>
+              </div>
+            </div>
+
+            <!-- Stacked vertically: narrower width, taller height -->
+            <div class="space-y-4 relative">
+              <!-- Main formula -->
+              <div>
+                <div class="text-xs text-slate-400 mb-2" data-i18n="curve_formula">曲线公式</div>
+                <div id="formula-panel"
+                     class="bg-slate-950 border border-slate-700 rounded-2xl p-4 min-h-[92px] flex items-center">
+                  <!-- Dynamically rendered by JS using KaTeX -->
+                </div>
+              </div>
+
+              <!-- De Casteljau + explanation -->
+              <div>
+                <div class="text-xs text-slate-400 mb-2" data-i18n="decasteljau_title">De Casteljau 递推构造</div>
+                <div id="decasteljau-formula"
+                     class="bg-slate-950 border border-slate-700 rounded-2xl p-4 text-sm mb-2">
+                  <!-- Rendered by JS -->
+                </div>
+                <div class="text-[11px] text-slate-500 leading-relaxed" data-i18n="decasteljau_desc">
+                  通过反复线性插值计算中间点，最终收敛到曲线上的精确位置。这是可视化中所有构造线的数学基础。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          
+          <!-- Degree Control -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-x-2">
+                <i class="fa-solid fa-shapes"></i>
+                <span data-i18n="curve_degree">曲线阶数</span>
+              </div>
+              <span id="degree-display" class="font-mono text-lg font-semibold text-violet-400">n = 4</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <button onclick="removeControlPoint()" 
+                      class="flex-1 px-4 py-2 text-sm rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 active:bg-slate-600 transition-colors">
+                <i class="fa-solid fa-minus mr-2"></i><span data-i18n="remove_point">删除点</span>
+              </button>
+              <button onclick="addControlPoint()" 
+                      class="flex-1 px-4 py-2 text-sm rounded-2xl bg-violet-600 hover:bg-violet-500 active:bg-violet-700 transition-colors">
+                <i class="fa-solid fa-plus mr-2"></i><span data-i18n="add_point">添加点</span>
+              </button>
+            </div>
+
+            <div class="text-[11px] text-slate-500 mt-3" data-i18n="degree_desc">
+              当前为 n 次贝塞尔曲线（n+1 个控制点）
+            </div>
+          </div>
+
+          <!-- Animation -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3 flex items-center justify-between">
+              <div class="flex items-center gap-x-2">
+                <i class="fa-solid fa-play"></i>
+                <span data-i18n="animation_progress">动画进度 (t)</span>
+              </div>
+              <span id="t-value" class="font-mono text-emerald-400 text-sm">0.50</span>
+            </div>
+            
+            <input type="range" id="t-slider" min="0" max="1" step="0.001" value="0.5"
+                   class="w-full accent-violet-500" oninput="updateTFromSlider()">
+            
+            <div class="flex items-center justify-between mt-3 text-xs">
+              <button onclick="setT(0)" class="px-2 py-1 hover:bg-slate-800 rounded">0</button>
+              <button onclick="setT(0.25)" class="px-2 py-1 hover:bg-slate-800 rounded">0.25</button>
+              <button onclick="setT(0.5)" class="px-2 py-1 hover:bg-slate-800 rounded">0.5</button>
+              <button onclick="setT(0.75)" class="px-2 py-1 hover:bg-slate-800 rounded">0.75</button>
+              <button onclick="setT(1)" class="px-2 py-1 hover:bg-slate-800 rounded">1</button>
+            </div>
+
+            <div class="flex items-center gap-3 mt-4">
+              <button onclick="toggleAnimation()" 
+                      class="flex-1 flex items-center justify-center gap-x-2 bg-slate-800 hover:bg-slate-700 transition-colors py-2 rounded-2xl text-sm">
+                <i class="fa-solid fa-play mr-1" id="bottom-play-icon"></i>
+                <span id="anim-text" data-i18n="auto_play">自动播放</span>
+              </button>
+              <button onclick="resetAnimation()" 
+                      class="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 text-sm">
+                <i class="fa-solid fa-redo"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Visual Settings -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-4" data-i18n="visual_settings">视觉参数</div>
+            
+            <div class="space-y-5">
+              <!-- Line Width -->
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span data-i18n="line_width">线条粗细</span>
+                  <span id="width-value" class="font-mono text-slate-400">4.5</span>
+                </div>
+                <input type="range" id="width-slider" min="1" max="12" step="0.5" value="4.5"
+                       class="w-full accent-violet-500" oninput="updateVisualSettings()">
+              </div>
+
+              <!-- Segments -->
+              <div>
+                <div class="flex justify-between text-xs mb-1.5">
+                  <span data-i18n="smoothness">平滑度</span>
+                  <span id="segments-value" class="font-mono text-slate-400">120</span>
+                </div>
+                <input type="range" id="segments-slider" min="20" max="300" step="10" value="120"
+                       class="w-full accent-violet-500" oninput="updateVisualSettings()">
+              </div>
+
+              <!-- Color -->
+              <div>
+                <div class="text-xs mb-2" data-i18n="curve_color">曲线颜色</div>
+                <div class="flex gap-2">
+                  <div onclick="setCurveColor('#a78bfa')" class="w-7 h-7 rounded-xl bg-violet-400 cursor-pointer ring-2 ring-offset-2 ring-offset-slate-900 ring-violet-400"></div>
+                  <div onclick="setCurveColor('#f472b6')" class="w-7 h-7 rounded-xl bg-pink-400 cursor-pointer"></div>
+                  <div onclick="setCurveColor('#34d399')" class="w-7 h-7 rounded-xl bg-emerald-400 cursor-pointer"></div>
+                  <div onclick="setCurveColor('#60a5fa')" class="w-7 h-7 rounded-xl bg-blue-400 cursor-pointer"></div>
+                  <div onclick="setCurveColor('#fbbf24')" class="w-7 h-7 rounded-xl bg-amber-400 cursor-pointer"></div>
+                  <input type="color" id="color-picker" value="#a78bfa" class="w-9 h-7 p-0 bg-transparent border-0 rounded overflow-hidden cursor-pointer" onchange="setCurveColor(this.value)">
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3 pt-1">
+                <label class="flex items-center gap-x-2 text-sm cursor-pointer">
+                  <input type="checkbox" id="show-handles" checked onchange="draw()" class="accent-violet-500">
+                  <span data-i18n="show_handles">显示控制柄</span>
+                </label>
+                <label class="flex items-center gap-x-2 text-sm cursor-pointer">
+                  <input type="checkbox" id="show-construction" checked onchange="draw()" class="accent-violet-500">
+                  <span data-i18n="show_construction">显示构造线</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Presets -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="presets">精选预设</div>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <button onclick="loadPreset('heart')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_heart">❤️ 心形</button>
+              <button onclick="loadPreset('wave')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_wave">〰️ 平滑波浪</button>
+              <button onclick="loadPreset('loop')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_loop">🔄 优美环绕</button>
+              <button onclick="loadPreset('easing')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_easing">📈 缓动曲线</button>
+              <button onclick="loadPreset('s-curve')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_s_curve">S 形优雅</button>
+              <button onclick="loadPreset('random')" class="preset-btn px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-left" data-i18n="preset_random">🎲 随机灵感</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ==================== Classic Applications ==================== -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="applications_kicker">CLASSIC APPLICATIONS</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="applications_title">经典应用案例</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="applications_subtitle">贝塞尔曲线渗透到设计、动画、工业制造的每一个角落</p>
+          </div>
+          <div class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:block">
+            1962 — present
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+          <!-- 1. Typography -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800 relative">
+              <svg viewBox="0 0 120 80" class="w-full h-full p-2" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="typoGrad" x1="0" x2="1">
+                    <stop offset="0" stop-color="#a78bfa"/>
+                    <stop offset="1" stop-color="#f472b6"/>
+                  </linearGradient>
+                </defs>
+                <!-- letter S as bezier strokes -->
+                <path d="M 30 62 C 30 50, 60 60, 60 45 C 60 30, 90 38, 90 22"
+                      fill="none" stroke="url(#typoGrad)" stroke-width="7" stroke-linecap="round"/>
+                <!-- control handles -->
+                <line x1="30" y1="62" x2="30" y2="50" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="60" y1="45" x2="60" y2="60" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="60" y1="45" x2="60" y2="30" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="90" y1="22" x2="90" y2="38" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <!-- control points -->
+                <circle cx="30" cy="62" r="2.5" fill="#f472b6"/>
+                <circle cx="30" cy="50" r="2" fill="#a5b4fc"/>
+                <circle cx="60" cy="60" r="2" fill="#a5b4fc"/>
+                <circle cx="60" cy="45" r="2.5" fill="#fff"/>
+                <circle cx="60" cy="30" r="2" fill="#a5b4fc"/>
+                <circle cx="90" cy="38" r="2" fill="#a5b4fc"/>
+                <circle cx="90" cy="22" r="2.5" fill="#f472b6"/>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2">
+              <i class="fa-solid fa-font text-violet-400 text-xs"></i>
+              <span class="text-sm font-semibold" data-i18n="app_typography_title">字体与排版</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_typography_desc">
+              TrueType 与 PostScript 字体的每个字形都由数百段贝塞尔曲线拼接而成，让字母的笔锋既精确又优雅。
+            </p>
+          </div>
+
+          <!-- 2. CSS Easing -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800 relative">
+              <svg viewBox="0 0 120 80" class="w-full h-full p-2" xmlns="http://www.w3.org/2000/svg">
+                <!-- frame -->
+                <rect x="20" y="12" width="80" height="56" fill="none" stroke="#1e293b" stroke-width="1"/>
+                <!-- ease-in-out bezier curve -->
+                <path d="M 20 68 C 40 68, 80 12, 100 12"
+                      fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round"/>
+                <!-- handles -->
+                <line x1="20" y1="68" x2="40" y2="68" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="100" y1="12" x2="80" y2="12" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <!-- points -->
+                <circle cx="20" cy="68" r="2.5" fill="#f472b6"/>
+                <circle cx="40" cy="68" r="2" fill="#a5b4fc"/>
+                <circle cx="80" cy="12" r="2" fill="#a5b4fc"/>
+                <circle cx="100" cy="12" r="2.5" fill="#f472b6"/>
+                <!-- moving ball indicating animation -->
+                <circle cx="60" cy="40" r="3.5" fill="#fbbf24">
+                  <animateMotion dur="2.4s" repeatCount="indefinite"
+                                 path="M 0 0 C 20 0, 60 -56, 80 -56"/>
+                </circle>
+                <text x="60" y="78" font-size="6" fill="#64748b" text-anchor="middle" font-family="monospace">cubic-bezier(.4,0,.2,1)</text>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2">
+              <i class="fa-solid fa-wave-square text-emerald-400 text-xs"></i>
+              <span class="text-sm font-semibold" data-i18n="app_easing_title">动画缓动</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n-html="app_easing_desc">
+              CSS 的 <code class="text-emerald-300 font-mono">cubic-bezier()</code> 函数让 UI 过渡自然流畅，是设计师定义节奏感的核心工具。
+            </p>
+          </div>
+
+          <!-- 3. Vector Illustration -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800 relative">
+              <svg viewBox="0 0 120 80" class="w-full h-full p-2" xmlns="http://www.w3.org/2000/svg">
+                <!-- vector path -->
+                <path d="M 15 55 C 30 15, 55 70, 70 40 S 95 25, 105 55"
+                      fill="none" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+                <!-- handles -->
+                <line x1="15" y1="55" x2="30" y2="15" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="70" y1="40" x2="55" y2="70" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="70" y1="40" x2="85" y2="10" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <line x1="105" y1="55" x2="95" y2="25" stroke="#475569" stroke-width="1" stroke-dasharray="2,2"/>
+                <!-- anchor points (yellow) and handle points (blue) -->
+                <circle cx="15" cy="55" r="2.8" fill="#fbbf24"/>
+                <circle cx="30" cy="15" r="2" fill="#a5b4fc"/>
+                <circle cx="55" cy="70" r="2" fill="#a5b4fc"/>
+                <circle cx="70" cy="40" r="2.8" fill="#fbbf24"/>
+                <circle cx="85" cy="10" r="2" fill="#a5b4fc"/>
+                <circle cx="95" cy="25" r="2" fill="#a5b4fc"/>
+                <circle cx="105" cy="55" r="2.8" fill="#fbbf24"/>
+                <!-- pen tool icon -->
+                <g transform="translate(95, 60) rotate(35)">
+                  <path d="M 0 0 L 8 -2 L 6 4 Z" fill="#fff" stroke="#475569" stroke-width="0.5"/>
+                </g>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2">
+              <i class="fa-solid fa-pen-nib text-blue-400 text-xs"></i>
+              <span class="text-sm font-semibold" data-i18n="app_vector_title">矢量绘图</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_vector_desc">
+              Illustrator、Figma、Inkscape 的钢笔工具基于贝塞尔曲线，使设计师可以精确控制每个锚点与曲率。
+            </p>
+          </div>
+
+          <!-- 4. Automotive / Industrial Design -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800 relative">
+              <svg viewBox="0 0 120 80" class="w-full h-full p-2" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="carGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f472b6" stop-opacity="0.55"/>
+                    <stop offset="1" stop-color="#f472b6" stop-opacity="0.1"/>
+                  </linearGradient>
+                </defs>
+                <!-- ground line -->
+                <line x1="5" y1="65" x2="115" y2="65" stroke="#475569" stroke-width="1" stroke-dasharray="3,2"/>
+                <!-- car body bezier silhouette -->
+                <path d="M 12 60 C 16 55, 20 50, 26 48 C 32 38, 42 28, 58 26 C 76 24, 92 30, 100 40 C 105 46, 108 52, 112 58 L 112 60 Z"
+                      fill="url(#carGrad)" stroke="#f472b6" stroke-width="2" stroke-linejoin="round"/>
+                <!-- window -->
+                <path d="M 40 28 C 44 36, 68 36, 78 28" fill="#0f172a" stroke="#a78bfa" stroke-width="1"/>
+                <!-- wheels -->
+                <circle cx="32" cy="60" r="7" fill="#0f172a" stroke="#cbd5e1" stroke-width="1.5"/>
+                <circle cx="32" cy="60" r="2.5" fill="#475569"/>
+                <circle cx="92" cy="60" r="7" fill="#0f172a" stroke="#cbd5e1" stroke-width="1.5"/>
+                <circle cx="92" cy="60" r="2.5" fill="#475569"/>
+                <!-- a couple control points to hint at construction -->
+                <circle cx="26" cy="48" r="1.8" fill="#a5b4fc"/>
+                <circle cx="58" cy="26" r="2.2" fill="#fff"/>
+                <circle cx="100" cy="40" r="1.8" fill="#a5b4fc"/>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2">
+              <i class="fa-solid fa-car-side text-pink-400 text-xs"></i>
+              <span class="text-sm font-semibold" data-i18n="app_automotive_title">汽车工业设计</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_automotive_desc">
+              Pierre Bézier 于 1960 年代在雷诺为车身曲线设计而提出这一方法，至今汽车造型与航空曲面建模仍依赖于它。
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+
+
+    
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 mt-4">
+      <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        <div class="flex items-center gap-x-2">
+          <span class="font-mono font-bold text-[10px] tracking-[0.18em] px-2 py-0.5 rounded-md bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-violet-200 border border-violet-400/40">HSSIM</span>
+          <span data-i18n="footer_tagline">Help Sunday Sharply Improve Math</span>
+        </div>
+        <div class="flex items-center gap-x-3 text-slate-600">
+          <span class="font-mono">B(t) = Σ Bₙ,ᵢ(t) Pᵢ</span>
+          <span class="text-slate-700">·</span>
+          <span data-i18n="footer_credit">用数学之美点亮每个周日</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script>
+    // ==================== 国际化 (i18n) ====================
+    const translations = {
+      zh: {
+        // Header
+        nav_home: "回大厅",
+        drag_hint: "拽控制点试试",
+        reset: "重来",
+        brand_title: "会拐弯的魔法线",
+        brand_subtitle: "拽着点玩，线自己扭",
+        page_title: "会拐弯的魔法线 · HSSIM",
+        footer_tagline: "Help Sunday Sharply Improve Math",
+        footer_credit: "一个让数学偷偷变好玩的地方",
+
+        // Applications section
+        applications_kicker: "它都藏在哪儿",
+        applications_title: "这条线其实无处不在",
+        applications_subtitle: "从字体的笔锋到汽车的曲线，它悄悄藏在你每天看到的东西里。",
+        app_typography_title: "你看的每个字",
+        app_typography_desc: "屏幕上每个字的形状，都是几百段贝塞尔曲线拼出来的——笔锋那股圆润劲儿全靠它。",
+        app_easing_title: "动画为啥那么顺滑",
+        app_easing_desc: "网页上那些丝滑的过渡动画，背后就是 <code class=\"text-emerald-300 font-mono\">cubic-bezier()</code>，设计师用它来调“手感”和节奏。",
+        app_vector_title: "钢笔工具",
+        app_vector_desc: "Illustrator、Figma、Inkscape 里的钢笔工具就是它，让设计师精确捏住每一个锚点。",
+        app_automotive_title: "车身和机身曲线",
+        app_automotive_desc: "贝塞尔本人 60 年代在雷诺造车时，就是为了设计车身曲面才发明了它，今天的汽车和飞机外形还在用。",
+
+        // Degree Control
+        curve_degree: "曲线阶数",
+        add_point: "添加点",
+        remove_point: "删除点",
+        degree_desc: "当前为 n 次贝塞尔曲线（n+1 个控制点）",
+
+        // Animation
+        animation_progress: "动画进度 (t)",
+        auto_play: "自动播放",
+        pause: "暂停动画",
+
+        // Canvas overlay buttons
+        construction_lines: "构造线",
+        play_animation: "播放动画",
+
+        // Visual Settings
+        visual_settings: "视觉参数",
+        line_width: "线条粗细",
+        smoothness: "平滑度",
+        curve_color: "曲线颜色",
+        show_handles: "显示控制柄",
+        show_construction: "显示构造线",
+
+        // Presets
+        presets: "精选预设",
+        preset_heart: "❤️ 心形",
+        preset_wave: "〰️ 平滑波浪",
+        preset_loop: "🔄 优美环绕",
+        preset_easing: "📈 缓动曲线",
+        preset_s_curve: "S 形优雅",
+        preset_random: "🎲 随机灵感",
+
+        // Formulas section
+        math_formulas: "数学公式",
+        curve_formula: "曲线公式",
+        decasteljau_title: "De Casteljau 递推构造",
+        decasteljau_desc: "通过反复线性插值计算中间点，最终收敛到曲线上的精确位置。这是可视化中所有构造线的数学基础。",
+        t_in_01: "其中 t ∈ [0, 1]，当 t 从 0 变化到 1 时，曲线从起点平滑过渡到终点。",
+        general_form: (n) => `一般形式（${n} 次贝塞尔曲线）`,
+        current_point_desc: (count) => `当前点坐标：<span class="font-mono text-emerald-300">由 ${count} 个控制点加权计算</span>`,
+
+        // Canvas overlay
+        curve_info: (n) => `${n} 次贝塞尔曲线`,
+
+        // Degree display
+        degree_display: (n) => `n = ${n}`,
+
+        // Alerts
+        too_many_points: "为了演示效果，建议控制点数量不要超过 12 个",
+        min_points: "至少需要 2 个控制点",
+      },
+      en: {
+        // Header
+        nav_home: "Lobby",
+        drag_hint: "Drag the dots",
+        reset: "Redo",
+        brand_title: "The bendy magic line",
+        brand_subtitle: "drag the dots, the line obeys",
+        page_title: "The bendy magic line · HSSIM",
+        footer_tagline: "Help Sunday Sharply Improve Math",
+        footer_credit: "where math sneakily turns into fun",
+
+        // Applications section
+        applications_kicker: "WHERE IT'S SECRETLY HIDING",
+        applications_title: "This line is secretly everywhere",
+        applications_subtitle: "From the strokes of letters to the curves of cars, it's quietly baked into stuff you see every single day.",
+        app_typography_title: "Every letter you read",
+        app_typography_desc: "The shape of every character on this screen is stitched from hundreds of Bézier curves — that's where those smooth strokes come from.",
+        app_easing_title: "Why animations feel smooth",
+        app_easing_desc: "Those buttery UI transitions on the web run on <code class=\"text-emerald-300 font-mono\">cubic-bezier()</code> — it's how designers dial in the 'feel' and timing.",
+        app_vector_title: "The pen tool",
+        app_vector_desc: "The pen tool in Illustrator, Figma, and Inkscape is literally this curve, letting designers grab every anchor point with precision.",
+        app_automotive_title: "Car & plane curves",
+        app_automotive_desc: "Pierre Bézier invented this at Renault in the 1960s to sculpt car-body surfaces — and car and aircraft shapes still rely on it today.",
+
+        // Degree Control
+        curve_degree: "Curve Degree",
+        add_point: "Add Point",
+        remove_point: "Remove Point",
+        degree_desc: "Current: n-degree Bézier curve (n+1 control points)",
+
+        // Animation
+        animation_progress: "Animation Progress (t)",
+        auto_play: "Auto Play",
+        pause: "Pause Animation",
+
+        // Canvas overlay buttons
+        construction_lines: "Construction",
+        play_animation: "Play Animation",
+
+        // Visual Settings
+        visual_settings: "Visual Settings",
+        line_width: "Line Width",
+        smoothness: "Smoothness",
+        curve_color: "Curve Color",
+        show_handles: "Show Handles",
+        show_construction: "Show Construction Lines",
+
+        // Presets
+        presets: "Presets",
+        preset_heart: "❤️ Heart",
+        preset_wave: "〰️ Smooth Wave",
+        preset_loop: "🔄 Elegant Loop",
+        preset_easing: "📈 Easing Curve",
+        preset_s_curve: "S-Curve",
+        preset_random: "🎲 Random",
+
+        // Formulas section
+        math_formulas: "Mathematical Formulas",
+        curve_formula: "Curve Formula",
+        decasteljau_title: "De Casteljau Recursion",
+        decasteljau_desc: "Repeated linear interpolation between points eventually converges to the exact point on the curve. This is the mathematical foundation behind all the construction lines you see.",
+        t_in_01: "where t ∈ [0, 1]. As t goes from 0 to 1, the curve travels smoothly from start to end point.",
+        general_form: (n) => `General form (degree-${n} Bézier curve)`,
+        current_point_desc: (count) => `Current point: <span class="font-mono text-emerald-300">weighted sum of ${count} control points</span>`,
+
+        // Canvas overlay
+        curve_info: (n) => `${n}-degree Bézier Curve`,
+
+        // Degree display
+        degree_display: (n) => `n = ${n}`,
+
+        // Alerts
+        too_many_points: "For demo purposes, we recommend keeping the number of control points under 12.",
+        min_points: "At least 2 control points are required.",
+      }
+    };
+
+    let currentLang = localStorage.getItem('hssim_lang') || 'zh';
+
+    function applyInitialLanguage() {
+      // Set button styles
+      const zhBtn = document.getElementById('lang-zh');
+      const enBtn = document.getElementById('lang-en');
+
+      if (currentLang === 'zh') {
+        zhBtn.classList.add('bg-violet-600', 'text-white');
+        zhBtn.classList.remove('text-slate-400');
+        enBtn.classList.remove('bg-violet-600', 'text-white');
+        enBtn.classList.add('text-slate-400');
+      } else {
+        enBtn.classList.add('bg-violet-600', 'text-white');
+        enBtn.classList.remove('text-slate-400');
+        zhBtn.classList.remove('bg-violet-600', 'text-white');
+        zhBtn.classList.add('text-slate-400');
+      }
+
+      applyTranslations();
+    }
+
+    function tr(key, ...args) {
+      const langPack = translations[currentLang] || translations.zh;
+      const value = langPack[key];
+      if (typeof value === 'function') return value(...args);
+      return value || key;
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('hssim_lang', lang);
+
+      // Update button styles
+      document.getElementById('lang-zh').classList.toggle('bg-violet-600', lang === 'zh');
+      document.getElementById('lang-zh').classList.toggle('text-white', lang === 'zh');
+      document.getElementById('lang-zh').classList.toggle('text-slate-400', lang !== 'zh');
+
+      document.getElementById('lang-en').classList.toggle('bg-violet-600', lang === 'en');
+      document.getElementById('lang-en').classList.toggle('text-white', lang === 'en');
+      document.getElementById('lang-en').classList.toggle('text-slate-400', lang !== 'en');
+
+      applyTranslations();
+    }
+
+    function applyTranslations() {
+      // Update all elements with data-i18n (text-only)
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = tr(key);
+      });
+
+      // Update elements with data-i18n-html (rich content, e.g. inline <code>)
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        el.innerHTML = tr(key);
+      });
+
+      // Document-level metadata
+      document.title = tr('page_title');
+      document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+
+      // Update dynamic elements
+      updateDynamicTexts();
+
+      // Re-render formulas so that any language-sensitive parts update
+      if (typeof renderFormulas === 'function') {
+        renderFormulas();
+      }
+    }
+
+    function updateDynamicTexts() {
+      // Degree display
+      const degreeEl = document.getElementById('degree-display');
+      if (degreeEl) {
+        const n = points.length - 1;
+        degreeEl.textContent = tr('degree_display', n);
+      }
+
+      // Canvas info
+      const infoEl = document.getElementById('curve-info');
+      if (infoEl) {
+        const n = points.length - 1;
+        infoEl.textContent = tr('curve_info', n);
+      }
+
+      // Re-render formulas with current language descriptions
+      if (typeof renderFormulas === 'function') {
+        renderFormulas();
+      }
+    }
+
+    // ==================== 全局状态 ====================
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    let points = [
+      { x: 150, y: 520 },
+      { x: 260, y: 180 },
+      { x: 420, y: 180 },
+      { x: 580, y: 520 },
+      { x: 720, y: 220 }
+    ];
+
+    let curveType = 'cubic'; // 'linear' | 'quadratic' | 'cubic'
+    let t = 0.5;
+    let isPlaying = false;
+    let animationFrame = null;
+    let lastTime = 0;
+
+    let showHandles = true;
+    let showConstruction = true;
+    let lineWidth = 4.5;
+    let segments = 120;
+    let curveColor = '#a78bfa';
+
+    let draggingPoint = null;
+    let dragOffset = { x: 0, y: 0 };
+
+    // ==================== 工具函数 ====================
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    /**
+     * 使用 De Casteljau 算法计算任意阶贝塞尔曲线上的一点（数值稳定）
+     */
+    function computeBezierPoint(points, t) {
+      if (points.length === 0) return { x: 0, y: 0 };
+      if (points.length === 1) return { ...points[0] };
+
+      let current = points.map(p => ({ ...p }));
+
+      while (current.length > 1) {
+        const next = [];
+        for (let i = 0; i < current.length - 1; i++) {
+          next.push({
+            x: lerp(current[i].x, current[i + 1].x, t),
+            y: lerp(current[i].y, current[i + 1].y, t)
+          });
+        }
+        current = next;
+      }
+      return current[0];
+    }
+
+    // De Casteljau 算法 - 返回每一层中间点，用于绘制构造线
+    function deCasteljau(points, t) {
+      let levels = [points.map(p => ({...p}))];
+      
+      let current = points.map(p => ({...p}));
+      
+      while (current.length > 1) {
+        const next = [];
+        for (let i = 0; i < current.length - 1; i++) {
+          const x = lerp(current[i].x, current[i + 1].x, t);
+          const y = lerp(current[i].y, current[i + 1].y, t);
+          next.push({ x, y });
+        }
+        levels.push(next);
+        current = next;
+      }
+      return levels;
+    }
+
+    // ==================== 绘制 ====================
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 背景网格
+      drawGrid();
+
+      const activePoints = getActivePoints();
+
+      // 绘制控制多边形
+      if (showHandles && activePoints.length > 1) {
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(activePoints[0].x, activePoints[0].y);
+        for (let i = 1; i < activePoints.length; i++) {
+          ctx.lineTo(activePoints[i].x, activePoints[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // 绘制贝塞尔曲线
+      drawBezierCurve(activePoints);
+
+      // 绘制 De Casteljau 构造线
+      if (showConstruction && activePoints.length >= 2) {
+        drawDeCasteljau(activePoints, t);
+      }
+
+      // 绘制当前 t 位置的点和切线
+      drawCurrentPoint(activePoints, t);
+
+      // 绘制控制点
+      if (showHandles) {
+        drawControlPoints(activePoints);
+      }
+
+      // 更新数学公式面板
+      renderFormulas();
+    }
+
+    function drawGrid() {
+      ctx.strokeStyle = '#1e2937';
+      ctx.lineWidth = 1;
+      
+      const step = 40;
+      for (let x = 0; x < canvas.width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawBezierCurve(activePoints) {
+      if (activePoints.length < 2) return;
+
+      ctx.strokeStyle = curveColor;
+      ctx.lineWidth = lineWidth;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.shadowColor = curveColor + '40';
+      ctx.shadowBlur = 18;
+
+      ctx.beginPath();
+      ctx.moveTo(activePoints[0].x, activePoints[0].y);
+
+      for (let i = 1; i <= segments; i++) {
+        const tt = i / segments;
+        const pt = computeBezierPoint(activePoints, tt);
+        ctx.lineTo(pt.x, pt.y);
+      }
+
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    function quadraticBezier(p0, p1, p2, t) {
+      const oneMinusT = 1 - t;
+      return {
+        x: oneMinusT * oneMinusT * p0.x + 2 * oneMinusT * t * p1.x + t * t * p2.x,
+        y: oneMinusT * oneMinusT * p0.y + 2 * oneMinusT * t * p1.y + t * t * p2.y
+      };
+    }
+
+    function drawDeCasteljau(activePoints, t) {
+      const levels = deCasteljau(activePoints, t);
+
+      const colors = ['#64748b', '#94a3b8', '#cbd5e1'];
+
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([2, 3]);
+
+      for (let i = 0; i < levels.length - 1; i++) {
+        const level = levels[i];
+        ctx.strokeStyle = colors[i % colors.length];
+
+        ctx.beginPath();
+        for (let j = 0; j < level.length - 1; j++) {
+          ctx.moveTo(level[j].x, level[j].y);
+          ctx.lineTo(level[j + 1].x, level[j + 1].y);
+        }
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+
+    function drawCurrentPoint(activePoints, t) {
+      if (activePoints.length < 2) return;
+
+      const currentPoint = computeBezierPoint(activePoints, t);
+
+      // 外发光
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(currentPoint.x, currentPoint.y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // 实心点
+      ctx.fillStyle = '#1e2937';
+      ctx.beginPath();
+      ctx.arc(currentPoint.x, currentPoint.y, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 绘制切线（速度方向）- 仅当点数 >= 3 时才有意义
+      if (activePoints.length >= 3) {
+        const dt = 0.008;
+        const pNext = computeBezierPoint(activePoints, Math.min(1, t + dt));
+        
+        ctx.strokeStyle = '#e0e7ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(currentPoint.x, currentPoint.y);
+        ctx.lineTo(pNext.x, pNext.y);
+        ctx.stroke();
+      }
+    }
+
+    function drawControlPoints(activePoints) {
+      activePoints.forEach((pt, index) => {
+        const isEndpoint = index === 0 || index === activePoints.length - 1;
+
+        // 外圈
+        ctx.fillStyle = isEndpoint ? '#f472b6' : '#a5b4fc';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 11, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 内圈
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 文字标签
+        ctx.fillStyle = '#e0e7ff';
+        ctx.font = '600 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('P' + index, pt.x, pt.y + 24);
+      });
+    }
+
+    // ==================== 交互 ====================
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (canvas.width / rect.width),
+        y: (e.clientY - rect.top) * (canvas.height / rect.height)
+      };
+    }
+
+    function getActivePoints() {
+      return points; // 支持任意阶数
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      const pos = getMousePos(e);
+      const activePoints = getActivePoints();
+
+      for (let i = 0; i < activePoints.length; i++) {
+        const pt = activePoints[i];
+        const dist = Math.hypot(pt.x - pos.x, pt.y - pos.y);
+        if (dist < 18) {
+          draggingPoint = points.indexOf(pt); // 找到原始索引
+          dragOffset = { x: pt.x - pos.x, y: pt.y - pos.y };
+          canvas.style.cursor = 'grabbing';
+          break;
+        }
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (draggingPoint === null) return;
+
+      const pos = getMousePos(e);
+      points[draggingPoint].x = Math.max(20, Math.min(canvas.width - 20, pos.x + dragOffset.x));
+      points[draggingPoint].y = Math.max(20, Math.min(canvas.height - 20, pos.y + dragOffset.y));
+
+      draw();
+    });
+
+    window.addEventListener('mouseup', () => {
+      draggingPoint = null;
+      canvas.style.cursor = 'crosshair';
+    });
+
+    // 点击空白处添加控制点（支持 n 次贝塞尔）
+    canvas.addEventListener('click', (e) => {
+      if (draggingPoint !== null) return;
+
+      const pos = getMousePos(e);
+
+      // 避免点击在已有控制点上
+      for (let pt of points) {
+        if (Math.hypot(pt.x - pos.x, pt.y - pos.y) < 22) return;
+      }
+
+      // 额外保护：如果点击位置在 overlay 按钮区域附近，忽略（以防万一）
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      if (clickX > rect.width - 180) return; // 右边有按钮的区域
+
+      points.push({
+        x: Math.max(40, Math.min(canvas.width - 40, pos.x)),
+        y: Math.max(40, Math.min(canvas.height - 40, pos.y))
+      });
+
+      updateDegreeDisplay();
+      draw();
+      renderFormulas();
+    });
+
+    // 触摸支持
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const pos = getMousePos(touch);
+
+      const activePoints = getActivePoints();
+      for (let i = 0; i < activePoints.length; i++) {
+        const pt = activePoints[i];
+        if (Math.hypot(pt.x - pos.x, pt.y - pos.y) < 22) {
+          draggingPoint = points.indexOf(pt);
+          dragOffset = { x: pt.x - pos.x, y: pt.y - pos.y };
+          break;
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (draggingPoint === null) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const pos = getMousePos(touch);
+
+      points[draggingPoint].x = Math.max(20, Math.min(canvas.width - 20, pos.x + dragOffset.x));
+      points[draggingPoint].y = Math.max(20, Math.min(canvas.height - 20, pos.y + dragOffset.y));
+      draw();
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      draggingPoint = null;
+    });
+
+    // ==================== 控制函数 ====================
+    function updateDegreeDisplay() {
+      const n = points.length - 1;
+      const el = document.getElementById('degree-display');
+      if (el) el.textContent = tr('degree_display', n);
+
+      const info = document.getElementById('curve-info');
+      if (info) info.textContent = tr('curve_info', n);
+    }
+
+    function addControlPoint() {
+      // 在最后一个点和倒数第二个点之间大致位置添加新点
+      const n = points.length;
+      if (n >= 12) {
+        alert(tr('too_many_points'));
+        return;
+      }
+
+      const last = points[n - 1];
+      const secondLast = points[n - 2] || last;
+
+      // 在最后两个点之间插入一个新点
+      const newPoint = {
+        x: (secondLast.x + last.x) / 2 + (Math.random() - 0.5) * 80,
+        y: (secondLast.y + last.y) / 2 + (Math.random() - 0.5) * 80
+      };
+
+      // 限制在画布内
+      newPoint.x = Math.max(40, Math.min(canvas.width - 40, newPoint.x));
+      newPoint.y = Math.max(40, Math.min(canvas.height - 40, newPoint.y));
+
+      points.splice(n - 1, 0, newPoint); // 插在倒数第二个位置
+
+      updateDegreeDisplay();
+      draw();
+      renderFormulas();
+    }
+
+    function removeControlPoint() {
+      if (points.length <= 2) {
+        alert(tr('min_points'));
+        return;
+      }
+
+      points.pop();
+      updateDegreeDisplay();
+      draw();
+      renderFormulas();
+    }
+
+    function updateTFromSlider() {
+      t = parseFloat(document.getElementById('t-slider').value);
+      document.getElementById('t-value').textContent = t.toFixed(2);
+      draw();
+      renderFormulas();
+    }
+
+    function setT(value) {
+      t = value;
+      document.getElementById('t-slider').value = t;
+      document.getElementById('t-value').textContent = t.toFixed(2);
+      draw();
+      renderFormulas();
+    }
+
+    function updateVisualSettings() {
+      lineWidth = parseFloat(document.getElementById('width-slider').value);
+      segments = parseInt(document.getElementById('segments-slider').value);
+
+      document.getElementById('width-value').textContent = lineWidth.toFixed(1);
+      document.getElementById('segments-value').textContent = segments;
+
+      draw();
+    }
+
+    function setCurveColor(color) {
+      curveColor = color;
+      draw();
+    }
+
+    function toggleDeCasteljau() {
+      showConstruction = !showConstruction;
+      const btn = document.getElementById('decasteljau-btn');
+      btn.style.borderColor = showConstruction ? '#64748b' : '#475569';
+      draw();
+    }
+
+    let animationDirection = 1;
+
+    function animate(timestamp = 0) {
+      if (!isPlaying) return;
+
+      if (!lastTime) lastTime = timestamp;
+
+      const delta = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+
+      // 平滑前进后退动画
+      t += delta * 0.55 * animationDirection;
+
+      if (t >= 1) {
+        t = 1;
+        animationDirection = -1;
+      } else if (t <= 0) {
+        t = 0;
+        animationDirection = 1;
+      }
+
+      document.getElementById('t-slider').value = t;
+      document.getElementById('t-value').textContent = t.toFixed(2);
+
+      draw();
+      renderFormulas();
+
+      animationFrame = requestAnimationFrame(animate);
+    }
+
+    function toggleAnimation() {
+      isPlaying = !isPlaying;
+      const icon = document.getElementById('play-icon');
+      const bottomIcon = document.getElementById('bottom-play-icon');
+      const text = document.getElementById('anim-text');
+
+      if (isPlaying) {
+        icon.classList.remove('fa-play');
+        icon.classList.add('fa-pause');
+        bottomIcon.classList.remove('fa-play');
+        bottomIcon.classList.add('fa-pause');
+        text.textContent = tr('pause');
+        lastTime = 0;
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        icon.classList.remove('fa-pause');
+        icon.classList.add('fa-play');
+        bottomIcon.classList.remove('fa-pause');
+        bottomIcon.classList.add('fa-play');
+        text.textContent = tr('auto_play');
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+      }
+    }
+
+    function resetAnimation() {
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      isPlaying = false;
+      t = 0;
+      animationDirection = 1;
+      document.getElementById('t-slider').value = 0;
+      document.getElementById('t-value').textContent = '0.00';
+      
+      const icon = document.getElementById('play-icon');
+      const bottomIcon = document.getElementById('bottom-play-icon');
+      icon.classList.remove('fa-pause');
+      icon.classList.add('fa-play');
+      bottomIcon.classList.remove('fa-pause');
+      bottomIcon.classList.add('fa-play');
+      document.getElementById('anim-text').textContent = tr('auto_play');
+
+      draw();
+    }
+
+    function updateCheckboxes() {
+      document.getElementById('show-handles').checked = showHandles;
+      document.getElementById('show-construction').checked = showConstruction;
+    }
+
+    // ==================== 数学公式渲染 (支持任意阶数) ====================
+    function renderFormulas() {
+      const mainPanel = document.getElementById('formula-panel');
+      const decastPanel = document.getElementById('decasteljau-formula');
+      const tDisplay = document.getElementById('formula-t-value');
+
+      if (!mainPanel || typeof katex === 'undefined') return;
+
+      const n = points.length - 1;
+      const tVal = t.toFixed(3);
+
+      if (tDisplay) tDisplay.textContent = tVal;
+
+      // 主公式
+      let mainContent = `
+        <div class="w-full">
+          <div class="text-xs text-slate-400 mb-1.5">${tr('general_form', n)}</div>
+          <div class="katex-formula" id="katex-main"></div>
+          <div class="mt-3 text-xs text-slate-400">
+            ${tr('current_point_desc', points.length)}
+          </div>
+        </div>
+      `;
+      mainPanel.innerHTML = mainContent;
+
+      // De Casteljau
+      if (decastPanel) {
+        decastPanel.innerHTML = `<div class="katex-formula" id="katex-decasteljau"></div>`;
+      }
+
+      // 渲染公式
+      try {
+        const mainEl = document.getElementById('katex-main');
+        const decastEl = document.getElementById('katex-decasteljau');
+
+        // 通用公式
+        katex.render(`B(t) = \\sum_{i=0}^{${n}} \\binom{${n}}{i} (1-t)^{${n}-i} t^i P_i`, mainEl, {
+          throwOnError: false,
+          displayMode: true
+        });
+
+        // De Casteljau（通用）
+        if (decastEl) {
+          katex.render("P_i^{(k)} = (1-t) P_i^{(k-1)} + t P_{i+1}^{(k-1)}", decastEl, {
+            throwOnError: false,
+            displayMode: true
+          });
+        }
+      } catch (e) {
+        console.warn('KaTeX error:', e);
+      }
+    }
+
+    // ==================== 预设 ====================
+    function loadPreset(name) {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      if (name === 'heart') {
+        // 保持经典心形（4点）
+        points = [
+          { x: w * 0.32, y: h * 0.55 },
+          { x: w * 0.22, y: h * 0.18 },
+          { x: w * 0.78, y: h * 0.18 },
+          { x: w * 0.68, y: h * 0.55 }
+        ];
+      } 
+      else if (name === 'wave') {
+        // 6点更优美的波浪
+        points = [
+          { x: w * 0.08, y: h * 0.58 },
+          { x: w * 0.20, y: h * 0.22 },
+          { x: w * 0.35, y: h * 0.78 },
+          { x: w * 0.52, y: h * 0.20 },
+          { x: w * 0.68, y: h * 0.80 },
+          { x: w * 0.92, y: h * 0.42 }
+        ];
+      } 
+      else if (name === 'loop') {
+        // 5点优美环绕
+        points = [
+          { x: w * 0.22, y: h * 0.72 },
+          { x: w * 0.15, y: h * 0.28 },
+          { x: w * 0.48, y: h * 0.12 },
+          { x: w * 0.82, y: h * 0.28 },
+          { x: w * 0.78, y: h * 0.72 }
+        ];
+      } 
+      else if (name === 'easing') {
+        points = [
+          { x: w * 0.08, y: h * 0.82 },
+          { x: w * 0.18, y: h * 0.18 },
+          { x: w * 0.82, y: h * 0.18 },
+          { x: w * 0.92, y: h * 0.18 }
+        ];
+      } 
+      else if (name === 's-curve') {
+        // 5点更优雅的S
+        points = [
+          { x: w * 0.10, y: h * 0.78 },
+          { x: w * 0.28, y: h * 0.22 },
+          { x: w * 0.50, y: h * 0.50 },
+          { x: w * 0.72, y: h * 0.78 },
+          { x: w * 0.90, y: h * 0.22 }
+        ];
+      } 
+      else if (name === 'random') {
+        const count = 5 + Math.floor(Math.random() * 3); // 5~7个点
+        points = [];
+        for (let i = 0; i < count; i++) {
+          points.push({
+            x: 80 + Math.random() * (w - 160),
+            y: 80 + Math.random() * (h - 160)
+          });
+        }
+      }
+
+      updateDegreeDisplay();
+      draw();
+      renderFormulas();
+    }
+
+    function resetPoints() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      points = [
+        { x: w * 0.18, y: h * 0.68 },
+        { x: w * 0.32, y: h * 0.22 },
+        { x: w * 0.52, y: h * 0.22 },
+        { x: w * 0.68, y: h * 0.78 },
+        { x: w * 0.82, y: h * 0.22 }
+      ];
+
+      updateDegreeDisplay();
+      setT(0.5);
+      draw();
+      renderFormulas();
+    }
+
+    function initControls() {
+      // 初始化滑块显示值
+      document.getElementById('width-value').textContent = lineWidth;
+      document.getElementById('segments-value').textContent = segments;
+      document.getElementById('t-value').textContent = t.toFixed(2);
+
+      // 初始化复选框
+      updateCheckboxes();
+
+      // 颜色选择器同步
+      document.getElementById('color-picker').value = curveColor;
+
+      // 监听复选框
+      document.getElementById('show-handles').onchange = () => {
+        showHandles = document.getElementById('show-handles').checked;
+        draw();
+      };
+      document.getElementById('show-construction').onchange = () => {
+        showConstruction = document.getElementById('show-construction').checked;
+        draw();
+      };
+    }
+
+    function init() {
+      // 设置初始状态
+      initControls();
+
+      // 初始化语言
+      applyInitialLanguage();
+
+      // 初始绘制
+      updateDegreeDisplay();
+      draw();
+
+      // 提示用户可以拖拽
+      setTimeout(() => {
+        const info = document.getElementById('curve-info');
+        info.style.transition = 'all 0.3s';
+      }, 1200);
+
+      // 键盘快捷键
+      document.addEventListener('keydown', (e) => {
+        if (e.key === ' ') {
+          e.preventDefault();
+          toggleAnimation();
+        }
+        if (e.key.toLowerCase() === 'r') {
+          resetPoints();
+        }
+        if (e.key === 'ArrowRight') setT(Math.min(1, t + 0.05));
+        if (e.key === 'ArrowLeft') setT(Math.max(0, t - 0.05));
+      });
+
+      // 初始加载一个漂亮的预设
+      setTimeout(() => {
+        loadPreset('wave');
+        updateDegreeDisplay();
+        // 确保公式在所有初始化完成后渲染
+        setTimeout(() => {
+          renderFormulas();
+        }, 120);
+      }, 380);
+    }
+
+    // 启动
+    window.onload = init;
+  </script>
+</body>
+</html>

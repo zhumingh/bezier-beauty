@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>单位圆与正弦波 · Unit Circle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">TRIGONOMETRY</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">单位圆与正弦波</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动圆上的点或播放动画，看正弦和余弦如何描出波形。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="520"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                  style="aspect-ratio: 900 / 520;"></canvas>
+          <div class="flex flex-wrap items-center gap-3">
+            <button id="play" class="px-4 py-2 rounded-2xl bg-violet-600 hover:bg-violet-500 text-sm flex items-center gap-x-2">
+              <i id="play-icon" class="fa-solid fa-play"></i><span id="play-text" data-i18n="play">播放</span>
+            </button>
+            <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="show-cos" checked> <span data-i18n="show_cos">显示余弦</span></label>
+            <div class="flex-1 min-w-[200px] flex items-center gap-x-3">
+              <span class="text-xs text-slate-400" data-i18n="angle">角度 θ</span>
+              <input type="range" id="ang" min="0" max="360" step="1" value="35" class="flex-1">
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">当前数值</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-4 katex-formula"></div>
+            <ul class="space-y-2 text-sm mt-3">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_deg">角度</span><span id="r-deg" class="font-mono text-violet-300"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_rad">弧度</span><span id="r-rad" class="font-mono text-violet-300"></span></li>
+              <li class="flex justify-between"><span class="text-rose-400">sin θ</span><span id="r-sin" class="font-mono text-rose-300"></span></li>
+              <li class="flex justify-between"><span class="text-sky-400">cos θ</span><span id="r-cos" class="font-mono text-sky-300"></span></li>
+              <li class="flex justify-between"><span class="text-amber-400">tan θ</span><span id="r-tan" class="font-mono text-amber-300"></span></li>
+            </ul>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "转圈圈，转出波浪 · HSSIM", nav_title: "转圈变波浪", nav_subtitle: "声音长这样",
+        kicker: "圆圈与波浪", title: "转圈圈，转出波浪",
+        intro: "拖那个红点绕圈跑，或者直接按播放。它有多高就是 sin θ，偏左偏右就是 cos θ——右边那条波浪，就是这么一点点描出来的。",
+        play: "播放", pause: "暂停", show_cos: "也看看余弦", angle: "转到哪 θ",
+        formula_title: "此刻的数值", r_deg: "角度", r_rad: "弧度",
+        concept_title: "说人话就是",
+        concept: "单位圆就是个半径为 1 的圆。上面一个点对应角度 θ：它的高度（纵坐标）就是 sin θ，左右位置（横坐标）就是 cos θ，tan θ 就是两者相除。让 θ 一直变大，把这个高度顺着时间画下来，就得到一条平滑起伏的波浪。你听的每段声音、手机收的每个信号，本质上都是这种波叠在一起。",
+      },
+      en: {
+        page_title: "Spin a circle, get a wave · HSSIM", nav_title: "Circle → wave", nav_subtitle: "what sound looks like",
+        kicker: "CIRCLES → WAVES", title: "Spin a circle, get a wave",
+        intro: "Drag the red dot around the circle, or just hit play. How high it is = sin θ; how far left/right = cos θ. That wave on the right? It's literally drawn from that height.",
+        play: "Play", pause: "Pause", show_cos: "show cosine too", angle: "spun to θ",
+        formula_title: "Right now", r_deg: "Degrees", r_rad: "Radians",
+        concept_title: "OK, the gist",
+        concept: "The unit circle is just a circle with radius 1. A point on it sits at angle θ: its height (y) is sin θ, its left/right position (x) is cos θ, and tan θ is one divided by the other. Let θ keep growing and plot that height over time — you get a smooth rolling wave. Every sound you hear and every signal your phone catches is basically a stack of these waves.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = 200, cy = 260, R = 150;     // circle
+    const wx0 = 380, wxW = 480;            // wave region
+    let theta = 35 * Math.PI / 180;
+    let playing = false, raf = null, last = 0;
+
+    const fmt = n => (Math.round(n * 1000) / 1000).toString();
+    const waveX = th => wx0 + ((th % (2 * Math.PI)) / (2 * Math.PI)) * wxW;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const showCos = document.getElementById('show-cos').checked;
+      // circle grid
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx - R - 20, cy); ctx.lineTo(cx + R + 20, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, cy - R - 20); ctx.lineTo(cx, cy + R + 20); ctx.stroke();
+      ctx.strokeStyle = '#334155'; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+
+      const ptx = cx + R * Math.cos(theta), pty = cy - R * Math.sin(theta);
+      // radius
+      ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ptx, pty); ctx.stroke();
+      // sin (vertical) & cos (horizontal) legs
+      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ptx, pty); ctx.lineTo(ptx, cy); ctx.stroke();
+      if (showCos) { ctx.strokeStyle = '#38bdf8'; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ptx, cy); ctx.stroke(); }
+      // point
+      ctx.fillStyle = '#f43f5e'; ctx.shadowColor = '#f43f5e'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.arc(ptx, pty, 8, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+
+      // wave axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(wx0, cy); ctx.lineTo(wx0 + wxW + 10, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(wx0, cy - R - 20); ctx.lineTo(wx0, cy + R + 20); ctx.stroke();
+
+      // sine curve
+      ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 3; ctx.beginPath();
+      for (let i = 0; i <= wxW; i++) { const th = (i / wxW) * 2 * Math.PI; const X = wx0 + i, Y = cy - R * Math.sin(th); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
+      ctx.stroke();
+      if (showCos) {
+        ctx.strokeStyle = '#38bdf8'; ctx.setLineDash([5, 4]); ctx.beginPath();
+        for (let i = 0; i <= wxW; i++) { const th = (i / wxW) * 2 * Math.PI; const X = wx0 + i, Y = cy - R * Math.cos(th); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); }
+        ctx.stroke(); ctx.setLineDash([]);
+      }
+      // connector + moving dot on wave
+      const Wx = waveX(theta), Wy = cy - R * Math.sin(theta);
+      ctx.strokeStyle = 'rgba(244,63,94,0.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(ptx, pty); ctx.lineTo(Wx, Wy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(Wx, Wy, 6, 0, 7); ctx.fill();
+    }
+
+    function render() {
+      const deg = (theta * 180 / Math.PI) % 360;
+      document.getElementById('r-deg').textContent = fmt(deg) + '°';
+      document.getElementById('r-rad').textContent = fmt(theta % (2 * Math.PI)) + ' rad';
+      document.getElementById('r-sin').textContent = fmt(Math.sin(theta));
+      document.getElementById('r-cos').textContent = fmt(Math.cos(theta));
+      const tan = Math.cos(theta) === 0 ? '∞' : fmt(Math.tan(theta));
+      document.getElementById('r-tan').textContent = tan;
+      katex.render(`\\sin\\theta = ${fmt(Math.sin(theta))}, \\quad \\cos\\theta = ${fmt(Math.cos(theta))}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+      draw();
+    }
+
+    document.getElementById('ang').oninput = e => { theta = e.target.value * Math.PI / 180; render(); };
+    document.getElementById('show-cos').onchange = render;
+    function syncSlider() { document.getElementById('ang').value = ((theta * 180 / Math.PI) % 360 + 360) % 360; }
+
+    function loop(ts) {
+      if (!playing) return;
+      if (!last) last = ts;
+      theta += (ts - last) / 1000 * 1.1; last = ts;
+      if (theta > 1e6) theta %= 2 * Math.PI;
+      syncSlider(); render(); raf = requestAnimationFrame(loop);
+    }
+    document.getElementById('play').onclick = () => {
+      playing = !playing;
+      document.getElementById('play-icon').className = playing ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+      document.getElementById('play-text').textContent = HSSIM.t(playing ? 'pause' : 'play');
+      if (playing) { last = 0; raf = requestAnimationFrame(loop); } else cancelAnimationFrame(raf);
+    };
+
+    function pos(e) { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; }
+    let dragging = false;
+    function near(e) { const p = pos(e); const ptx = cx + R * Math.cos(theta), pty = cy - R * Math.sin(theta); return Math.hypot(p.x - ptx, p.y - pty) < 26 || Math.hypot(p.x - cx, p.y - cy) < R + 30; }
+    function setFrom(e) { const p = pos(e); theta = Math.atan2(cy - p.y, p.x - cx); syncSlider(); render(); }
+    canvas.addEventListener('mousedown', e => { if (near(e)) { dragging = true; setFrom(e); } });
+    window.addEventListener('mousemove', e => { if (dragging) setFrom(e); });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { if (near(e.touches[0])) { dragging = true; setFrom(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { setFrom(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = render;
+    HSSIM.mount({ icon: 'fa-wave-square', gradient: 'from-rose-500 to-pink-500' });
+    syncSlider(); render();
+  </script>
+</body>
+</html>

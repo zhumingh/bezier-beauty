@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>谢尔宾斯基分形 · Sierpinski</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">FRACTALS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">谢尔宾斯基分形</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">只靠掷骰子和取中点，纯粹的随机竟拼出精致的分形三角。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="640"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 640;"></canvas>
+          <div class="flex flex-wrap items-center gap-3">
+            <button id="play" class="px-4 py-2 rounded-2xl bg-violet-600 hover:bg-violet-500 text-sm flex items-center gap-x-2">
+              <i id="play-icon" class="fa-solid fa-play"></i><span id="play-text" data-i18n="play">开始</span>
+            </button>
+            <button id="add" class="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm" data-i18n="add">+ 5000 点</button>
+            <button id="reset" class="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm" data-i18n="reset">清空</button>
+            <div class="flex-1 min-w-[180px] flex items-center gap-x-3">
+              <span class="text-xs text-slate-400" data-i18n="vertices">顶点数</span>
+              <input type="range" id="sv" min="3" max="6" step="1" value="3" class="flex-1">
+              <span id="vv" class="font-mono text-violet-400 text-sm"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="rule_title">游戏规则</div>
+            <ol class="text-sm text-slate-300 space-y-2 list-decimal list-inside">
+              <li data-i18n="step1">任选一个起点。</li>
+              <li data-i18n="step2">随机选中一个顶点。</li>
+              <li data-i18n="step3">移动到当前点与该顶点的中点。</li>
+              <li data-i18n="step4">画下这个点，然后重复。</li>
+            </ol>
+            <div class="mt-3 flex justify-between text-sm border-t border-slate-700 pt-3">
+              <span class="text-slate-400" data-i18n="points">已画点数</span><span id="r-count" class="font-mono text-emerald-400">0</span>
+            </div>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "掷骰子掷出一幅艺术品 · HSSIM", nav_title: "随机的魔法", nav_subtitle: "骰子也能画画",
+        kicker: "随机的魔法", title: "掷骰子掷出一幅艺术品",
+        intro: "这就是传说中的“混沌游戏”：每一步都纯随机，点却一点不乱，反而拼出一个精致、自己套着自己的三角形图案。",
+        play: "开玩", pause: "暂停", add: "+ 5000 点", reset: "清空", vertices: "几个角",
+        rule_title: "玩法（巨简单）", step1: "随便点个起点。", step2: "随机挑一个角。",
+        step3: "朝它走一半的距离。", step4: "在那儿点一下，然后无限循环。",
+        points: "已经点了", concept_title: "说人话就是",
+        concept: "在三角形上玩“混沌游戏”：随便从哪儿出发，每次随机挑一个角、走到中点、点一下。看起来就是瞎点，结果却必然拼出谢尔宾斯基三角形——一个放大多少倍都长一个样的分形。它告诉你：简单规则 + 随机，照样能造出超有秩序、还能复现的图案。把角数改成 4、5、6，会蹦出完全不同的花样，自己试试！",
+      },
+      en: {
+        page_title: "Roll dice, accidentally make art · HSSIM", nav_title: "Randomness is wild", nav_subtitle: "dice that draw",
+        kicker: "RANDOMNESS IS WILD", title: "Roll dice, accidentally make art",
+        intro: "Meet the 'chaos game': every move is totally random, yet the dots aren't messy at all — they snap into a delicate triangle made of tiny copies of itself.",
+        play: "Play", pause: "Pause", add: "+ 5000 dots", reset: "Clear", vertices: "Corners",
+        rule_title: "Rules (dead simple)", step1: "Drop a dot anywhere.", step2: "Pick a random corner.",
+        step3: "Walk halfway toward it.", step4: "Dot there, then repeat forever.",
+        points: "Dots so far", concept_title: "OK, the gist",
+        concept: "Play the 'chaos game' on a triangle: start anywhere, keep picking a random corner, step halfway, and dot. Looks like pure flailing — yet it always builds the Sierpinski triangle, a shape that looks the same no matter how far you zoom in. The takeaway: simple rules + randomness can still make something super ordered and repeatable. Bump the corners up to 4, 5 or 6 for totally different patterns — try it!",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    let vcount = 3, verts = [], cur = { x: W / 2, y: H / 2 }, count = 0;
+    let playing = false, raf = null;
+    const palette = ['#a78bfa', '#f472b6', '#34d399', '#38bdf8', '#fbbf24', '#fb7185'];
+
+    function setVerts() {
+      verts = [];
+      const cx = W / 2, cy = H / 2 + 20, R = Math.min(W, H) * 0.42;
+      for (let i = 0; i < vcount; i++) {
+        const ang = -Math.PI / 2 + i * 2 * Math.PI / vcount;
+        verts.push({ x: cx + R * Math.cos(ang), y: cy + R * Math.sin(ang), color: palette[i % palette.length] });
+      }
+    }
+
+    function clear() {
+      ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, W, H);
+      verts.forEach((v, i) => {
+        ctx.fillStyle = v.color; ctx.beginPath(); ctx.arc(v.x, v.y, 7, 0, 7); ctx.fill();
+        ctx.fillStyle = '#e2e8f0'; ctx.font = '600 14px Inter'; ctx.textAlign = 'center';
+        ctx.fillText(String.fromCharCode(65 + i), v.x, v.y - 14);
+      });
+      count = 0; cur = { x: W / 2, y: H / 2 };
+      document.getElementById('r-count').textContent = '0';
+    }
+
+    // ratio: classic Sierpinski uses 1/2; for n>3 a smaller ratio gives a clean fractal
+    function ratioFor(n) { return n <= 3 ? 0.5 : 1 - 1 / (1 + Math.sqrt(n / 2)); }
+
+    function addPoints(num) {
+      const r = ratioFor(vcount);
+      for (let i = 0; i < num; i++) {
+        const v = verts[(Math.random() * vcount) | 0];
+        cur = { x: cur.x + (v.x - cur.x) * r, y: cur.y + (v.y - cur.y) * r };
+        if (count > 12) { // skip first few transient points
+          ctx.fillStyle = v.color;
+          ctx.fillRect(cur.x, cur.y, 1.6, 1.6);
+        }
+        count++;
+      }
+      document.getElementById('r-count').textContent = count.toLocaleString();
+    }
+
+    function loop() { if (!playing) return; addPoints(900); raf = requestAnimationFrame(loop); }
+
+    document.getElementById('play').onclick = () => {
+      playing = !playing;
+      document.getElementById('play-icon').className = playing ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+      document.getElementById('play-text').textContent = HSSIM.t(playing ? 'pause' : 'play');
+      if (playing) loop(); else cancelAnimationFrame(raf);
+    };
+    document.getElementById('add').onclick = () => addPoints(5000);
+    document.getElementById('reset').onclick = () => clear();
+    document.getElementById('sv').oninput = e => {
+      vcount = parseInt(e.target.value);
+      document.getElementById('vv').textContent = vcount;
+      setVerts(); clear();
+    };
+
+    window.onLangChange = () => { document.getElementById('play-text').textContent = HSSIM.t(playing ? 'pause' : 'play'); };
+    HSSIM.mount({ icon: 'fa-shapes', gradient: 'from-cyan-500 to-blue-500' });
+    document.getElementById('vv').textContent = vcount;
+    setVerts(); clear();
+  </script>
+</body>
+</html>

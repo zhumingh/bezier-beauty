@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>函数变换 · Function Transformations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">ALGEBRA</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">函数变换</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">选择一个母函数，再用滑块平移、翻转和拉伸它。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="640"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 640;"></canvas>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">变换后的函数</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-4 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="parent">母函数 f(x)</div>
+            <div id="parents" class="grid grid-cols-2 gap-2 text-sm"></div>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">a · f( b(x − h) ) + k</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="p_a">a（纵向拉伸 / 翻转）</span><span id="va" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sa" min="-3" max="3" step="0.1" value="1" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="p_b">b（横向压缩）</span><span id="vb" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sb" min="-3" max="3" step="0.1" value="1" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="p_h">h（左右平移）</span><span id="vh" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sh" min="-6" max="6" step="0.1" value="0" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="p_k">k（上下平移）</span><span id="vk" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sk" min="-6" max="6" step="0.1" value="0" class="w-full">
+            </div>
+            <button id="reset" class="w-full px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm" data-i18n="reset">重置</button>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "给曲线做个整容 · HSSIM", nav_title: "曲线整容", nav_subtitle: "推拉翻拉随你",
+        kicker: "曲线整容现场", title: "给曲线做个整容",
+        intro: "先挑一条原版曲线，再拖滑块把它推、翻、拉。淡淡的是原版，发光的是你整完的样子。",
+        formula_title: "整完长这样", parent: "原版曲线 f(x)", controls: "a · f( b(x − h) ) + k",
+        p_a: "a：拉高拉扁 / 上下翻", p_b: "b：左右挤 / 左右翻", p_h: "h：左右挪", p_k: "k：上下挪", reset: "还原",
+        concept_title: "说人话就是",
+        concept: "任何函数都能用同一套招式改造：a 把它拉高或压扁，a 是负的就上下翻个面；b 把它左右挤，b 是负的就左右照镜子；h 让它左右挪（注意是 x − h）；k 让它上下挪。记住这四个旋钮，几乎所有曲线图你都能一眼看穿它做了啥。",
+      },
+      en: {
+        page_title: "Give a graph a glow-up · HSSIM", nav_title: "Graph glow-up", nav_subtitle: "push, flip, stretch",
+        kicker: "GRAPH GLOW-UP", title: "Give a graph a glow-up",
+        intro: "Pick an original curve, then drag the sliders to push, flip and stretch it. The faint one is the original; the glowing one is your remix.",
+        formula_title: "Your remix", parent: "Original f(x)", controls: "a · f( b(x − h) ) + k",
+        p_a: "a: taller / flatter (negative = flip upside-down)", p_b: "b: squeeze sideways (negative = mirror)", p_h: "h: slide left / right", p_k: "k: slide up / down", reset: "Undo",
+        concept_title: "OK, the gist",
+        concept: "Any function can be remixed with the same four moves: a makes it taller or flatter (and flips it upside-down when negative); b squeezes it sideways (and mirrors it when negative); h slides it left/right (mind the x − h); k slides it up/down. Learn these four knobs and you can read almost any graph at a glance.",
+      },
+    });
+
+    const PARENTS = {
+      'x^2': { f: x => x * x, tex: 'x^2' },
+      '|x|': { f: x => Math.abs(x), tex: '|x|' },
+      'sqrt': { f: x => x >= 0 ? Math.sqrt(x) : NaN, tex: '\\sqrt{x}' },
+      'x^3': { f: x => x * x * x / 4, tex: '\\tfrac{1}{4}x^3' },
+      'sin': { f: x => 3 * Math.sin(x), tex: '3\\sin x' },
+      '1/x': { f: x => x === 0 ? NaN : 3 / x, tex: '3/x' },
+    };
+    let parent = 'x^2';
+    let a = 1, b = 1, h = 0, k = 0;
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const XMIN = -10, XMAX = 10, YMIN = -8, YMAX = 8;
+    const sx = W / (XMAX - XMIN), sy = H / (YMAX - YMIN);
+    const px = x => (x - XMIN) * sx, py = y => H - (y - YMIN) * sy;
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+
+    function plot(fn, color, width, faint) {
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineJoin = 'round';
+      if (!faint) { ctx.shadowColor = color + '55'; ctx.shadowBlur = 14; }
+      let pen = false;
+      ctx.beginPath();
+      for (let X = 0; X <= W; X += 2) {
+        const xv = X / sx + XMIN, yv = fn(xv);
+        if (!isFinite(yv) || yv < YMIN - 5 || yv > YMAX + 5) { pen = false; continue; }
+        const Y = py(yv);
+        if (!pen) { ctx.moveTo(X, Y); pen = true; } else ctx.lineTo(X, Y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(XMIN); x <= XMAX; x++) { ctx.beginPath(); ctx.moveTo(px(x), 0); ctx.lineTo(px(x), H); ctx.stroke(); }
+      for (let y = Math.ceil(YMIN); y <= YMAX; y++) { ctx.beginPath(); ctx.moveTo(0, py(y)); ctx.lineTo(W, py(y)); ctx.stroke(); }
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py(0)); ctx.lineTo(W, py(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px(0), 0); ctx.lineTo(px(0), H); ctx.stroke();
+
+      const f = PARENTS[parent].f;
+      plot(f, 'rgba(148,163,184,0.45)', 2.5, true);            // parent faint
+      plot(x => a * f(b * (x - h)) + k, '#818cf8', 4, false);  // transformed
+    }
+
+    function render() {
+      document.getElementById('va').textContent = fmt(a);
+      document.getElementById('vb').textContent = fmt(b);
+      document.getElementById('vh').textContent = fmt(h);
+      document.getElementById('vk').textContent = fmt(k);
+      const t = PARENTS[parent].tex;
+      const inner = `${fmt(b)}(x ${h <= 0 ? '+' : '-'} ${fmt(Math.abs(h))})`;
+      katex.render(`g(x) = ${fmt(a)} f\\big(${inner}\\big) ${k < 0 ? '-' : '+'} ${fmt(Math.abs(k))}, \\quad f(x)=${t}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+      draw();
+    }
+
+    function buildParents() {
+      const box = document.getElementById('parents');
+      box.innerHTML = Object.keys(PARENTS).map(key =>
+        `<button data-p="${key}" class="px-3 py-2 rounded-2xl border text-center ${key === parent ? 'bg-violet-600 border-violet-500 text-white' : 'bg-slate-800 border-slate-600'}">$${PARENTS[key].tex}$</button>`
+      ).join('');
+      box.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => { parent = btn.getAttribute('data-p'); buildParents(); render(); };
+        try { katex.render(PARENTS[btn.getAttribute('data-p')].tex, btn, { throwOnError: false }); } catch (e) {}
+      });
+    }
+
+    ['a', 'b', 'h', 'k'].forEach(p => {
+      document.getElementById('s' + p).oninput = e => {
+        const v = parseFloat(e.target.value);
+        if (p === 'a') a = v; if (p === 'b') b = v; if (p === 'h') h = v; if (p === 'k') k = v;
+        render();
+      };
+    });
+    document.getElementById('reset').onclick = () => {
+      a = 1; b = 1; h = 0; k = 0;
+      document.getElementById('sa').value = 1; document.getElementById('sb').value = 1;
+      document.getElementById('sh').value = 0; document.getElementById('sk').value = 0;
+      render();
+    };
+
+    window.onLangChange = render;
+    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-indigo-500 to-violet-500' });
+    buildParents(); render();
+  </script>
+</body>
+</html>

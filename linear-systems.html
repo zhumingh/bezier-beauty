@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一次函数与方程组 · Lines & Systems</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">LINEAR FUNCTIONS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">一次函数与方程组</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动每条直线上的圆点，观察斜率、截距和它们的交点。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="640"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                  style="aspect-ratio: 900 / 640;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">方程组</div>
+            <div id="f-system" class="bg-slate-950 border border-slate-700 rounded-2xl p-4 katex-formula"></div>
+            <div id="f-solution" class="mt-3 text-sm text-slate-300"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="line1">直线 1（紫）</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="slope">斜率 m</span><span id="m1" class="font-mono text-violet-300"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="yint">截距 b</span><span id="b1" class="font-mono text-violet-300"></span></li>
+            </ul>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="line2">直线 2（青）</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="slope">斜率 m</span><span id="m2" class="font-mono text-emerald-300"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="yint">截距 b</span><span id="b2" class="font-mono text-emerald-300"></span></li>
+            </ul>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">两条直线的交点就是方程组的解。</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "两条线的相遇现场 · HSSIM", nav_title: "两条线", nav_subtitle: "它们在哪儿撞上",
+        kicker: "两条线的故事", title: "两条线的相遇现场",
+        intro: "拖动每条线上的圆点。看它们多陡、从哪儿起步，最关键的是——它俩到底在哪儿撞上。",
+        formula_title: "两条线的方程", line1: "线 1（紫）", line2: "线 2（青）", slope: "陡不陡 m", yint: "起点高度 b",
+        sol_one: (x, y) => `撞上啦！就在 (${x}, ${y})`,
+        sol_parallel: "两条平行线，这辈子都遇不上（无解）。",
+        sol_same: "其实是同一条线，处处都重合（无穷多解）。",
+        concept_title: "说人话就是",
+        concept: "y = mx + b 画出来就是一条直线：m 表示它有多陡（往右走一步往上跳多高），b 是它从 y 轴哪儿出发。把两条这样的方程摆一起，就叫“方程组”。它俩交叉的那个点同时满足两条线，所以那一点就是答案。平行线永远撞不上（无解）；要是俩其实是同一条线，那处处都算撞上（无穷多解）。",
+      },
+      en: {
+        page_title: "Two lines walk into a graph… · HSSIM", nav_title: "Two lines", nav_subtitle: "where do they crash",
+        kicker: "A TALE OF TWO LINES", title: "Two lines walk into a graph…",
+        intro: "Drag the dots on each line. See how steep they are, where they start, and — the main event — where they crash into each other.",
+        formula_title: "The two equations", line1: "Line 1 (violet)", line2: "Line 2 (teal)", slope: "steepness m", yint: "starting height b",
+        sol_one: (x, y) => `They crash at (${x}, ${y})!`,
+        sol_parallel: "Parallel lines — they'll never meet (no solution, sorry).",
+        sol_same: "Same line, secretly — they overlap everywhere (infinite solutions).",
+        concept_title: "OK, the gist",
+        concept: "y = mx + b draws a straight line: m is how steep it is (how high it jumps per step right) and b is where it starts on the y-axis. Stack two of these equations and you've got a 'system'. The point where they cross satisfies both lines at once, so that point is the answer. Parallel lines never meet (no solution); if they're secretly the same line, they meet everywhere (infinitely many).",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const XMIN = -10, XMAX = 10, YMIN = -8, YMAX = 8;
+    const sx = W / (XMAX - XMIN), sy = H / (YMAX - YMIN);
+    const px = x => (x - XMIN) * sx, py = y => H - (y - YMIN) * sy;
+    const wx = X => X / sx + XMIN, wy = Y => (H - Y) / sy + YMIN;
+
+    // each line is two world-space handles
+    let lines = [
+      { pts: [{ x: -6, y: -3 }, { x: 4, y: 4 }], color: '#a78bfa' },
+      { pts: [{ x: -5, y: 5 }, { x: 6, y: -4 }], color: '#34d399' },
+    ];
+    let drag = null;
+
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+    const slope = l => (l.pts[1].y - l.pts[0].y) / ((l.pts[1].x - l.pts[0].x) || 1e-9);
+    const yint = l => l.pts[0].y - slope(l) * l.pts[0].x;
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(XMIN); x <= XMAX; x++) { ctx.beginPath(); ctx.moveTo(px(x), 0); ctx.lineTo(px(x), H); ctx.stroke(); }
+      for (let y = Math.ceil(YMIN); y <= YMAX; y++) { ctx.beginPath(); ctx.moveTo(0, py(y)); ctx.lineTo(W, py(y)); ctx.stroke(); }
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py(0)); ctx.lineTo(W, py(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px(0), 0); ctx.lineTo(px(0), H); ctx.stroke();
+
+      lines.forEach(l => {
+        const m = slope(l), b = yint(l);
+        ctx.strokeStyle = l.color; ctx.lineWidth = 4; ctx.lineCap = 'round';
+        ctx.shadowColor = l.color + '55'; ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.moveTo(px(XMIN), py(m * XMIN + b));
+        ctx.lineTo(px(XMAX), py(m * XMAX + b));
+        ctx.stroke(); ctx.shadowBlur = 0;
+        l.pts.forEach(p => {
+          ctx.fillStyle = l.color; ctx.beginPath(); ctx.arc(px(p.x), py(p.y), 10, 0, 7); ctx.fill();
+          ctx.fillStyle = '#0f172a'; ctx.beginPath(); ctx.arc(px(p.x), py(p.y), 5, 0, 7); ctx.fill();
+        });
+      });
+
+      // intersection
+      const m1 = slope(lines[0]), b1 = yint(lines[0]), m2 = slope(lines[1]), b2 = yint(lines[1]);
+      if (Math.abs(m1 - m2) > 1e-6) {
+        const xi = (b2 - b1) / (m1 - m2), yi = m1 * xi + b1;
+        ctx.fillStyle = '#fff'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 14;
+        ctx.beginPath(); ctx.arc(px(xi), py(yi), 7, 0, 7); ctx.fill(); ctx.shadowBlur = 0;
+      }
+    }
+
+    function render() {
+      const m1 = slope(lines[0]), b1 = yint(lines[0]), m2 = slope(lines[1]), b2 = yint(lines[1]);
+      document.getElementById('m1').textContent = fmt(m1);
+      document.getElementById('b1').textContent = fmt(b1);
+      document.getElementById('m2').textContent = fmt(m2);
+      document.getElementById('b2').textContent = fmt(b2);
+      katex.render(
+        `\\begin{cases} y = ${fmt(m1)}x ${b1 < 0 ? '-' : '+'} ${fmt(Math.abs(b1))} \\\\ y = ${fmt(m2)}x ${b2 < 0 ? '-' : '+'} ${fmt(Math.abs(b2))} \\end{cases}`,
+        document.getElementById('f-system'), { throwOnError: false, displayMode: true });
+      const sol = document.getElementById('f-solution');
+      if (Math.abs(m1 - m2) > 1e-6) {
+        const xi = (b2 - b1) / (m1 - m2), yi = m1 * xi + b1;
+        sol.innerHTML = `<span class="text-white font-medium">${HSSIM.t('sol_one', fmt(xi), fmt(yi))}</span>`;
+      } else if (Math.abs(b1 - b2) < 1e-6) {
+        sol.textContent = HSSIM.t('sol_same');
+      } else {
+        sol.textContent = HSSIM.t('sol_parallel');
+      }
+      draw();
+    }
+
+    function hit(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width), my = (e.clientY - rect.top) * (H / rect.height);
+      for (let li = 0; li < lines.length; li++)
+        for (let pi = 0; pi < 2; pi++) {
+          const p = lines[li].pts[pi];
+          if (Math.hypot(mx - px(p.x), my - py(p.y)) < 20) return { li, pi };
+        }
+      return null;
+    }
+    function move(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width), my = (e.clientY - rect.top) * (H / rect.height);
+      const p = lines[drag.li].pts[drag.pi];
+      p.x = Math.max(XMIN, Math.min(XMAX, Math.round(wx(mx) * 2) / 2));
+      p.y = Math.max(YMIN, Math.min(YMAX, Math.round(wy(my) * 2) / 2));
+      render();
+    }
+    canvas.addEventListener('mousedown', e => { drag = hit(e); });
+    window.addEventListener('mousemove', e => { if (drag) move(e); });
+    window.addEventListener('mouseup', () => drag = null);
+    canvas.addEventListener('touchstart', e => { drag = hit(e.touches[0]); if (drag) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (drag) { move(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => drag = null);
+
+    window.onLangChange = render;
+    HSSIM.mount({ icon: 'fa-slash', gradient: 'from-emerald-500 to-teal-500' });
+    render();
+  </script>
+</body>
+</html>

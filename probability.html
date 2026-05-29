@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>概率与正态分布 · The Bell Curve</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">PROBABILITY</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">概率与正态分布</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">让小球随机穿过钉板，看混乱如何堆出整齐的钟形曲线。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="660"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 660;"></canvas>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">操作</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="drop1" class="px-4 py-2 rounded-2xl bg-violet-600 hover:bg-violet-500 text-sm" data-i18n="drop1">投 1 个</button>
+              <button id="drop50" class="px-4 py-2 rounded-2xl bg-violet-600 hover:bg-violet-500 text-sm" data-i18n="drop50">投 50 个</button>
+              <button id="auto" class="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm" data-i18n="auto">连续投放</button>
+              <button id="reset" class="px-4 py-2 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-sm" data-i18n="reset">清空</button>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="rows">钉板层数</span><span id="vr" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="srows" min="5" max="13" step="1" value="10" class="w-full">
+            </div>
+            <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="show-ideal" checked> <span data-i18n="show_ideal">显示理论钟形曲线</span></label>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="stats_title">统计</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="total">已落下小球</span><span id="r-total" class="font-mono text-emerald-400">0</span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="paths">每个小球的路径数</span><span id="r-paths" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "纯靠运气也能很有规律 · HSSIM", nav_title: "运气有套路", nav_subtitle: "钟形曲线哪来的",
+        kicker: "运气的真相", title: "纯靠运气，居然也有规律",
+        intro: "每个小球碰到钉子，一半几率往左、一半往右，纯看运气。可一旦成百上千个球叠起来，它们总会堆成同一座漂亮的钟形小山。",
+        controls: "开整", drop1: "丢 1 个", drop50: "丢 50 个", auto: "一直丢", stop: "停", reset: "清空",
+        rows: "钉子几层", show_ideal: "把理论曲线画出来",
+        stats_title: "战绩", total: "已落下", paths: "每个球有多少条路",
+        concept_title: "说人话就是",
+        concept: "小球落进第几个格子，概率服从“二项分布” C(n, i) / 2ⁿ。球越多、层数越多，它就越接近大名鼎鼎的正态分布（钟形曲线）。意思是：哪怕每一步都纯靠掷硬币，海量随机事件叠在一起，最后会冒出一个稳得离谱的规律——这正是整个统计学站得住脚的原因。考试分数、身高、各种误差，几乎都长这个样。",
+      },
+      en: {
+        page_title: "Pure chaos, weirdly organized · HSSIM", nav_title: "Luck has a pattern", nav_subtitle: "where the bell curve hides",
+        kicker: "THE TRUTH ABOUT LUCK", title: "Pure chaos, weirdly organized",
+        intro: "Every ball hits a peg and goes left or right on a coin flip — pure luck. But once hundreds of balls pile up, they always build the same gorgeous bell-shaped hill.",
+        controls: "Let's go", drop1: "Drop 1", drop50: "Drop 50", auto: "Keep dropping", stop: "Stop", reset: "Clear",
+        rows: "Rows of pegs", show_ideal: "draw the textbook curve",
+        stats_title: "Scoreboard", total: "Dropped", paths: "Paths per ball",
+        concept_title: "OK, the gist",
+        concept: "Which bin a ball lands in follows the 'binomial distribution' C(n, i) / 2ⁿ. More balls and more rows push it closer and closer to the famous normal distribution (bell curve). Translation: even when every step is a pure coin flip, a huge pile of random events produces a suspiciously reliable pattern — which is exactly why statistics works. Test scores, heights, measurement errors: nearly all bell-shaped.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    let rows = 10;
+    const cx = W / 2, topY = 90, rowGap = 34, gapX = 46;
+    let bins = new Array(rows + 1).fill(0);
+    let balls = [];
+    let total = 0, autoOn = false, raf = null, lastTs = 0;
+    const binBottom = H - 40;
+
+    const pegX = (i, j) => cx + (j - i / 2) * gapX;
+    const pegY = i => topY + i * rowGap;
+    const binCenterX = i => cx + (i - rows / 2) * gapX;
+
+    function logFact(n) { let s = 0; for (let i = 2; i <= n; i++) s += Math.log(i); return s; }
+    function binom(n, k) { return Math.exp(logFact(n) - logFact(k) - logFact(n - k)); }
+
+    function newBall() {
+      const decisions = [];
+      for (let i = 0; i < rows; i++) decisions.push(Math.random() < 0.5 ? 0 : 1);
+      balls.push({ decisions, level: 0, t: 0 });
+    }
+
+    function step(dt) {
+      const speed = 4.5; // levels per second
+      for (const b of balls) {
+        b.t += dt * speed;
+        while (b.t >= 1 && b.level < rows) { b.t -= 1; b.level++; }
+        if (b.level >= rows && b.t >= 1) b.landed = true;
+      }
+      balls.filter(b => b.landed).forEach(b => {
+        const bin = b.decisions.reduce((a, c) => a + c, 0);
+        bins[bin]++; total++;
+      });
+      balls = balls.filter(b => !b.landed);
+    }
+
+    function ballPos(b) {
+      const sBefore = b.decisions.slice(0, b.level).reduce((a, c) => a + c, 0);
+      if (b.level >= rows) {
+        // dropping into bin
+        const bin = sBefore;
+        const x = binCenterX(bin);
+        const y = pegY(rows - 1) + rowGap + b.t * (binBottom - (pegY(rows - 1) + rowGap));
+        return { x, y: Math.min(binBottom, y) };
+      }
+      const sAfter = sBefore + b.decisions[b.level];
+      const x0 = b.level === 0 ? cx : pegX(b.level - 1, sBefore);
+      const y0 = b.level === 0 ? topY - rowGap : pegY(b.level - 1);
+      const x1 = pegX(b.level, sAfter), y1 = pegY(b.level);
+      const tt = b.t;
+      return { x: x0 + (x1 - x0) * tt, y: y0 + (y1 - y0) * tt };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // pegs
+      ctx.fillStyle = '#475569';
+      for (let i = 0; i < rows; i++) for (let j = 0; j <= i; j++) {
+        ctx.beginPath(); ctx.arc(pegX(i, j), pegY(i), 3.5, 0, 7); ctx.fill();
+      }
+      // bins histogram
+      const maxCount = Math.max(1, ...bins);
+      const maxBarH = binBottom - (pegY(rows - 1) + rowGap + 14);
+      for (let i = 0; i <= rows; i++) {
+        const x = binCenterX(i), bw = gapX - 6;
+        const bh = (bins[i] / maxCount) * maxBarH;
+        const grad = ctx.createLinearGradient(0, binBottom - bh, 0, binBottom);
+        grad.addColorStop(0, '#c084fc'); grad.addColorStop(1, '#7c3aed');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x - bw / 2, binBottom - bh, bw, bh);
+        ctx.fillStyle = '#64748b'; ctx.font = '10px monospace'; ctx.textAlign = 'center';
+        if (bins[i] > 0) ctx.fillText(bins[i], x, binBottom - bh - 4);
+      }
+      // ideal bell curve
+      if (document.getElementById('show-ideal').checked && total > 0) {
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.5; ctx.beginPath();
+        for (let i = 0; i <= rows; i++) {
+          const p = binom(rows, i) / Math.pow(2, rows);
+          const expected = p * total;
+          const bh = (expected / maxCount) * maxBarH;
+          const x = binCenterX(i), y = binBottom - bh;
+          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+      // balls
+      ctx.fillStyle = '#f43f5e';
+      for (const b of balls) { const p = ballPos(b); ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 7); ctx.fill(); }
+      document.getElementById('r-total').textContent = total;
+    }
+
+    function loop(ts) {
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(0.05, (ts - lastTs) / 1000); lastTs = ts;
+      if (autoOn && balls.length < 60) newBall();
+      step(dt); draw();
+      if (balls.length || autoOn) { raf = requestAnimationFrame(loop); }
+      else { raf = null; lastTs = 0; }
+    }
+    function ensureLoop() { if (!raf) { lastTs = 0; raf = requestAnimationFrame(loop); } }
+
+    document.getElementById('drop1').onclick = () => { newBall(); ensureLoop(); };
+    document.getElementById('drop50').onclick = () => { for (let i = 0; i < 50; i++) newBall(); ensureLoop(); };
+    document.getElementById('auto').onclick = e => {
+      autoOn = !autoOn;
+      e.target.textContent = HSSIM.t(autoOn ? 'stop' : 'auto');
+      e.target.classList.toggle('bg-violet-600', autoOn);
+      if (autoOn) ensureLoop();
+    };
+    document.getElementById('reset').onclick = () => { bins = new Array(rows + 1).fill(0); balls = []; total = 0; draw(); };
+    document.getElementById('show-ideal').onchange = draw;
+    document.getElementById('srows').oninput = e => {
+      rows = parseInt(e.target.value); bins = new Array(rows + 1).fill(0); balls = []; total = 0;
+      document.getElementById('vr').textContent = rows;
+      document.getElementById('r-paths').textContent = Math.pow(2, rows).toLocaleString();
+      draw();
+    };
+
+    function refreshStatic() {
+      document.getElementById('vr').textContent = rows;
+      document.getElementById('r-paths').textContent = Math.pow(2, rows).toLocaleString();
+    }
+    window.onLangChange = () => { document.getElementById('auto').textContent = HSSIM.t(autoOn ? 'stop' : 'auto'); };
+    HSSIM.mount({ icon: 'fa-dice', gradient: 'from-fuchsia-500 to-purple-500' });
+    refreshStatic(); draw();
+  </script>
+</body>
+</html>

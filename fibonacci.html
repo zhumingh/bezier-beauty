@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>斐波那契与黄金螺旋 · Fibonacci</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">PATTERNS IN NATURE</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">斐波那契与黄金螺旋</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">用一系列正方形搭出斐波那契数列，画出自然界中常见的黄金螺旋。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="600"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 600;"></canvas>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1"><span data-i18n="terms">正方形数量</span><span id="vn" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sn" min="3" max="11" step="1" value="8" class="w-full">
+            </div>
+            <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="show-spiral" checked> <span data-i18n="show_spiral">显示黄金螺旋</span></label>
+            <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="show-squares" checked> <span data-i18n="show_squares">显示正方形</span></label>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="seq_title">数列</div>
+            <div id="seq" class="font-mono text-sm text-emerald-300 break-words leading-relaxed"></div>
+            <div class="mt-3 text-xs text-slate-400" data-i18n="rule">规则：每一项 = 前两项之和</div>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="ratio_title">相邻项之比 → 黄金比 φ</div>
+            <div id="f-ratio" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Fibonacci in everyday life ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="apps_kicker">FIBONACCI ALL AROUND US</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="apps_title">生活中的斐波那契</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="apps_subtitle">从一朵向日葵到一张股价走势图，斐波那契数一次次出现在我们身边。</p>
+          </div>
+          <div class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:block">φ = 1.618…</div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <!-- 1. Sunflowers -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg id="phyllo-svg" viewBox="-60 -36 120 72" class="w-full h-full"></svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-sun text-amber-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_sun_title">向日葵与种子排列</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_sun_desc"></p>
+          </div>
+
+          <!-- 2. Pinecones & pineapples -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg id="cone-svg" viewBox="0 0 120 72" class="w-full h-full"></svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-tree text-emerald-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_cone_title">松果与菠萝</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_cone_desc"></p>
+          </div>
+
+          <!-- 3. Nautilus & galaxies -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg id="shell-svg" viewBox="0 0 120 72" class="w-full h-full"></svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-hurricane text-sky-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_shell_title">鹦鹉螺与星系</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_shell_desc"></p>
+          </div>
+
+          <!-- 4. Flower petals -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg viewBox="0 0 120 72" class="w-full h-full">
+                <g transform="translate(54,38)">
+                  <ellipse cx="0" cy="-15" rx="6.5" ry="15" fill="rgba(244,63,94,0.18)" stroke="#fb7185" stroke-width="1.3" transform="rotate(0)"/>
+                  <ellipse cx="0" cy="-15" rx="6.5" ry="15" fill="rgba(244,63,94,0.18)" stroke="#fb7185" stroke-width="1.3" transform="rotate(72)"/>
+                  <ellipse cx="0" cy="-15" rx="6.5" ry="15" fill="rgba(244,63,94,0.18)" stroke="#fb7185" stroke-width="1.3" transform="rotate(144)"/>
+                  <ellipse cx="0" cy="-15" rx="6.5" ry="15" fill="rgba(244,63,94,0.18)" stroke="#fb7185" stroke-width="1.3" transform="rotate(216)"/>
+                  <ellipse cx="0" cy="-15" rx="6.5" ry="15" fill="rgba(244,63,94,0.18)" stroke="#fb7185" stroke-width="1.3" transform="rotate(288)"/>
+                  <circle r="6.5" fill="#fbbf24"/>
+                </g>
+                <text x="96" y="22" font-size="20" fill="#fb7185" font-family="'Space Grotesk', sans-serif" font-weight="700">5</text>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-spa text-rose-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_petal_title">花瓣的数目</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_petal_desc"></p>
+          </div>
+
+          <!-- 5. Art, architecture & design -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg viewBox="0 0 120 72" class="w-full h-full">
+                <rect x="8" y="5" width="104" height="64" fill="none" stroke="#a78bfa" stroke-width="1.6" rx="2"/>
+                <line x1="72" y1="5" x2="72" y2="69" stroke="#7c3aed" stroke-width="1" opacity="0.7"/>
+                <line x1="72" y1="45" x2="112" y2="45" stroke="#7c3aed" stroke-width="1" opacity="0.7"/>
+                <line x1="88" y1="45" x2="88" y2="69" stroke="#7c3aed" stroke-width="1" opacity="0.6"/>
+                <line x1="88" y1="57" x2="112" y2="57" stroke="#7c3aed" stroke-width="1" opacity="0.5"/>
+                <text x="30" y="44" font-size="22" fill="#c4b5fd" font-family="'Space Grotesk', sans-serif" font-weight="700">φ</text>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-compass-drafting text-violet-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_design_title">艺术、建筑与设计</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_design_desc"></p>
+          </div>
+
+          <!-- 6. Financial markets -->
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col">
+            <div class="aspect-[5/3] bg-slate-950 rounded-2xl mb-4 flex items-center justify-center overflow-hidden border border-slate-800">
+              <svg viewBox="0 0 120 72" class="w-full h-full">
+                <g font-family="monospace" font-size="5" fill="#94a3b8">
+                  <line x1="22" y1="14" x2="112" y2="14" stroke="#334155" stroke-width="0.8"/>
+                  <line x1="22" y1="30.3" x2="112" y2="30.3" stroke="#475569" stroke-width="0.8" stroke-dasharray="3,2"/><text x="1" y="32">.618</text>
+                  <line x1="22" y1="36" x2="112" y2="36" stroke="#475569" stroke-width="0.8" stroke-dasharray="3,2"/><text x="1" y="38">.5</text>
+                  <line x1="22" y1="41.7" x2="112" y2="41.7" stroke="#475569" stroke-width="0.8" stroke-dasharray="3,2"/><text x="1" y="43.5">.382</text>
+                  <line x1="22" y1="58" x2="112" y2="58" stroke="#334155" stroke-width="0.8"/>
+                </g>
+                <polyline points="24,58 42,40 60,14 78,34 98,24 112,29" fill="none" stroke="#84cc16" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="flex items-center gap-x-2 mb-2"><i class="fa-solid fa-chart-line text-lime-400 text-xs"></i><span class="text-sm font-semibold" data-i18n="app_finance_title">金融市场</span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="app_finance_desc"></p>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "大自然最偏爱的一串数字 · HSSIM", nav_title: "自然的小心机", nav_subtitle: "向日葵都在用",
+        kicker: "自然界的小心机", title: "大自然最偏爱的一串数字",
+        intro: "把边长是斐波那契数的方块一块块拼起来，再在每块里画一段弧——啪，向日葵、松果、鹦鹉螺身上那条黄金螺旋就出来了。",
+        controls: "随便调", terms: "拼几个方块", show_spiral: "显示黄金螺旋", show_squares: "显示方块",
+        seq_title: "这串数字", rule: "规则：每个数 = 前面两个数相加",
+        ratio_title: "相邻两个一除 → 黄金比 φ", concept_title: "说人话就是",
+        concept: "斐波那契数列 1, 1, 2, 3, 5, 8, 13… 的规则简单到离谱：每个数都是前面两个加起来。神奇的是，用这些数当边长的方块能严丝合缝拼成矩形，而相邻两个数一除，结果越来越靠近黄金比 φ ≈ 1.618。顺着这些方块画弧，就是大自然反复偷用的那条黄金螺旋。",
+        apps_kicker: "斐波那契无处不在",
+        apps_title: "生活中的斐波那契",
+        apps_subtitle: "从一朵向日葵到一张股价走势图，斐波那契数和黄金比 φ 一次次出现在我们身边。",
+        app_sun_title: "向日葵与种子排列",
+        app_sun_desc: "向日葵的种子按约 137.5° 的“黄金角”螺旋排开，形成相互交错的两组螺线，数目往往正是相邻的斐波那契数（如 34 与 55）。这种排布让种子填得最密、采光最匀。",
+        app_cone_title: "松果与菠萝",
+        app_cone_desc: "松果的鳞片、菠萝表皮的菱形格，沿顺时针和逆时针各排成若干条螺线，条数几乎总是一对斐波那契数（8 与 13、5 与 8）。",
+        app_shell_title: "鹦鹉螺与星系",
+        app_shell_desc: "鹦鹉螺每长一节就按固定比例放大，画出近似黄金螺旋的对数螺旋；从飓风到旋涡星系，自然界都用这种螺旋实现“等比例生长”。",
+        app_petal_title: "花瓣的数目",
+        app_petal_desc: "许多花的花瓣数恰是斐波那契数：百合 3 瓣、毛茛 5 瓣、飞燕草 8 瓣、万寿菊 13 瓣，雏菊常见 34、55 甚至 89 瓣。",
+        app_design_title: "艺术、建筑与设计",
+        app_design_desc: "黄金比 φ≈1.618 被认为格外悦目。从帕特农神庙、达·芬奇的画作，到摄影构图和许多品牌 logo，设计师都用它来安排比例与版面。",
+        app_finance_title: "金融市场",
+        app_finance_desc: "交易员用“斐波那契回撤线”——23.6%、38.2%、61.8% 等由斐波那契数得来的水平线，来判断股价回调可能停在哪里，是技术分析最常用的工具之一。",
+      },
+      en: {
+        page_title: "Nature's favorite number trick · HSSIM", nav_title: "Nature's cheat code", nav_subtitle: "sunflowers use it",
+        kicker: "NATURE'S CHEAT CODE", title: "Nature's favorite number trick",
+        intro: "Stack blocks whose sides are Fibonacci numbers, draw one arc in each — boom, you've got the golden spiral hiding in sunflowers, pinecones and nautilus shells.",
+        controls: "Mess with it", terms: "How many blocks", show_spiral: "Show the golden spiral", show_squares: "Show the blocks",
+        seq_title: "This number string", rule: "Rule: each number = the last two added up",
+        ratio_title: "Divide two neighbors → golden ratio φ", concept_title: "OK, the gist",
+        concept: "The Fibonacci sequence 1, 1, 2, 3, 5, 8, 13… has a stupidly simple rule: each number is the previous two added together. The wild part: blocks with those side lengths tile perfectly into a rectangle, and dividing two neighbors gets closer and closer to the golden ratio φ ≈ 1.618. Sweep arcs through the blocks and you get the golden spiral nature keeps quietly reusing.",
+        apps_kicker: "FIBONACCI ALL AROUND US",
+        apps_title: "Fibonacci in Everyday Life",
+        apps_subtitle: "From a single sunflower to a stock chart, Fibonacci numbers and the golden ratio φ show up around us again and again.",
+        app_sun_title: "Sunflowers & Seed Heads",
+        app_sun_desc: "A sunflower's seeds spiral out at the ~137.5° \"golden angle,\" forming two interlocking sets of spirals whose counts are usually neighboring Fibonacci numbers (like 34 and 55). It packs the most seeds into the least space.",
+        app_cone_title: "Pinecones & Pineapples",
+        app_cone_desc: "The scales of a pinecone and the diamonds on a pineapple form clockwise and counter-clockwise spirals — and the number of spirals is almost always a pair of Fibonacci numbers (8 and 13, or 5 and 8).",
+        app_shell_title: "Nautilus Shells & Galaxies",
+        app_shell_desc: "A nautilus grows each chamber by a fixed ratio, tracing a logarithmic spiral close to the golden spiral. From hurricanes to spiral galaxies, nature reuses this same \"grow-in-proportion\" curve.",
+        app_petal_title: "Flower Petals",
+        app_petal_desc: "Petal counts are often Fibonacci numbers: lilies have 3, buttercups 5, delphiniums 8, marigolds 13, and daisies commonly 34, 55, even 89.",
+        app_design_title: "Art, Architecture & Design",
+        app_design_desc: "The golden ratio φ≈1.618 is widely felt to look pleasing. From the Parthenon and Leonardo's paintings to photo composition and many brand logos, designers use it to balance proportion and layout.",
+        app_finance_title: "Financial Markets",
+        app_finance_desc: "Traders use \"Fibonacci retracement\" lines — levels like 23.6%, 38.2% and 61.8% drawn from Fibonacci numbers — to anticipate where a price pullback might pause. It's one of the most common tools in technical analysis.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height, M = 50;
+    let n = 8;
+
+    function buildSquares(count) {
+      const fib = [1, 1];
+      while (fib.length < count) fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
+      const sq = [{ x: 0, y: 0, s: fib[0], dir: 'init' }];
+      const rect = { x: 0, y: 0, w: fib[0], h: fib[0] };
+      const dirs = ['right', 'top', 'left', 'bottom'];
+      for (let k = 1; k < count; k++) {
+        const dir = dirs[(k - 1) % 4];
+        let s, nx, ny;
+        if (dir === 'right') { s = rect.h; nx = rect.x + rect.w; ny = rect.y; rect.w += s; }
+        else if (dir === 'top') { s = rect.w; nx = rect.x; ny = rect.y - s; rect.y -= s; rect.h += s; }
+        else if (dir === 'left') { s = rect.h; nx = rect.x - s; ny = rect.y; rect.x -= s; rect.w += s; }
+        else { s = rect.w; nx = rect.x; ny = rect.y + rect.h; rect.h += s; }
+        sq.push({ x: nx, y: ny, s, dir });
+      }
+      return { sq, fib };
+    }
+
+    function render() {
+      const { sq, fib } = buildSquares(n);
+      // bounding box
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      sq.forEach(s => { x0 = Math.min(x0, s.x); y0 = Math.min(y0, s.y); x1 = Math.max(x1, s.x + s.s); y1 = Math.max(y1, s.y + s.s); });
+      const scale = Math.min((W - 2 * M) / (x1 - x0), (H - 2 * M) / (y1 - y0));
+      const ox = (W - (x1 - x0) * scale) / 2, oy = (H - (y1 - y0) * scale) / 2;
+      const tx = x => ox + (x - x0) * scale, ty = y => oy + (y - y0) * scale;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const showSq = document.getElementById('show-squares').checked;
+      const showSp = document.getElementById('show-spiral').checked;
+
+      if (showSq) {
+        sq.forEach((s, i) => {
+          const px = tx(s.x), py = ty(s.y), ps = s.s * scale;
+          const hue = 90 + i * 18;
+          ctx.fillStyle = `hsla(${hue},70%,55%,0.10)`;
+          ctx.strokeStyle = `hsla(${hue},70%,60%,0.8)`;
+          ctx.lineWidth = 2;
+          ctx.fillRect(px, py, ps, ps); ctx.strokeRect(px, py, ps, ps);
+          ctx.fillStyle = '#e2e8f0'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.font = `600 ${Math.min(34, ps / 2.2)}px 'Space Grotesk', sans-serif`;
+          ctx.fillText(s.s, px + ps / 2, py + ps / 2);
+        });
+      }
+
+      if (showSp) {
+        ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3.5; ctx.lineCap = 'round';
+        ctx.shadowColor = 'rgba(251,191,36,0.4)'; ctx.shadowBlur = 12;
+        // Tangent golden spiral: each 90° arc shares BOTH its endpoint and its
+        // tangent with the next, so the whole thing strokes as one smooth curve.
+        // Start at the first square's top-right corner, angle 180°, turning 90°
+        // per square — a config where every arc centre lands on a square corner.
+        let C = { x: sq[0].x + sq[0].s, y: sq[0].y };
+        let th = Math.PI;
+        const sweep = -1;
+        ctx.beginPath();
+        for (let k = 0; k < sq.length; k++) {
+          const r = sq[k].s * scale;
+          const th2 = th + sweep * Math.PI / 2;
+          ctx.arc(tx(C.x), ty(C.y), r, th, th2, sweep < 0);
+          const rn = k + 1 < sq.length ? sq[k + 1].s : sq[k].s;
+          C = { x: C.x + (sq[k].s - rn) * Math.cos(th2), y: C.y + (sq[k].s - rn) * Math.sin(th2) };
+          th = th2;
+        }
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      // sequence + ratio
+      document.getElementById('vn').textContent = n;
+      document.getElementById('seq').textContent = fib.join(', ') + ' …';
+      const last = fib[n - 1], prev = fib[n - 2] || 1;
+      katex.render(`\\frac{${last}}{${prev}} = ${(last / prev).toFixed(5)} \\approx \\varphi = 1.61803\\ldots`,
+        document.getElementById('f-ratio'), { throwOnError: false, displayMode: true });
+    }
+
+    document.getElementById('sn').oninput = e => { n = parseInt(e.target.value); render(); };
+    document.getElementById('show-spiral').onchange = render;
+    document.getElementById('show-squares').onchange = render;
+
+    // ---- static illustrations for the "everyday life" cards ----
+    function buildIllustrations() {
+      // Sunflower: real phyllotaxis using the 137.5° golden angle
+      const phyllo = document.getElementById('phyllo-svg');
+      if (phyllo) {
+        const golden = Math.PI * (3 - Math.sqrt(5)); // ≈ 137.507°
+        const num = 150, c = 2.5; let s = '';
+        for (let i = 0; i < num; i++) {
+          const r = c * Math.sqrt(i), a = i * golden, t = i / num;
+          s += `<circle cx="${(r * Math.cos(a)).toFixed(1)}" cy="${(r * Math.sin(a)).toFixed(1)}" r="${(1 + t).toFixed(2)}" fill="hsl(${(42 - t * 16).toFixed(0)},92%,${(52 + t * 10).toFixed(0)}%)"/>`;
+        }
+        phyllo.innerHTML = s;
+      }
+      // Pinecone / pineapple: two families of spirals crossing into rhombic scales
+      const cone = document.getElementById('cone-svg');
+      if (cone) {
+        let s = '<defs><clipPath id="cclip"><ellipse cx="60" cy="38" rx="24" ry="30"/></clipPath></defs>';
+        s += '<ellipse cx="60" cy="38" rx="24" ry="30" fill="rgba(16,185,129,0.08)" stroke="#34d399" stroke-width="1.5"/>';
+        s += '<g clip-path="url(#cclip)" stroke="#6ee7b7" stroke-width="1" opacity="0.7">';
+        for (let x = 4; x < 162; x += 7) s += `<line x1="${x}" y1="2" x2="${x - 72}" y2="74"/>`;
+        for (let x = -42; x < 120; x += 7) s += `<line x1="${x}" y1="2" x2="${x + 72}" y2="74"/>`;
+        s += '</g>';
+        cone.innerHTML = s;
+      }
+      // Nautilus: a logarithmic spiral that grows by φ every quarter turn
+      const shell = document.getElementById('shell-svg');
+      if (shell) {
+        const b = Math.log(1.61803) / (Math.PI / 2);
+        const pts = [];
+        for (let th = 0; th <= 4.4 * Math.PI; th += 0.12) { const r = Math.exp(b * th); pts.push([r * Math.cos(th), r * Math.sin(th)]); }
+        const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+        const minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+        const sc = Math.min(104 / (maxx - minx), 60 / (maxy - miny));
+        const ox = 60 - (minx + maxx) / 2 * sc, oy = 36 - (miny + maxy) / 2 * sc;
+        const d = pts.map((p, i) => `${i ? 'L' : 'M'} ${(ox + p[0] * sc).toFixed(1)} ${(oy + p[1] * sc).toFixed(1)}`).join(' ');
+        shell.innerHTML = `<path d="${d}" fill="none" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }
+    }
+
+    window.onLangChange = render;
+    HSSIM.mount({ icon: 'fa-spinner', gradient: 'from-lime-500 to-emerald-500' });
+    render();
+    buildIllustrations();
+  </script>
+</body>
+</html>

@@ -1,97 +1,125 @@
-# 贝塞尔曲线之美 · Bézier Beauty
+# HSSIM 🎮 a pile of fun stuff that happens to be math
 
-> An elegant, interactive visualization of Bézier curves with live mathematical formulas.
+> **HSSIM — Help Sunday Sharply Improve Math.**
+> A growing playground of interactive, bilingual (简体中文 / English) toys for
+> high-schoolers (think Grade 9–10). No lectures, no tests — just drag stuff,
+> smash play, and watch the "fancy" math come alive on its own.
 
-[![Live Demo](https://img.shields.io/badge/🚀-Live_Demo-violet?style=for-the-badge)](https://zhumingh.github.io/bezier-beauty)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-![Bézier Beauty Screenshot](https://raw.githubusercontent.com/zhumingh/bezier-beauty/main/screenshot.png)
+---
+
+## ✨ The vibe
+
+`index.html` is the **lobby** — it links out to every toy. Each toy is its own
+self-contained page that shares one tiny design system, so the whole place looks
+and feels like one site.
+
+Every page is:
+
+- **Hands-on** — drag points, scrub sliders, hit play. Nothing is static.
+- **Bilingual** — one toggle flips the *entire* site (titles, controls, the
+  "OK, the gist" explainers) between 中文 and English. Your choice is remembered
+  across pages (`localStorage` key `hssim_lang`).
+- **Honest math under the hood** — the sunflower really uses the 137.5° golden
+  angle, the nautilus is a real log-spiral, the bell curve is a real binomial.
+  The voice is chill; the math is not faked.
+- **Mobile / touch friendly**, and **zero build step** — just open the file.
 
 ---
 
-## ✨ Features
+## 🧸 The toy box
 
-- **Arbitrary Degree Curves** — Add or remove control points to explore curves from linear (n=1) to high-order (n≤11)
-- **De Casteljau Visualization** — Watch the elegant recursive construction in real time
-- **Smooth Animation** — Play, pause, and scrub through the parameter t with fine control
-- **Mathematical Formulas** — Live KaTeX-rendered formulas that update as you interact
-- **Beautiful Presets** — Heart, wave, loop, S-curve, easing, and random inspiration
-- **Bilingual UI** — Full support for 简体中文 and English
-- **Touch Friendly** — Works beautifully on mobile and tablets
-- **Zero Dependencies** — Single HTML file, uses CDN for Tailwind, Font Awesome, and KaTeX
+| | Toy | File | What it secretly teaches |
+|---|---|---|---|
+| 🟣 | **The bendy magic line** | `bezier.html` | Bézier curves |
+| 🔵 | **Why everything you throw flies like this** | `parabola.html` | Parabolas / quadratics |
+| 🟢 | **Two lines walk into a graph…** | `linear-systems.html` | Lines & systems of equations |
+| 🟠 | **The triangle's secret handshake** | `pythagoras.html` | Pythagorean theorem |
+| 🌹 | **Spin a circle, get a wave** | `trig.html` | Unit circle, sine & cosine |
+| 💜 | **Give a graph a glow-up** | `transformations.html` | Function transformations |
+| 🟪 | **Pure chaos, weirdly organized** | `probability.html` | Probability & the bell curve |
+| 🟩 | **Nature's favorite number trick** | `fibonacci.html` | Fibonacci & the golden spiral |
+| 🔷 | **Roll dice, accidentally make art** | `sierpinski.html` | The Sierpinski fractal (chaos game) |
+
+The Fibonacci page also has a **"Fibonacci in everyday life"** showcase —
+sunflowers, pinecones, nautilus shells & galaxies, flower petals, art & design,
+and even stock-chart Fibonacci retracement.
 
 ---
 
-## 🚀 Quick Start
-
-### Option 1: Open Locally
-Simply open `index.html` in any modern browser:
+## 🚀 Run it
 
 ```bash
-open index.html
-# or
-python -m http.server 8000
+# from the project folder
+python3 -m http.server 8000
+# then open http://localhost:8000
 ```
 
-### Option 2: GitHub Pages
-1. Push to GitHub
-2. Enable GitHub Pages in repo settings (Settings → Pages → Source: GitHub Actions or main branch)
-3. Your demo will be live at `https://<username>.github.io/bezier-beauty`
+Or just double-click `index.html` in any modern browser.
+
+### Put it online (GitHub Pages)
+Push to GitHub, then **Settings → Pages → Source: main branch**. It goes live at
+`https://<username>.github.io/<repo>` with the lobby as the front door.
 
 ---
 
-## 🎮 How to Use
+## 🧩 Project structure
 
-| Action | Description |
-|--------|-------------|
-| **Drag** control points | Move them freely to reshape the curve |
-| **Click empty space** | Add a new control point |
-| **Add / Remove Point** buttons | Change curve degree (n) |
-| **t-slider** | Manually control animation progress |
-| **Play / Pause** | Watch the curve draw itself with De Casteljau lines |
-| **Presets** | Instantly load beautiful curve shapes |
-| **Keyboard shortcuts** | `Space` = toggle animation, `R` = reset, `←` `→` = nudge t |
+```
+.
+├── index.html              # lobby (renders the toy grid from a data array)
+├── bezier.html             # the bendy magic line
+├── parabola.html           # flying arcs / quadratics
+├── linear-systems.html     # two lines crashing / systems
+├── pythagoras.html         # the triangle's secret handshake
+├── trig.html               # circle → wave
+├── transformations.html    # graph glow-up
+├── probability.html        # chaos → bell curve (Galton board)
+├── fibonacci.html          # nature's cheat code + "everyday life" showcase
+├── sierpinski.html         # roll dice, make art (chaos game)
+└── assets/
+    ├── hssim.css           # shared design system
+    └── hssim.js            # bilingual engine + shared header/footer
+```
 
 ---
 
-## 📐 The Math
+## ➕ Add a new toy (持续更新)
 
-A Bézier curve of degree **n** is defined as:
+The place is built to grow. To drop in a new toy:
 
-```
-B(t) = Σᵢ₌₀ⁿ (ⁿᵢ) (1-t)ⁿ⁻ⁱ tⁱ Pᵢ     t ∈ [0,1]
-```
+1. **Copy an existing page** (e.g. `parabola.html`) as a template.
+2. Rewrite its `HSSIM.registerDict({ zh: {...}, en: {...} })` block and the
+   canvas/demo logic. Keep the tone light — write the explainer like you'd text
+   a friend, not like a textbook.
+3. Keep these pieces so it matches the rest of the site:
+   ```html
+   <div id="hssim-header"></div>      <!-- top of <body> -->
+   <div id="hssim-footer"></div>      <!-- bottom of <body> -->
+   <script src="assets/hssim.js"></script>
+   HSSIM.mount({ icon: 'fa-...', gradient: 'from-...-500 to-...-500' });
+   ```
+4. **List it in the lobby**: add one entry to the `LESSONS` array in
+   `index.html` (file, icon, gradient, tag, and zh/en title + blurb). The card
+   shows up automatically.
 
-The visualization uses **De Casteljau's algorithm** — a numerically stable way to evaluate the curve through repeated linear interpolation. Every construction line you see is one step of this recursion.
+### Bilingual text rules
+- `data-i18n="key"` → sets `textContent` from the dictionary.
+- `data-i18n-html="key"` → sets `innerHTML` (use for inline `<code>` etc.).
+- `data-i18n-attr="title:key;aria-label:key2"` → translates attributes.
+- For anything drawn on `<canvas>`, call `HSSIM.t('key')` and re-render inside
+  the global `window.onLangChange` hook so it updates when the language flips.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
-- Pure HTML + JavaScript (ES6)
-- [Tailwind CSS](https://tailwindcss.com) (via CDN)
+Pure HTML + vanilla JS (ES6). No framework, no build, no npm:
+
+- [Tailwind CSS](https://tailwindcss.com) (CDN)
 - [Font Awesome 6](https://fontawesome.com)
-- [KaTeX](https://katex.org) for beautiful math typesetting
-
-No build step. No npm. Just open the file.
-
----
-
-## 📁 Project Structure
-
-```
-bezier-beauty/
-├── index.html      # The entire application (single file)
-├── README.md
-├── LICENSE
-└── .gitignore
-```
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! If you have ideas for new presets, better mobile UX, or additional mathematical visualizations, feel free to open an issue or PR.
+- [KaTeX](https://katex.org) for the math typesetting
 
 ---
 
@@ -99,11 +127,4 @@ Pull requests are welcome! If you have ideas for new presets, better mobile UX, 
 
 MIT © [zhumingh](https://github.com/zhumingh)
 
----
-
-## 💖 Acknowledgments
-
-Made with love for the beauty of mathematics.  
-*Help Sunday Sharply Improve Math (HSSIM)*
-
-> “The Bézier curve is not just a tool — it is poetry written in control points.”
+> *Help Sunday Sharply Improve Math — 一个让数学偷偷变好玩的地方。*
