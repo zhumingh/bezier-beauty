@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>斜率的真面目 · The Derivative</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">THE DERIVATIVE</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">陡不陡，谁说了算</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">导数与切线斜率</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动曲线上的点，再把那条割线的“间距”慢慢调到 0，看它怎么贴成切线。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="secant_form">割线斜率（差商）</div>
+                <div id="f-secant" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="deriv_form">真正的导数（切线斜率）</div>
+                <div id="f-deriv" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="text-xs text-slate-400 mb-2" data-i18n="pick_fn">挑一条曲线</div>
+              <div class="flex flex-wrap gap-2">
+                <button data-fn="sq" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">x²</button>
+                <button data-fn="cube" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">x³ − 3x</button>
+                <button data-fn="sin" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">sin x</button>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_x">位置 x</span><span id="vx" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sx" min="-5" max="5" step="0.05" value="1.4" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_h">间距 h（→ 0）</span><span id="vh" class="font-mono text-amber-400"></span></div>
+              <input type="range" id="sh" min="0.01" max="3" step="0.01" value="2" class="w-full">
+              <button id="shrink" class="mt-2 w-full px-3 py-1.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors" data-i18n="shrink">让 h 慢慢缩到 0 ▾</button>
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="drag_hint">提示：曲线上的白点也可以直接拖。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_point">点</span><span id="r-point" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_secant">割线斜率</span><span id="r-secant" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_tangent">切线斜率 f′(x)</span><span id="r-tangent" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_gap">两者差距</span><span id="r-gap" class="font-mono text-rose-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">导数就是某一点的陡峭程度，也就是切线的斜率。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=9vKqVkMQHKk" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/calculus/derivatives-introduction.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Derivative" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "陡不陡，谁说了算 · HSSIM", nav_title: "陡不陡", nav_subtitle: "切线斜率就是导数",
+        kicker: "导数 · 切线斜率", title: "陡不陡，谁说了算",
+        intro: "在曲线上挑一个点，画一条穿过它和旁边一点的“割线”。然后把那两点的间距 h 慢慢缩到 0——割线就慢慢贴成了切线，它的斜率就是导数。",
+        formula_title: "现场公式", secant_form: "割线斜率（差商）", deriv_form: "真正的导数（切线斜率）",
+        controls: "控制台", pick_fn: "挑一条曲线", param_x: "位置 x", param_h: "间距 h（→ 0）", shrink: "让 h 慢慢缩到 0 ▾",
+        drag_hint: "偷懒提示：曲线上的白点可以直接拖。",
+        readout_title: "当前战况", r_point: "点", r_secant: "割线斜率", r_tangent: "切线斜率 f′(x)", r_gap: "两者差距",
+        formal_name: "导数与切线斜率",
+        concept_title: "说人话就是",
+        concept: "“割线”穿过曲线上的两个点，它的斜率是 (f(x+h)−f(x)) / h，也就是“涨了多少 ÷ 走了多远”。当你把两点的间距 h 越缩越小，这条割线就越来越贴着曲线，最后变成只碰一点的“切线”。这条切线的斜率，就是导数 f′(x)——它告诉你曲线在那一点到底有多陡、是往上冲还是往下掉。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "速度、加速度、最优解……导数是整个微积分的开门钥匙。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown", ref_a_title: "导数到底是什么", ref_a_desc: "把“瞬时变化率”讲得无比直观的一集，强烈推荐。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "导数，慢慢看懂", ref_b_desc: "从割线到切线，一步步带你看懂那个极限。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己画切线", ref_c_desc: "在 Desmos 里给任意函数加一条切线，拖着点看斜率变。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "导数（维基百科）", ref_d_desc: "定义、记号、求导法则，需要查的时候都在这里。",
+      },
+      en: {
+        page_title: "What makes a curve steep · HSSIM", nav_title: "How steep?", nav_subtitle: "tangent slope = derivative",
+        kicker: "THE DERIVATIVE", title: "What makes a curve steep",
+        intro: "Pick a point on the curve and draw a 'secant' line through it and a nearby point. Now shrink the gap h toward 0 — the secant slowly snuggles into the tangent, and its slope is the derivative.",
+        formula_title: "Live formula", secant_form: "Secant slope (difference quotient)", deriv_form: "The real derivative (tangent slope)",
+        controls: "Controls", pick_fn: "Pick a curve", param_x: "Position x", param_h: "Gap h (→ 0)", shrink: "Shrink h toward 0 ▾",
+        drag_hint: "Lazy tip: just drag the white dot on the curve.",
+        readout_title: "Live stats", r_point: "Point", r_secant: "Secant slope", r_tangent: "Tangent slope f′(x)", r_gap: "Gap between them",
+        formal_name: "The Derivative & Tangent Slope",
+        concept_title: "OK, the gist",
+        concept: "A 'secant' line cuts the curve at two points; its slope is (f(x+h)−f(x)) / h — literally 'how much it rose ÷ how far you walked'. Shrink the gap h smaller and smaller and the secant hugs the curve until it touches at just one point: the tangent. That tangent's slope is the derivative f′(x) — it tells you exactly how steep the curve is right there, and whether it's climbing or falling.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Speed, acceleration, finding the best answer — the derivative is the front door to all of calculus.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown", ref_a_title: "What a derivative actually is", ref_a_desc: "The clearest possible take on 'instantaneous rate of change'. Highly recommended.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Derivatives, explained", ref_b_desc: "From secant to tangent, walking you through that limit one step at a time.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Draw your own tangent", ref_c_desc: "Add a tangent line to any function in Desmos and drag the point to watch the slope change.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Derivative (Wikipedia)", ref_d_desc: "Definition, notation, and all the differentiation rules when you need to look one up.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const XMIN = -6, XMAX = 6, YMIN = -6, YMAX = 6;
+    const sx = W / (XMAX - XMIN), sy = H / (YMAX - YMIN);
+    const px = x => (x - XMIN) * sx;
+    const py = y => H - (y - YMIN) * sy;
+    const wx = X => X / sx + XMIN;
+
+    // function library: value + exact derivative + KaTeX strings
+    const FNS = {
+      sq:   { f: x => x * x,              d: x => 2 * x,            fx: 'f(x) = x^2',        dfx: x => `f'(x) = 2x = ${fmt(2*x)}` },
+      cube: { f: x => x*x*x - 3*x,        d: x => 3*x*x - 3,        fx: 'f(x) = x^3 - 3x',   dfx: x => `f'(x) = 3x^2 - 3 = ${fmt(3*x*x-3)}` },
+      sin:  { f: x => 2*Math.sin(x),      d: x => 2*Math.cos(x),    fx: 'f(x) = 2\\sin x',   dfx: x => `f'(x) = 2\\cos x = ${fmt(2*Math.cos(x))}` },
+    };
+
+    let fn = 'cube', x0 = 1.4, h = 2;
+    let dragging = false, shrinking = false, shrinkRAF = null;
+
+    function fmt(n) { const r = Math.round(n * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString(); }
+    const F = () => FNS[fn];
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(XMIN); x <= XMAX; x++) { ctx.beginPath(); ctx.moveTo(px(x), 0); ctx.lineTo(px(x), H); ctx.stroke(); }
+      for (let y = Math.ceil(YMIN); y <= YMAX; y++) { ctx.beginPath(); ctx.moveTo(0, py(y)); ctx.lineTo(W, py(y)); ctx.stroke(); }
+      // axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py(0)); ctx.lineTo(W, py(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px(0), 0); ctx.lineTo(px(0), H); ctx.stroke();
+
+      const f = F().f, d = F().d;
+
+      // the curve
+      ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3.5; ctx.lineJoin = 'round';
+      ctx.beginPath(); let started = false;
+      for (let X = 0; X <= W; X += 2) {
+        const yv = f(wx(X)), Y = py(yv);
+        if (Y < -2000 || Y > H + 2000) { started = false; continue; }
+        if (!started) { ctx.moveTo(X, Y); started = true; } else ctx.lineTo(X, Y);
+      }
+      ctx.stroke();
+
+      const y0 = f(x0), x1 = x0 + h, y1 = f(x1);
+      const tanSlope = d(x0);
+      const secSlope = (y1 - y0) / h;
+
+      // tangent line (sky) — full width
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+      drawLineThrough(x0, y0, tanSlope, 'rgba(56,189,248,0.9)');
+
+      // secant line (amber) — full width
+      drawLineThrough(x0, y0, secSlope, 'rgba(251,191,36,0.95)');
+
+      // the "rise over run" triangle for the secant
+      ctx.strokeStyle = 'rgba(251,191,36,0.5)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(px(x0), py(y0)); ctx.lineTo(px(x1), py(y0)); ctx.lineTo(px(x1), py(y1)); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // second point (moving end of secant)
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath(); ctx.arc(px(x1), py(y1), 7, 0, 7); ctx.fill();
+
+      // anchor point (draggable)
+      ctx.fillStyle = '#a78bfa';
+      ctx.beginPath(); ctx.arc(px(x0), py(y0), 11, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(px(x0), py(y0), 5, 0, 7); ctx.fill();
+    }
+
+    function drawLineThrough(x, y, m, color) {
+      ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+      const yL = y + m * (XMIN - x), yR = y + m * (XMAX - x);
+      ctx.beginPath(); ctx.moveTo(px(XMIN), py(yL)); ctx.lineTo(px(XMAX), py(yR)); ctx.stroke();
+    }
+
+    function renderFormulas() {
+      const f = F().f;
+      const y0 = f(x0), y1 = f(x0 + h);
+      const sec = (y1 - y0) / h;
+      katex.render(
+        `\\dfrac{f(x+h)-f(x)}{h} = \\dfrac{${fmt(y1)} - (${fmt(y0)})}{${fmt(h)}} = ${fmt(sec)}`,
+        document.getElementById('f-secant'), { throwOnError: false, displayMode: true });
+      katex.render(F().dfx(x0), document.getElementById('f-deriv'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const f = F().f, d = F().d;
+      const y0 = f(x0), y1 = f(x0 + h);
+      const sec = (y1 - y0) / h, tan = d(x0);
+      document.getElementById('vx').textContent = fmt(x0);
+      document.getElementById('vh').textContent = fmt(h);
+      document.getElementById('r-point').textContent = `(${fmt(x0)}, ${fmt(y0)})`;
+      document.getElementById('r-secant').textContent = fmt(sec);
+      document.getElementById('r-tangent').textContent = fmt(tan);
+      document.getElementById('r-gap').textContent = fmt(Math.abs(sec - tan));
+      document.getElementById('sx').value = x0;
+      document.getElementById('sh').value = h;
+      draw(); renderFormulas();
+    }
+
+    function refreshFnBtns() {
+      document.querySelectorAll('.fn-btn').forEach(b => {
+        const on = b.dataset.fn === fn;
+        b.classList.toggle('bg-violet-600', on);
+        b.classList.toggle('text-white', on);
+        b.classList.toggle('border-violet-500', on);
+        b.classList.toggle('bg-slate-800', !on);
+      });
+    }
+    document.querySelectorAll('.fn-btn').forEach(b => {
+      b.onclick = () => { fn = b.dataset.fn; refreshFnBtns(); update(); };
+    });
+
+    document.getElementById('sx').oninput = e => { x0 = parseFloat(e.target.value); update(); };
+    document.getElementById('sh').oninput = e => { h = parseFloat(e.target.value); update(); };
+
+    // animate h -> 0
+    document.getElementById('shrink').onclick = () => {
+      if (shrinking) return;
+      shrinking = true; h = 2;
+      function step() {
+        h *= 0.965;
+        if (h <= 0.01) { h = 0.01; shrinking = false; update(); return; }
+        update();
+        shrinkRAF = requestAnimationFrame(step);
+      }
+      step();
+    };
+
+    // drag anchor along the curve (snap x to mouse, y follows f)
+    function hit(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      return Math.hypot(mx - px(x0), my - py(F().f(x0))) < 26;
+    }
+    function moveAnchor(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      x0 = Math.max(XMIN + 0.2, Math.min(XMAX - 0.2, wx(mx)));
+      update();
+    }
+    canvas.addEventListener('mousedown', e => { if (hit(e)) dragging = true; });
+    window.addEventListener('mousemove', e => { if (dragging) moveAnchor(e); });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { if (hit(e.touches[0])) { dragging = true; e.preventDefault(); } }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { moveAnchor(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-indigo-500' });
+    refreshFnBtns(); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

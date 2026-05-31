@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>转圈圈变波浪 · The Unit Circle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">THE UNIT CIRCLE</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">转圈圈，转出波浪</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">单位圆与三角函数</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动圆上的点，或者按播放，看它的高度怎么画出一条完美的波浪。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="520"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 520;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="flex items-center justify-between">
+              <div class="section-title" data-i18n="controls">控制台</div>
+              <button id="play" class="px-3 py-1.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium flex items-center gap-x-2 transition-colors">
+                <i id="play-icon" class="fa-solid fa-play"></i><span id="play-label" data-i18n="play">播放</span>
+              </button>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_angle">角度 θ</span><span id="va" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sa" min="0" max="360" step="1" value="35" class="w-full">
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button data-curve="sin" class="curve-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">sin</button>
+              <button data-curve="cos" class="curve-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">cos</button>
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="drag_hint">提示：可以直接抓住圆上的白点拖动。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_deg">角度</span><span id="r-deg" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_rad">弧度</span><span id="r-rad" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">sin θ <span class="text-rose-400">↑</span></span><span id="r-sin" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">cos θ <span class="text-sky-400">→</span></span><span id="r-cos" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">tan θ</span><span id="r-tan" class="font-mono text-amber-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">让一个点绕单位圆匀速跑，它的高度就是 sin，它的横坐标就是 cos。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=Ohp6Okk_tww" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/geometry/unit-circle.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Unit_circle" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "转圈圈，转出波浪 · HSSIM", nav_title: "转圈出波浪", nav_subtitle: "圆和波其实是一回事",
+        kicker: "转圈圈，转出波浪", title: "转圈圈，转出波浪",
+        intro: "抓住圆上那个白点拖，或者直接按播放。它跑得越高，右边的波浪就翘得越高——sin 就是这么画出来的。",
+        formula_title: "现场公式", controls: "控制台", play: "播放", pause: "暂停",
+        param_angle: "角度 θ", drag_hint: "偷懒提示：圆上的白点可以直接拖。",
+        readout_title: "当前战况", r_deg: "角度", r_rad: "弧度",
+        formal_name: "单位圆与三角函数",
+        concept_title: "说人话就是",
+        concept: "画一个半径是 1 的圆（单位圆）。让一个点绕着它跑，跑到角度 θ 的时候：这个点的“高度”就是 sin θ，它的“横向位置”就是 cos θ。所以圆和波浪根本是同一件事——把绕圈的高度沿时间摊平，就得到了你在声音、潮汐、弹簧、交流电里看到的那条波。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "声音、潮汐、秋千、交流电……全是这条波。再看看它还藏在哪儿。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube", ref_a_title: "圆是怎么变成正弦波的", ref_a_desc: "一段超直观的动画：把绕圈的点摊开，正弦波就自己长出来了。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "单位圆，慢慢看懂", ref_b_desc: "图文讲清 sin、cos、tan 到底在圆上是哪一段。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己画一条 sin", ref_c_desc: "在 Desmos 输入 y=sin(x)，再叠一个圆，亲手对照着玩。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "单位圆（维基百科）", ref_d_desc: "从定义到那张著名的特殊角度数值表，全在这里。",
+      },
+      en: {
+        page_title: "Spin a circle, get a wave · HSSIM", nav_title: "Circle into wave", nav_subtitle: "they're the same thing",
+        kicker: "THE UNIT CIRCLE", title: "Spin a circle, get a wave",
+        intro: "Grab the white dot on the circle and drag, or just hit play. The higher it climbs, the higher the wave on the right rises — that's literally how sine is drawn.",
+        formula_title: "Live formula", controls: "Controls", play: "Play", pause: "Pause",
+        param_angle: "Angle θ", drag_hint: "Lazy tip: just drag the white dot on the circle.",
+        readout_title: "Live stats", r_deg: "Degrees", r_rad: "Radians",
+        formal_name: "The Unit Circle & Trig Functions",
+        concept_title: "OK, the gist",
+        concept: "Draw a circle of radius 1 (the unit circle). Send a dot around it. At angle θ, the dot's height is sin θ and its sideways position is cos θ. So a circle and a wave are the same thing — unroll the height over time and you get the exact wave behind sound, tides, springs and AC electricity.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Sound, tides, swings, AC power — all this same wave. See where else it hides.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube", ref_a_title: "How a circle becomes a sine wave", ref_a_desc: "A gorgeous animation: unroll the spinning dot and the sine wave grows itself.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "The unit circle, explained", ref_b_desc: "Clear pictures of exactly which segment sin, cos and tan are on the circle.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Draw your own sine", ref_c_desc: "Type y=sin(x) in Desmos, drop a circle on top, and match them up by hand.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Unit circle (Wikipedia)", ref_d_desc: "From the definition to that famous table of special-angle values — all here.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = 230, cy = H / 2, R = 175;     // circle center + radius
+    const waveX0 = 430, waveW = W - waveX0 - 30; // wave plot region
+
+    let theta = 35 * Math.PI / 180;  // current angle (radians)
+    let curve = 'sin';               // which curve to trace
+    let playing = false, raf = null, lastT = 0;
+    let dragging = false;
+
+    function fmt(n) { const r = Math.round(n * 1000) / 1000; return (Object.is(r, -0) ? 0 : r).toString(); }
+
+    function radStr(t) {
+      const turns = t / Math.PI;            // in units of π
+      const r = Math.round(turns * 12) / 12; // snap to nice fractions of π
+      return `${fmt(r)}π`;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // ---- left: the circle ----
+      // axes
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(cx - R - 25, cy); ctx.lineTo(cx + R + 25, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, cy - R - 25); ctx.lineTo(cx, cy + R + 25); ctx.stroke();
+      // unit circle
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+
+      const px = cx + R * Math.cos(theta);
+      const py = cy - R * Math.sin(theta);
+
+      // angle sweep
+      ctx.fillStyle = 'rgba(139,92,246,0.18)';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, 46, 0, -theta, true); ctx.closePath(); ctx.fill();
+
+      // cos leg (horizontal, sky) and sin leg (vertical, rose)
+      ctx.lineWidth = 4; ctx.lineCap = 'round';
+      ctx.strokeStyle = '#38bdf8';
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, cy); ctx.stroke();
+      ctx.strokeStyle = '#f472b6';
+      ctx.beginPath(); ctx.moveTo(px, cy); ctx.lineTo(px, py); ctx.stroke();
+
+      // radius line
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py); ctx.stroke();
+
+      // the moving point
+      ctx.fillStyle = '#a78bfa';
+      ctx.beginPath(); ctx.arc(px, py, 11, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(px, py, 5, 0, 7); ctx.fill();
+
+      // ---- right: the unfolding wave ----
+      const traced = curve === 'sin' ? Math.sin : Math.cos;
+      const valNow = traced(theta);
+
+      // baseline
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(waveX0, cy); ctx.lineTo(W - 20, cy); ctx.stroke();
+
+      // full faint reference wave (0..2π)
+      ctx.strokeStyle = 'rgba(148,163,184,0.25)'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let i = 0; i <= waveW; i++) {
+        const a = (i / waveW) * 2 * Math.PI;
+        const Y = cy - R * traced(a);
+        if (i === 0) ctx.moveTo(waveX0 + i, Y); else ctx.lineTo(waveX0 + i, Y);
+      }
+      ctx.stroke();
+
+      // traced portion 0..theta (bright)
+      ctx.strokeStyle = curve === 'sin' ? '#f472b6' : '#38bdf8';
+      ctx.lineWidth = 4; ctx.lineJoin = 'round';
+      ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 12;
+      ctx.beginPath();
+      const tEnd = theta;
+      const steps = Math.max(1, Math.round((tEnd / (2 * Math.PI)) * waveW));
+      for (let i = 0; i <= steps; i++) {
+        const a = (i / waveW) * 2 * Math.PI;
+        const Y = cy - R * traced(a);
+        if (i === 0) ctx.moveTo(waveX0 + i, Y); else ctx.lineTo(waveX0 + i, Y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+
+      // connector from circle point to wave front
+      const waveFrontX = waveX0 + (theta / (2 * Math.PI)) * waveW;
+      const waveFrontY = cy - R * valNow;
+      ctx.strokeStyle = 'rgba(226,232,240,0.35)'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(waveFrontX, waveFrontY); ctx.stroke(); ctx.setLineDash([]);
+
+      // wave-front dot
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(waveFrontX, waveFrontY, 6, 0, 7); ctx.fill();
+    }
+
+    function renderFormula() {
+      const s = Math.sin(theta), c = Math.cos(theta);
+      katex.render(
+        `\\theta = ${Math.round(theta * 180 / Math.PI)}^\\circ \\;=\\; ${radStr(theta)} \\qquad \\sin\\theta = ${fmt(s)} \\qquad \\cos\\theta = ${fmt(c)}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const deg = theta * 180 / Math.PI;
+      document.getElementById('va').textContent = `${Math.round(deg)}°`;
+      document.getElementById('r-deg').textContent = `${Math.round(deg)}°`;
+      document.getElementById('r-rad').textContent = radStr(theta);
+      document.getElementById('r-sin').textContent = fmt(Math.sin(theta));
+      document.getElementById('r-cos').textContent = fmt(Math.cos(theta));
+      const tn = Math.cos(theta);
+      document.getElementById('r-tan').textContent = Math.abs(tn) < 1e-6 ? '∞' : fmt(Math.sin(theta) / tn);
+      document.getElementById('sa').value = Math.round(deg);
+      draw(); renderFormula();
+    }
+
+    // curve toggle buttons
+    function refreshCurveBtns() {
+      document.querySelectorAll('.curve-btn').forEach(b => {
+        const on = b.dataset.curve === curve;
+        b.classList.toggle('bg-violet-600', on);
+        b.classList.toggle('text-white', on);
+        b.classList.toggle('border-violet-500', on);
+        b.classList.toggle('bg-slate-800', !on);
+      });
+    }
+    document.querySelectorAll('.curve-btn').forEach(b => {
+      b.onclick = () => { curve = b.dataset.curve; refreshCurveBtns(); update(); };
+    });
+
+    document.getElementById('sa').oninput = e => { theta = parseFloat(e.target.value) * Math.PI / 180; update(); };
+
+    // play / pause animation
+    const playBtn = document.getElementById('play');
+    function setPlay(on) {
+      playing = on;
+      document.getElementById('play-icon').className = on ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+      document.getElementById('play-label').textContent = HSSIM.t(on ? 'pause' : 'play');
+      if (on) { lastT = performance.now(); raf = requestAnimationFrame(tick); }
+      else if (raf) cancelAnimationFrame(raf);
+    }
+    function tick(now) {
+      if (!playing) return;
+      const dt = (now - lastT) / 1000; lastT = now;
+      theta = (theta + dt * 0.9) % (2 * Math.PI);
+      update();
+      raf = requestAnimationFrame(tick);
+    }
+    playBtn.onclick = () => setPlay(!playing);
+
+    // drag the point around the circle
+    function angleFrom(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      return { mx, my, a: Math.atan2(cy - my, mx - cx) };
+    }
+    function near(e) {
+      const { mx, my } = angleFrom(e);
+      const px = cx + R * Math.cos(theta), py = cy - R * Math.sin(theta);
+      return Math.hypot(mx - px, my - py) < 28 || Math.hypot(mx - cx, my - cy) < R + 30 && Math.hypot(mx-cx,my-cy) > R - 30;
+    }
+    canvas.addEventListener('mousedown', e => { if (near(e)) { dragging = true; if (playing) setPlay(false); let a = angleFrom(e).a; theta = (a + 2*Math.PI) % (2*Math.PI); update(); } });
+    window.addEventListener('mousemove', e => { if (dragging) { let a = angleFrom(e).a; theta = (a + 2*Math.PI) % (2*Math.PI); update(); } });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { if (near(e.touches[0])) { dragging = true; if (playing) setPlay(false); let a = angleFrom(e.touches[0]).a; theta = (a + 2*Math.PI) % (2*Math.PI); update(); e.preventDefault(); } }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { let a = angleFrom(e.touches[0]).a; theta = (a + 2*Math.PI) % (2*Math.PI); update(); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = () => { document.getElementById('play-label').textContent = HSSIM.t(playing ? 'pause' : 'play'); update(); };
+    HSSIM.mount({ icon: 'fa-circle-notch', gradient: 'from-rose-500 to-pink-500' });
+    refreshCurveBtns(); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

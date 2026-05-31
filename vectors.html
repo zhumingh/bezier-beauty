@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>箭头的加法 · Vectors</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">VECTORS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">两个箭头怎么相加</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">向量加法与点积</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动两个箭头的尖端，看它们首尾相接拼出第三个箭头，再看一个箭头在另一个上投下多长的影子。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="760" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 760 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="sum_form">向量相加</div>
+                <div id="f-sum" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="dot_form">点积与夹角</div>
+                <div id="f-dot" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">显示什么</div>
+            <label class="flex items-center justify-between text-sm cursor-pointer">
+              <span class="text-slate-300" data-i18n="show_sum">a + b（首尾相接）</span>
+              <input type="checkbox" id="t-sum" checked class="w-4 h-4 accent-violet-500">
+            </label>
+            <label class="flex items-center justify-between text-sm cursor-pointer">
+              <span class="text-slate-300" data-i18n="show_proj">a 在 b 上的影子（投影）</span>
+              <input type="checkbox" id="t-proj" checked class="w-4 h-4 accent-violet-500">
+            </label>
+            <label class="flex items-center justify-between text-sm cursor-pointer">
+              <span class="text-slate-300" data-i18n="show_angle">夹角 θ</span>
+              <input type="checkbox" id="t-angle" checked class="w-4 h-4 accent-violet-500">
+            </label>
+            <p class="text-[11px] text-slate-500 pt-1" data-i18n="drag_hint">提示：直接抓住箭头尖端拖动就行。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-sky-400">a</span><span id="r-a" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between"><span class="text-emerald-400">b</span><span id="r-b" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-amber-400">a + b</span><span id="r-sum" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">|a| , |b|</span><span id="r-mag" class="font-mono text-slate-200"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_dot">点积 a·b</span><span id="r-dot" class="font-mono text-fuchsia-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_angle">夹角 θ</span><span id="r-angle" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_proj">影子长度</span><span id="r-proj" class="font-mono text-violet-300"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">向量就是带方向的箭头；相加就是首尾相接，点积告诉你两个箭头有多“同向”。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=fNk_zzaMoSs" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/vectors.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.geogebra.org/m/n9xkdze6" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · GeoGebra</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Dot_product" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "两个箭头怎么相加 · HSSIM", nav_title: "箭头的加法", nav_subtitle: "向量、点积、影子",
+        kicker: "向量 · 加法与点积", title: "两个箭头怎么相加",
+        intro: "拖动两个彩色箭头的尖端。把 b 接到 a 的尾巴后面，第三个箭头就是它们的和。再看看 a 在 b 上投下的“影子”——那就是投影，也是点积在干的事。",
+        formula_title: "现场公式", sum_form: "向量相加", dot_form: "点积与夹角",
+        controls: "显示什么", show_sum: "a + b（首尾相接）", show_proj: "a 在 b 上的影子（投影）", show_angle: "夹角 θ",
+        drag_hint: "偷懒提示：直接抓住箭头尖端拖。",
+        readout_title: "当前战况", r_dot: "点积 a·b", r_angle: "夹角 θ", r_proj: "影子长度",
+        formal_name: "向量加法与点积",
+        concept_title: "说人话就是",
+        concept: "向量就是一个“带方向的箭头”，用 (x, y) 记它走了多远、朝哪走。两个向量相加：把第二个的尾巴接到第一个的尖端，从最开始走到最后到的地方，就是和——画出来正好是个平行四边形的对角线。点积 a·b = |a||b|cosθ 衡量两个箭头有多“同向”：完全同向时最大，垂直时是 0，反向时变负。它等于 a 在 b 上影子的长度乘以 |b|。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "游戏、物理、AI 里的“相似度”，全靠向量和点积。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown", ref_a_title: "向量到底是什么", ref_a_desc: "线性代数第一课，把“箭头”讲得既好看又通透。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "向量，慢慢看懂", ref_b_desc: "加法、减法、长度、方向，图文一步步带你过一遍。",
+        ref_c_tag: "动手玩 · GeoGebra", ref_c_title: "自己拖两个向量", ref_c_desc: "在 GeoGebra 里拖动向量，实时看点积和夹角怎么变。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "点积（维基百科）", ref_d_desc: "几何意义、公式、性质，需要查的时候都在这里。",
+      },
+      en: {
+        page_title: "How two arrows add up · HSSIM", nav_title: "Arrow addition", nav_subtitle: "vectors, dot, shadows",
+        kicker: "VECTORS · ADD & DOT", title: "How two arrows add up",
+        intro: "Drag the tips of the two colored arrows. Stick b onto the tail-end of a and the third arrow is their sum. Then watch the 'shadow' a casts on b — that's the projection, and it's exactly what the dot product measures.",
+        formula_title: "Live formula", sum_form: "Adding vectors", dot_form: "Dot product & angle",
+        controls: "Show what", show_sum: "a + b (tip-to-tail)", show_proj: "a's shadow on b (projection)", show_angle: "Angle θ",
+        drag_hint: "Lazy tip: just grab an arrow's tip and drag.",
+        readout_title: "Live stats", r_dot: "Dot product a·b", r_angle: "Angle θ", r_proj: "Shadow length",
+        formal_name: "Vector Addition & the Dot Product",
+        concept_title: "OK, the gist",
+        concept: "A vector is just an arrow with direction, written (x, y) for how far it goes and which way. To add two of them, stick the tail of the second onto the tip of the first; where you end up is the sum — drawn out, it's the diagonal of a parallelogram. The dot product a·b = |a||b|cosθ measures how much they point the same way: biggest when aligned, 0 when perpendicular, negative when opposed. It equals the length of a's shadow on b times |b|.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Games, physics, and 'similarity' in AI all run on vectors and the dot product.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown", ref_a_title: "What a vector really is", ref_a_desc: "Lesson one of linear algebra — arrows made beautiful and clear.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Vectors, explained", ref_b_desc: "Addition, subtraction, length and direction, walked through with pictures.",
+        ref_c_tag: "PLAY · GeoGebra", ref_c_title: "Drag your own vectors", ref_c_desc: "Drag vectors in GeoGebra and watch the dot product and angle update live.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Dot product (Wikipedia)", ref_d_desc: "Geometric meaning, formulas and properties for when you need to look one up.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const ox = W / 2, oy = H / 2, U = 48;     // origin + pixels per unit
+    const px = x => ox + x * U;
+    const py = y => oy - y * U;
+    const wx = X => (X - ox) / U;
+    const wy = Y => (oy - Y) / U;
+
+    let a = { x: 4, y: 1.5 }, b = { x: 1.5, y: 3.5 };
+    let drag = null;  // 'a' | 'b'
+    let show = { sum: true, proj: true, angle: true };
+
+    function fmt(n) { const r = Math.round(n * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString(); }
+
+    function arrow(x1, y1, x2, y2, color, width) {
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      const ang = Math.atan2(y2 - y1, x2 - x1), s = 14 + width;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - s * Math.cos(ang - 0.4), y2 - s * Math.sin(ang - 0.4));
+      ctx.lineTo(x2 - s * Math.cos(ang + 0.4), y2 - s * Math.sin(ang + 0.4));
+      ctx.closePath(); ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let gx = ox % U; gx <= W; gx += U) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+      for (let gy = oy % U; gy <= H; gy += U) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(W, oy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox, H); ctx.stroke();
+
+      // parallelogram + tip-to-tail for the sum
+      if (show.sum) {
+        const sx = a.x + b.x, sy = a.y + b.y;
+        // ghost copies forming the parallelogram
+        ctx.setLineDash([5, 5]); ctx.lineWidth = 1.5;
+        arrowGhost(px(a.x), py(a.y), px(sx), py(sy), 'rgba(52,211,153,0.55)');   // b moved onto a's tip
+        arrowGhost(px(b.x), py(b.y), px(sx), py(sy), 'rgba(56,189,248,0.55)');   // a moved onto b's tip
+        ctx.setLineDash([]);
+        // the sum vector
+        arrow(px(0), py(0), px(sx), py(sy), '#fbbf24', 4);
+      }
+
+      // projection of a onto b (the shadow)
+      if (show.proj) {
+        const bb = b.x * b.x + b.y * b.y || 1e-9;
+        const k = (a.x * b.x + a.y * b.y) / bb;       // scalar (a·b)/|b|²
+        const projx = k * b.x, projy = k * b.y;
+        // shadow segment on b's line
+        ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 7; ctx.lineCap = 'butt';
+        ctx.beginPath(); ctx.moveTo(px(0), py(0)); ctx.lineTo(px(projx), py(projy)); ctx.stroke();
+        // drop line from a's tip to its shadow
+        ctx.strokeStyle = 'rgba(167,139,250,0.55)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(px(a.x), py(a.y)); ctx.lineTo(px(projx), py(projy)); ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // angle arc between a and b
+      if (show.angle) {
+        const aA = Math.atan2(a.y, a.x), aB = Math.atan2(b.y, b.x);
+        ctx.strokeStyle = 'rgba(244,114,182,0.8)'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        let from = aA, to = aB;
+        ctx.arc(px(0), py(0), 40, -from, -to, crossDir(from, to));
+        ctx.stroke();
+      }
+
+      // the two main vectors
+      arrow(px(0), py(0), px(a.x), py(a.y), '#38bdf8', 4.5);
+      arrow(px(0), py(0), px(b.x), py(b.y), '#34d399', 4.5);
+
+      // labels
+      ctx.font = '600 18px Space Grotesk, sans-serif';
+      ctx.fillStyle = '#38bdf8'; ctx.fillText('a', px(a.x) + 8, py(a.y) - 6);
+      ctx.fillStyle = '#34d399'; ctx.fillText('b', px(b.x) + 8, py(b.y) - 6);
+
+      // draggable tip handles
+      tipDot(a.x, a.y, '#38bdf8'); tipDot(b.x, b.y, '#34d399');
+    }
+
+    function arrowGhost(x1, y1, x2, y2, color) {
+      ctx.strokeStyle = color; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+    function tipDot(x, y, color) {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(px(x), py(y), 10, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(px(x), py(y), 4.5, 0, 7); ctx.fill();
+    }
+    // choose the shorter sweep direction for the angle arc (canvas y is flipped)
+    function crossDir(from, to) {
+      let d = to - from;
+      while (d <= -Math.PI) d += 2 * Math.PI;
+      while (d > Math.PI) d -= 2 * Math.PI;
+      return d > 0;  // counter-clockwise in math => clockwise on flipped canvas
+    }
+
+    function renderFormulas() {
+      const sx = a.x + b.x, sy = a.y + b.y;
+      katex.render(
+        `\\begin{pmatrix}${fmt(a.x)}\\\\${fmt(a.y)}\\end{pmatrix} + \\begin{pmatrix}${fmt(b.x)}\\\\${fmt(b.y)}\\end{pmatrix} = \\begin{pmatrix}${fmt(sx)}\\\\${fmt(sy)}\\end{pmatrix}`,
+        document.getElementById('f-sum'), { throwOnError: false, displayMode: true });
+      const dot = a.x * b.x + a.y * b.y;
+      const ma = Math.hypot(a.x, a.y), mb = Math.hypot(b.x, b.y);
+      const cos = dot / ((ma * mb) || 1e-9);
+      const deg = Math.acos(Math.max(-1, Math.min(1, cos))) * 180 / Math.PI;
+      katex.render(
+        `a\\cdot b = ${fmt(a.x)}(${fmt(b.x)}) + ${fmt(a.y)}(${fmt(b.y)}) = ${fmt(dot)} \\quad\\Rightarrow\\quad \\theta = ${fmt(deg)}^\\circ`,
+        document.getElementById('f-dot'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const dot = a.x * b.x + a.y * b.y;
+      const ma = Math.hypot(a.x, a.y), mb = Math.hypot(b.x, b.y);
+      const cos = dot / ((ma * mb) || 1e-9);
+      const deg = Math.acos(Math.max(-1, Math.min(1, cos))) * 180 / Math.PI;
+      const proj = dot / (mb || 1e-9);
+      document.getElementById('r-a').textContent = `(${fmt(a.x)}, ${fmt(a.y)})`;
+      document.getElementById('r-b').textContent = `(${fmt(b.x)}, ${fmt(b.y)})`;
+      document.getElementById('r-sum').textContent = `(${fmt(a.x + b.x)}, ${fmt(a.y + b.y)})`;
+      document.getElementById('r-mag').textContent = `${fmt(ma)} , ${fmt(mb)}`;
+      document.getElementById('r-dot').textContent = fmt(dot);
+      document.getElementById('r-angle').textContent = `${fmt(deg)}°`;
+      document.getElementById('r-proj').textContent = fmt(proj);
+      draw(); renderFormulas();
+    }
+
+    ['sum', 'proj', 'angle'].forEach(key => {
+      document.getElementById('t-' + key).onchange = e => { show[key] = e.target.checked; update(); };
+    });
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+    }
+    function pick(e) {
+      const p = pos(e);
+      if (Math.hypot(p.x - px(a.x), p.y - py(a.y)) < 24) return 'a';
+      if (Math.hypot(p.x - px(b.x), p.y - py(b.y)) < 24) return 'b';
+      return null;
+    }
+    function moveTip(e) {
+      const p = pos(e);
+      const v = { x: Math.round(wx(p.x) * 2) / 2, y: Math.round(wy(p.y) * 2) / 2 };
+      const lim = 6.5;
+      v.x = Math.max(-lim, Math.min(lim, v.x)); v.y = Math.max(-lim, Math.min(lim, v.y));
+      if (drag === 'a') a = v; else if (drag === 'b') b = v;
+      update();
+    }
+    canvas.addEventListener('mousedown', e => { drag = pick(e); });
+    window.addEventListener('mousemove', e => { if (drag) moveTip(e); });
+    window.addEventListener('mouseup', () => drag = null);
+    canvas.addEventListener('touchstart', e => { drag = pick(e.touches[0]); if (drag) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (drag) { moveTip(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => drag = null);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-emerald-500 to-sky-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

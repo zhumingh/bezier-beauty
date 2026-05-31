@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>切一刀，切出四种曲线 · Conic Sections</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">CONIC SECTIONS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">切一刀，切出四种曲线</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">圆锥曲线</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">用一把刀以不同角度切一个圆锥，切口会是圆、椭圆、抛物线还是双曲线？拨动角度自己看。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="520"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 520;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_beta">切面倾角 β</span><span id="vb" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sb" min="0" max="85" step="1" value="20" class="w-full">
+            </div>
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button data-beta="0"  class="snap-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="snap_circle">圆</button>
+              <button data-beta="30" class="snap-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="snap_ellipse">椭圆</button>
+              <button data-beta="55" class="snap-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="snap_parabola">抛物线</button>
+              <button data-beta="75" class="snap-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="snap_hyperbola">双曲线</button>
+            </div>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">切口是……</div>
+            <div id="r-type" class="font-display text-2xl font-semibold mb-2 text-emerald-400"></div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_beta">切面倾角 β</span><span id="r-beta" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_slant">母线倾角 φ</span><span id="r-slant" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_ecc">离心率 e</span><span id="r-ecc" class="font-mono text-amber-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">同一个圆锥，切的角度不同，切口就是圆、椭圆、抛物线或双曲线。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=pzVl0gV2W8U" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/geometry/conic-sections.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Conic_section" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "切一刀，切出四种曲线 · HSSIM", nav_title: "切圆锥", nav_subtitle: "一个圆锥，四种切口",
+        kicker: "圆锥曲线", title: "切一刀，切出四种曲线",
+        intro: "拿一把刀去切一个圆锥。切得越斜，切口就越夸张：从一个正圆，一路变成椭圆、抛物线，最后裂成双曲线。拨动角度，左边是切法，右边就是切出来的真实曲线。",
+        formula_title: "现场公式", controls: "控制台", param_beta: "切面倾角 β",
+        snap_circle: "圆", snap_ellipse: "椭圆", snap_parabola: "抛物线", snap_hyperbola: "双曲线",
+        readout_title: "切口是……", r_beta: "切面倾角 β", r_slant: "母线倾角 φ", r_ecc: "离心率 e",
+        type_circle: "圆", type_ellipse: "椭圆", type_parabola: "抛物线", type_hyperbola: "双曲线",
+        formal_name: "圆锥曲线",
+        concept_title: "说人话就是",
+        concept: "圆、椭圆、抛物线、双曲线，其实是同一个东西——拿平面去切圆锥，切口的形状。关键看刀切得有多斜（β），跟圆锥侧面的倾角（φ）比一比：水平切是正圆；稍微斜一点是椭圆；斜到刚好和侧面平行，切口闭不上了，就是抛物线；再斜下去，一刀同时切到上下两个锥，得到两支双曲线。离心率 e 就是这份“斜的程度”：e=0 是圆，0<e<1 椭圆，e=1 抛物线，e>1 双曲线。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "行星轨道、卫星天线、彗星路径……宇宙特别偏爱这四条曲线。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube", ref_a_title: "圆锥曲线，一刀看懂", ref_a_desc: "真的拿平面去切圆锥的 3D 动画，四种曲线一次看全。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "圆锥曲线，慢慢看懂", ref_b_desc: "图文讲清四种切口、焦点和离心率到底是什么。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己画一条圆锥曲线", ref_c_desc: "在 Desmos 里输入 r=l/(1+e·cosθ)，拖 e 看它从圆变到双曲线。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "圆锥曲线（维基百科）", ref_d_desc: "从阿波罗尼奥斯到开普勒轨道，圆锥曲线的完整故事。",
+      },
+      en: {
+        page_title: "One cut, four curves · HSSIM", nav_title: "Slice a cone", nav_subtitle: "one cone, four cuts",
+        kicker: "CONIC SECTIONS", title: "One cut, four curves",
+        intro: "Take a knife to a cone. The more you tilt the cut, the wilder the cross-section: from a perfect circle to an ellipse, to a parabola, and finally splitting into a hyperbola. Drag the angle — left shows the cut, right shows the actual curve it makes.",
+        formula_title: "Live formula", controls: "Controls", param_beta: "Cut tilt β",
+        snap_circle: "Circle", snap_ellipse: "Ellipse", snap_parabola: "Parabola", snap_hyperbola: "Hyperbola",
+        readout_title: "The cut is…", r_beta: "Cut tilt β", r_slant: "Cone slant φ", r_ecc: "Eccentricity e",
+        type_circle: "Circle", type_ellipse: "Ellipse", type_parabola: "Parabola", type_hyperbola: "Hyperbola",
+        formal_name: "Conic Sections",
+        concept_title: "OK, the gist",
+        concept: "Circles, ellipses, parabolas and hyperbolas are all the same thing — the shape you get when a flat plane slices a cone. It all comes down to how steep the cut is (β) versus the cone's own slant (φ): cut flat and you get a circle; tilt a little for an ellipse; tilt until the cut runs exactly parallel to the side and it can't close up — that's a parabola; tilt further and a single cut catches both cones at once, giving the two branches of a hyperbola. Eccentricity e is that 'steepness': e=0 circle, 0<e<1 ellipse, e=1 parabola, e>1 hyperbola.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Planet orbits, satellite dishes, comet paths — the universe loves these four curves.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube", ref_a_title: "Conic sections in one cut", ref_a_desc: "A 3D animation that really slices a cone with a plane — all four curves at once.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Conic sections, explained", ref_b_desc: "Clear pictures of the four cuts, plus what focus and eccentricity actually mean.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Draw your own conic", ref_c_desc: "Type r=l/(1+e·cosθ) in Desmos and drag e to morph a circle into a hyperbola.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Conic section (Wikipedia)", ref_d_desc: "From Apollonius to Kepler's orbits — the full story of the conics.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const ALPHA = 35 * Math.PI / 180;        // cone half-angle from the axis
+    const PHI = Math.PI / 2 - ALPHA;          // cone slant measured from horizontal
+    let beta = 20 * Math.PI / 180;            // cutting-plane tilt from horizontal
+
+    function fmt(n) { const r = Math.round(n * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString(); }
+
+    function eccentricity() { return Math.sin(beta) / Math.sin(PHI); }
+
+    function typeKey() {
+      const e = eccentricity();
+      if (e < 0.02) return 'type_circle';
+      if (e < 0.98) return 'type_ellipse';
+      if (e <= 1.02) return 'type_parabola';
+      return 'type_hyperbola';
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      // divider
+      const midX = W * 0.5;
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(midX, 30); ctx.lineTo(midX, H - 30); ctx.stroke();
+
+      drawCone(W * 0.26, H / 2);
+      drawConic(W * 0.74, H / 2);
+    }
+
+    function drawCone(apexX, apexY) {
+      const half = 175;                        // half-height of each nappe
+      const dx = half * Math.tan(ALPHA);       // horizontal spread at the rim
+
+      // axis
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 6]);
+      ctx.beginPath(); ctx.moveTo(apexX, apexY - half - 20); ctx.lineTo(apexX, apexY + half + 20); ctx.stroke(); ctx.setLineDash([]);
+
+      // the double cone (bowtie) with elliptical caps
+      ctx.fillStyle = 'rgba(99,102,241,0.10)';
+      ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2.5;
+      // upper nappe
+      ctx.beginPath(); ctx.moveTo(apexX, apexY);
+      ctx.lineTo(apexX - dx, apexY - half); ctx.lineTo(apexX + dx, apexY - half); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      // lower nappe
+      ctx.beginPath(); ctx.moveTo(apexX, apexY);
+      ctx.lineTo(apexX - dx, apexY + half); ctx.lineTo(apexX + dx, apexY + half); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      // caps (3D hint)
+      ctx.strokeStyle = 'rgba(129,140,248,0.7)'; ctx.lineWidth = 1.5;
+      ellipse(apexX, apexY - half, dx, dx * 0.28);
+      ellipse(apexX, apexY + half, dx, dx * 0.28);
+
+      // reference: a generator-parallel line (slant) through a pivot on the axis
+      const pivotY = apexY - 55;
+      const L = 230;
+      // dashed slant reference (parallel to the cone side) = parabola threshold
+      ctx.strokeStyle = 'rgba(148,163,184,0.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+      lineAt(apexX, pivotY, PHI, L);
+      ctx.setLineDash([]);
+
+      // the cutting plane, tilted by beta
+      const e = eccentricity();
+      const col = e < 0.02 ? '#34d399' : e < 0.98 ? '#22d3ee' : e <= 1.02 ? '#fbbf24' : '#f472b6';
+      ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineCap = 'round';
+      ctx.shadowColor = col; ctx.shadowBlur = 12;
+      lineAt(apexX, pivotY, beta, L);
+      ctx.shadowBlur = 0;
+
+      // angle arc for beta
+      ctx.strokeStyle = col; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(apexX, pivotY, 40, 0, -beta, true); ctx.stroke();
+
+      // label
+      ctx.fillStyle = '#94a3b8'; ctx.font = '500 13px Inter, sans-serif';
+      ctx.fillText('β = ' + Math.round(beta * 180 / Math.PI) + '°', apexX + 48, pivotY - 4);
+    }
+
+    function lineAt(cx, cy, ang, L) {
+      ctx.beginPath();
+      ctx.moveTo(cx - L * Math.cos(ang), cy + L * Math.sin(ang));
+      ctx.lineTo(cx + L * Math.cos(ang), cy - L * Math.sin(ang));
+      ctx.stroke();
+    }
+    function ellipse(cx, cy, rx, ry) {
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    // draw the resulting conic from the unified polar equation r = p/(1 + e cosθ)
+    function drawConic(cx, cy) {
+      const e = eccentricity();
+      const scale = 78;
+      const p = 1.55;                    // semi-latus rectum (units)
+      const col = e < 0.02 ? '#34d399' : e < 0.98 ? '#22d3ee' : e <= 1.02 ? '#fbbf24' : '#f472b6';
+
+      // directrix (faint) for non-circles
+      if (e > 0.02) {
+        const dX = cx + scale * (p / e);
+        ctx.strokeStyle = 'rgba(148,163,184,0.3)'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(dX, 40); ctx.lineTo(dX, H - 40); ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // the conic
+      ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+      ctx.shadowColor = col; ctx.shadowBlur = 14;
+      ctx.beginPath();
+      let pen = false;
+      for (let deg = 0; deg <= 360; deg += 0.5) {
+        const th = deg * Math.PI / 180;
+        const denom = 1 + e * Math.cos(th);
+        if (denom <= 0.06) { pen = false; continue; }   // beyond the asymptote — lift the pen
+        let r = p / denom;
+        if (r * scale > 1600) { pen = false; continue; } // clamp runaway hyperbola arms
+        const X = cx + scale * r * Math.cos(th);
+        const Y = cy - scale * r * Math.sin(th);
+        if (!pen) { ctx.moveTo(X, Y); pen = true; } else ctx.lineTo(X, Y);
+      }
+      ctx.stroke(); ctx.shadowBlur = 0;
+
+      // focus
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, 7); ctx.fill();
+      ctx.fillStyle = '#94a3b8'; ctx.font = '500 12px Inter, sans-serif';
+      ctx.fillText(HSSIM.getLang() === 'zh' ? '焦点' : 'focus', cx + 9, cy + 16);
+    }
+
+    function renderFormula() {
+      const e = eccentricity();
+      katex.render(
+        `r = \\dfrac{l}{1 + e\\,\\cos\\theta}, \\quad e = \\dfrac{\\sin\\beta}{\\sin\\varphi} = ${fmt(e)}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const e = eccentricity();
+      document.getElementById('vb').textContent = Math.round(beta * 180 / Math.PI) + '°';
+      document.getElementById('r-beta').textContent = Math.round(beta * 180 / Math.PI) + '°';
+      document.getElementById('r-slant').textContent = Math.round(PHI * 180 / Math.PI) + '°';
+      document.getElementById('r-ecc').textContent = fmt(e);
+      const typeColor = e < 0.02 ? '#34d399' : e < 0.98 ? '#22d3ee' : e <= 1.02 ? '#fbbf24' : '#f472b6';
+      const rt = document.getElementById('r-type');
+      rt.textContent = HSSIM.t(typeKey()); rt.style.color = typeColor;
+      document.getElementById('sb').value = Math.round(beta * 180 / Math.PI);
+      draw(); renderFormula();
+    }
+
+    document.getElementById('sb').oninput = e => { beta = parseFloat(e.target.value) * Math.PI / 180; update(); };
+    document.querySelectorAll('.snap-btn').forEach(b => {
+      b.onclick = () => { beta = parseFloat(b.dataset.beta) * Math.PI / 180; update(); };
+    });
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-circle-half-stroke', gradient: 'from-amber-500 to-rose-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>
