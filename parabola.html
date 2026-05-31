@@ -17,6 +17,10 @@
       <div class="mb-6">
         <div class="section-title mb-2" data-i18n="kicker">QUADRATIC FUNCTIONS</div>
         <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">抛物线与二次函数</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">二次函数与抛物线</span>
+        </div>
         <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动顶点或调节滑块，看二次函数如何随之改变。</p>
       </div>
 
@@ -76,6 +80,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=HB4ws7RoA3M" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/geometry/parabola.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Parabola" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
     </main>
 
     <div id="hssim-footer"></div>
@@ -94,8 +133,25 @@
         drag_hint: "偷懒提示：白点可以直接拖。",
         readout_title: "当前战况", r_vertex: "最高/最低点", r_axis: "中线", r_open: "开口朝", r_roots: "落地点", r_yint: "撞 y 轴的地方",
         open_up: "朝上", open_down: "朝下", no_real: "不落地（飞太高啦）",
+        formal_name: "二次函数与抛物线",
         concept_title: "说人话就是",
         concept: "任何二次函数画出来都是这种弧线，名字叫抛物线。顶点式 y = a(x−h)² + k 特别贴心：直接告诉你最高/最低点在 (h, k)。h 管左右、k 管上下、a 管开口朝哪儿和胖瘦。展开一下就是课本里那个 y = ax² + bx + c。弧线碰到横轴的地方，就是方程的“解”（也叫根）。",
+        ref_kicker: "想再多看一眼",
+        ref_title: "继续往下玩",
+        ref_subtitle: "投篮、喷泉、跳水都在画这条线——再看看它还藏在哪些地方。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube",
+        ref_a_title: "橄榄球里的抛物线（科学）",
+        ref_a_desc: "美国 NSF × NFL 出品：一个传球为什么必然划出一条漂亮的抛物线。",
+        ref_b_tag: "入门 · Math Is Fun",
+        ref_b_title: "抛物线，慢慢看懂",
+        ref_b_desc: "图文讲清焦点、准线和顶点，原来卫星天线也靠它。",
+        ref_c_tag: "动手玩 · Desmos",
+        ref_c_title: "自己拨一条抛物线",
+        ref_c_desc: "在 Desmos 输入 y=a(x−h)²+k，拖滑块看它怎么变胖变瘦、上下翻。",
+        ref_d_tag: "百科 · Wikipedia",
+        ref_d_title: "抛物线（维基百科）",
+        ref_d_desc: "从古希腊到火箭轨道，抛物线的完整故事都在这里。",
       },
       en: {
         page_title: "Why everything you throw flies like this · HSSIM", nav_title: "The flying arc", nav_subtitle: "every throw, ever",
@@ -106,8 +162,25 @@
         drag_hint: "Lazy tip: just drag the white dot.",
         readout_title: "Live stats", r_vertex: "Tip (top/bottom)", r_axis: "Middle line", r_open: "Opens", r_roots: "Landing spots", r_yint: "Hits the y-axis at",
         open_up: "up", open_down: "down", no_real: "never lands (flying too high)",
+        formal_name: "Quadratic Functions & the Parabola",
         concept_title: "OK, the gist",
         concept: "Every quadratic draws this same arc — a parabola. Vertex form y = a(x−h)² + k is the friendly one: it straight-up tells you the highest/lowest point is at (h, k). h moves it sideways, k moves it up/down, and a decides which way it opens and how chunky it is. Expand it and you get the textbook y = ax² + bx + c. Where the arc touches the x-axis = the answers (a.k.a. roots).",
+        ref_kicker: "DIVE DEEPER",
+        ref_title: "Want to go further?",
+        ref_subtitle: "Free throws, fountains, dives — they all draw this curve. See where else it hides.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube",
+        ref_a_title: "Parabolas in football (the science)",
+        ref_a_desc: "From NSF × NFL: why every thrown pass traces a perfect parabola.",
+        ref_b_tag: "READ · Math Is Fun",
+        ref_b_title: "The Parabola, explained",
+        ref_b_desc: "Focus, directrix and vertex made clear — and why satellite dishes are parabolas too.",
+        ref_c_tag: "PLAY · Desmos",
+        ref_c_title: "Bend your own parabola",
+        ref_c_desc: "Type y=a(x−h)²+k in Desmos and drag the sliders to fatten, flip and slide it.",
+        ref_d_tag: "REFERENCE · Wikipedia",
+        ref_d_title: "Parabola (Wikipedia)",
+        ref_d_desc: "From ancient Greece to rocket trajectories — the full story of the parabola.",
       },
     });
 
@@ -233,5 +306,7 @@
     HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-cyan-500' });
     syncSliders(); update();
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>

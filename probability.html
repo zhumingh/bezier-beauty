@@ -16,6 +16,10 @@
       <div class="mb-6">
         <div class="section-title mb-2" data-i18n="kicker">PROBABILITY</div>
         <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">概率与正态分布</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">概率论 · 二项分布与正态分布</span>
+        </div>
         <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">让小球随机穿过钉板，看混乱如何堆出整齐的钟形曲线。</p>
       </div>
 
@@ -54,6 +58,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=AwEaHCjgeXk" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-fuchsia-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-fuchsia-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/data/quincunx.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-fuchsia-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">动手玩 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-fuchsia-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-circle-dot text-fuchsia-300"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/data/standard-normal-distribution.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-fuchsia-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-fuchsia-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Galton_board" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-fuchsia-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-fuchsia-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
     </main>
 
     <div id="hssim-footer"></div>
@@ -69,8 +108,25 @@
         controls: "开整", drop1: "丢 1 个", drop50: "丢 50 个", auto: "一直丢", stop: "停", reset: "清空",
         rows: "钉子几层", show_ideal: "把理论曲线画出来",
         stats_title: "战绩", total: "已落下", paths: "每个球有多少条路",
+        formal_name: "概率论 · 二项分布与正态分布",
         concept_title: "说人话就是",
         concept: "小球落进第几个格子，概率服从“二项分布” C(n, i) / 2ⁿ。球越多、层数越多，它就越接近大名鼎鼎的正态分布（钟形曲线）。意思是：哪怕每一步都纯靠掷硬币，海量随机事件叠在一起，最后会冒出一个稳得离谱的规律——这正是整个统计学站得住脚的原因。考试分数、身高、各种误差，几乎都长这个样。",
+        ref_kicker: "想再多看一眼",
+        ref_title: "继续往下玩",
+        ref_subtitle: "如果钉板堆出钟形让你惊讶，下面这几个会让你更上头。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube",
+        ref_a_title: "真实的高尔顿钉板",
+        ref_a_desc: "几千颗小珠子哗啦落下，亲眼看它们堆成那条标准的钟形曲线。",
+        ref_b_tag: "动手玩 · Math Is Fun",
+        ref_b_title: "在线钉板，自己丢球",
+        ref_b_desc: "Math Is Fun 的互动钉板（Quincunx），点一下就能丢，越丢越像钟形。",
+        ref_c_tag: "入门 · Math Is Fun",
+        ref_c_title: "正态分布，慢慢讲",
+        ref_c_desc: "为什么身高、分数都长成钟形？“68–95–99.7”又是什么意思。",
+        ref_d_tag: "百科 · Wikipedia",
+        ref_d_title: "高尔顿钉板（维基百科）",
+        ref_d_desc: "钉板的发明者、原理，以及它和大名鼎鼎的中心极限定理的关系。",
       },
       en: {
         page_title: "Pure chaos, weirdly organized · HSSIM", nav_title: "Luck has a pattern", nav_subtitle: "where the bell curve hides",
@@ -79,8 +135,25 @@
         controls: "Let's go", drop1: "Drop 1", drop50: "Drop 50", auto: "Keep dropping", stop: "Stop", reset: "Clear",
         rows: "Rows of pegs", show_ideal: "draw the textbook curve",
         stats_title: "Scoreboard", total: "Dropped", paths: "Paths per ball",
+        formal_name: "Probability · the Binomial & Normal Distributions",
         concept_title: "OK, the gist",
         concept: "Which bin a ball lands in follows the 'binomial distribution' C(n, i) / 2ⁿ. More balls and more rows push it closer and closer to the famous normal distribution (bell curve). Translation: even when every step is a pure coin flip, a huge pile of random events produces a suspiciously reliable pattern — which is exactly why statistics works. Test scores, heights, measurement errors: nearly all bell-shaped.",
+        ref_kicker: "DIVE DEEPER",
+        ref_title: "Want to go further?",
+        ref_subtitle: "If the pegboard building a bell shape surprised you, these go further.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube",
+        ref_a_title: "A real Galton board in action",
+        ref_a_desc: "Thousands of beads pour down and pile up into the bell curve — for real, not a simulation.",
+        ref_b_tag: "PLAY · Math Is Fun",
+        ref_b_title: "Drop balls on the Quincunx",
+        ref_b_desc: "Math Is Fun's interactive bean machine — keep dropping and watch the bell appear.",
+        ref_c_tag: "READ · Math Is Fun",
+        ref_c_title: "The Normal Distribution, explained",
+        ref_c_desc: "Why heights and test scores are bell-shaped — and what 68–95–99.7 actually means.",
+        ref_d_tag: "REFERENCE · Wikipedia",
+        ref_d_title: "Galton board (Wikipedia)",
+        ref_d_desc: "Who invented it, how it works, and its link to the famous central limit theorem.",
       },
     });
 
@@ -211,5 +284,7 @@
     HSSIM.mount({ icon: 'fa-dice', gradient: 'from-fuchsia-500 to-purple-500' });
     refreshStatic(); draw();
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>

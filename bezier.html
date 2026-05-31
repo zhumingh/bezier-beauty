@@ -127,6 +127,10 @@
     </div>
 
     <div class="max-w-7xl mx-auto w-full px-6 pt-8 pb-12 flex-1">
+      <div class="mb-6 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+        <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+        <span class="font-medium" data-i18n="formal_name">贝塞尔曲线与伯恩斯坦多项式</span>
+      </div>
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         <!-- Canvas + Math Formulas (left column) -->
@@ -505,7 +509,7 @@
         <div class="flex items-center gap-x-3 text-slate-600">
           <span class="font-mono">B(t) = Σ Bₙ,ᵢ(t) Pᵢ</span>
           <span class="text-slate-700">·</span>
-          <span data-i18n="footer_credit">用数学之美点亮每个周日</span>
+          <span data-i18n="footer_credit">用数学之美点亮 Sunday 的每一天</span>
         </div>
       </div>
     </footer>
@@ -522,6 +526,7 @@
         reset: "重来",
         brand_title: "会拐弯的魔法线",
         brand_subtitle: "拽着点玩，线自己扭",
+        formal_name: "贝塞尔曲线与伯恩斯坦多项式",
         page_title: "会拐弯的魔法线 · HSSIM",
         footer_tagline: "Help Sunday Sharply Improve Math",
         footer_credit: "一个让数学偷偷变好玩的地方",
@@ -597,6 +602,7 @@
         reset: "Redo",
         brand_title: "The bendy magic line",
         brand_subtitle: "drag the dots, the line obeys",
+        formal_name: "Bézier Curves & Bernstein Polynomials",
         page_title: "The bendy magic line · HSSIM",
         footer_tagline: "Help Sunday Sharply Improve Math",
         footer_credit: "where math sneakily turns into fun",
@@ -1479,5 +1485,7 @@
     // 启动
     window.onload = init;
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>

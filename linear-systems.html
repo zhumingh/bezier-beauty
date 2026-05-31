@@ -17,6 +17,10 @@
       <div class="mb-6">
         <div class="section-title mb-2" data-i18n="kicker">LINEAR FUNCTIONS</div>
         <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">一次函数与方程组</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">一次函数与二元一次方程组</span>
+        </div>
         <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动每条直线上的圆点，观察斜率、截距和它们的交点。</p>
       </div>
 
@@ -54,6 +58,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-emerald-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-emerald-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/systems-linear-equations.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-emerald-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-emerald-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-emerald-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-emerald-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-emerald-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/System_of_linear_equations" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-emerald-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-emerald-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
     </main>
 
     <div id="hssim-footer"></div>
@@ -71,8 +110,25 @@
         sol_one: (x, y) => `撞上啦！就在 (${x}, ${y})`,
         sol_parallel: "两条平行线，这辈子都遇不上（无解）。",
         sol_same: "其实是同一条线，处处都重合（无穷多解）。",
+        formal_name: "一次函数与二元一次方程组",
         concept_title: "说人话就是",
         concept: "y = mx + b 画出来就是一条直线：m 表示它有多陡（往右走一步往上跳多高），b 是它从 y 轴哪儿出发。把两条这样的方程摆一起，就叫“方程组”。它俩交叉的那个点同时满足两条线，所以那一点就是答案。平行线永远撞不上（无解）；要是俩其实是同一条线，那处处都算撞上（无穷多解）。",
+        ref_kicker: "想再多看一眼",
+        ref_title: "继续往下玩",
+        ref_subtitle: "两条线在哪儿相遇，背后其实是一整门超有用的数学。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown",
+        ref_a_title: "线性代数的本质（动画神作）",
+        ref_a_desc: "等你长大一点再看：用最美的动画讲清方程组背后的几何。有点难，但很震撼。",
+        ref_b_tag: "入门 · Math Is Fun",
+        ref_b_title: "二元方程组，慢慢讲",
+        ref_b_desc: "图解、代入、消元，三种解法一次讲明白。",
+        ref_c_tag: "动手玩 · Desmos",
+        ref_c_title: "画两条线，找交点",
+        ref_c_desc: "在 Desmos 里输入两条 y=mx+b，拖一拖，看它们到底在哪相遇。",
+        ref_d_tag: "百科 · Wikipedia",
+        ref_d_title: "线性方程组（维基百科）",
+        ref_d_desc: "想深挖时来这里：从两条线一直延伸到上百个未知数。",
       },
       en: {
         page_title: "Two lines walk into a graph… · HSSIM", nav_title: "Two lines", nav_subtitle: "where do they crash",
@@ -82,8 +138,25 @@
         sol_one: (x, y) => `They crash at (${x}, ${y})!`,
         sol_parallel: "Parallel lines — they'll never meet (no solution, sorry).",
         sol_same: "Same line, secretly — they overlap everywhere (infinite solutions).",
+        formal_name: "Linear Functions & Systems of Equations",
         concept_title: "OK, the gist",
         concept: "y = mx + b draws a straight line: m is how steep it is (how high it jumps per step right) and b is where it starts on the y-axis. Stack two of these equations and you've got a 'system'. The point where they cross satisfies both lines at once, so that point is the answer. Parallel lines never meet (no solution); if they're secretly the same line, they meet everywhere (infinitely many).",
+        ref_kicker: "DIVE DEEPER",
+        ref_title: "Want to go further?",
+        ref_subtitle: "Where two lines meet opens up a whole world of surprisingly useful math.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown",
+        ref_a_title: "Essence of Linear Algebra",
+        ref_a_desc: "Save it for when you're a bit older: gorgeous animations on the geometry behind systems. Tough, but breathtaking.",
+        ref_b_tag: "READ · Math Is Fun",
+        ref_b_title: "Systems of equations, explained",
+        ref_b_desc: "Graphing, substitution and elimination — all three methods, clearly laid out.",
+        ref_c_tag: "PLAY · Desmos",
+        ref_c_title: "Plot two lines, find the crossing",
+        ref_c_desc: "Type two y=mx+b lines in Desmos and drag them to see exactly where they cross.",
+        ref_d_tag: "REFERENCE · Wikipedia",
+        ref_d_title: "System of linear equations (Wikipedia)",
+        ref_d_desc: "For digging deeper: from two lines all the way to hundreds of unknowns.",
       },
     });
 
@@ -188,5 +261,7 @@
     HSSIM.mount({ icon: 'fa-slash', gradient: 'from-emerald-500 to-teal-500' });
     render();
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>

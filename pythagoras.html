@@ -17,6 +17,10 @@
       <div class="mb-6">
         <div class="section-title mb-2" data-i18n="kicker">GEOMETRY</div>
         <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">勾股定理</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">勾股定理（毕达哥拉斯定理）</span>
+        </div>
         <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动三角形的顶点，用正方形的真实面积验证 a² + b² = c²。</p>
       </div>
 
@@ -48,6 +52,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=CAkMUdeB06o" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-amber-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-amber-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/pythagoras.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-amber-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-amber-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.britannica.com/science/Pythagorean-theorem" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-amber-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">百科 · Britannica</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-amber-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-landmark text-amber-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Pythagorean_theorem" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-amber-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-amber-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
     </main>
 
     <div id="hssim-footer"></div>
@@ -63,8 +102,25 @@
         intro: "拖黄点和蓝点，改改两条直角边。三个正方形的真实面积会直接摊牌：两个小的加起来，刚好等于那个大的。",
         formula_title: "面积对账单", readout_title: "量一量（单位）",
         leg_a: "直角边 a", leg_b: "直角边 b", hyp_c: "斜边 c（最长）",
+        formal_name: "勾股定理（毕达哥拉斯定理）",
         concept_title: "说人话就是",
         concept: "只要是直角三角形，两条直角边 a、b 和最长的斜边 c 永远满足 a² + b² = c²。这里的 a²、b²、c² 不是抽象符号——就是画在三条边上的正方形的真实面积。随你怎么拖，绿色加蓝色永远等于橙色。这条两千多年前的“暗号”，今天的 GPS、盖房子都还在用。",
+        ref_kicker: "想再多看一眼",
+        ref_title: "继续往下玩",
+        ref_subtitle: "如果三个正方形的面积让你觉得神奇，下面这几个一定要看看。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube",
+        ref_a_title: "用水证明勾股定理",
+        ref_a_desc: "经典名场面：转一转，两个小正方形里的水正好倒满大正方形——a²+b²=c² 当场看见。",
+        ref_b_tag: "入门 · Math Is Fun",
+        ref_b_title: "勾股定理，从头讲起",
+        ref_b_desc: "带插图和小练习的友好讲解，还教你怎么真用它去算长度。",
+        ref_c_tag: "百科 · Britannica",
+        ref_c_title: "毕达哥拉斯与他的定理",
+        ref_c_desc: "两千多年的来龙去脉：这个人到底是谁，这条定理又是怎么来的。",
+        ref_d_tag: "百科 · Wikipedia",
+        ref_d_title: "勾股定理（维基百科）",
+        ref_d_desc: "上百种证明、各种推广，够你刨根问底一整天。",
       },
       en: {
         page_title: "The triangle's secret handshake · HSSIM", nav_title: "Secret handshake", nav_subtitle: "a²+b²=c², proven",
@@ -72,8 +128,25 @@
         intro: "Drag the yellow and blue dots to resize the two short sides. The real areas of three squares spill the secret: the two small ones add up to the big one.",
         formula_title: "Area receipt", readout_title: "Measurements (units)",
         leg_a: "Short side a", leg_b: "Short side b", hyp_c: "Longest side c",
+        formal_name: "The Pythagorean Theorem",
         concept_title: "OK, the gist",
         concept: "For any right triangle, the two short sides a, b and the longest side c always obey a² + b² = c². And a², b², c² aren't abstract — they're the actual areas of squares drawn on each side. Drag however you like: green + blue always equals orange. A 2,000-year-old handshake we still lean on today (GPS, building houses, all of it).",
+        ref_kicker: "DIVE DEEPER",
+        ref_title: "Want to go further?",
+        ref_subtitle: "If those three squares clicked for you, you'll love these.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube",
+        ref_a_title: "Pythagoras, proven with water",
+        ref_a_desc: "The classic clip: spin it, and the water from the two small squares exactly fills the big one — a²+b²=c² before your eyes.",
+        ref_b_tag: "READ · Math Is Fun",
+        ref_b_title: "Pythagoras' Theorem, from scratch",
+        ref_b_desc: "A friendly illustrated guide — plus how to actually use it to find real lengths.",
+        ref_c_tag: "REFERENCE · Britannica",
+        ref_c_title: "Pythagoras & his theorem",
+        ref_c_desc: "The 2,000-year backstory: who he was, and where this theorem came from.",
+        ref_d_tag: "REFERENCE · Wikipedia",
+        ref_d_title: "Pythagorean theorem (Wikipedia)",
+        ref_d_desc: "Hundreds of proofs and generalizations — enough rabbit holes for a whole day.",
       },
     });
 
@@ -170,5 +243,7 @@
     HSSIM.mount({ icon: 'fa-vector-square', gradient: 'from-amber-500 to-orange-500' });
     render();
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>

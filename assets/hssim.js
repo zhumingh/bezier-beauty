@@ -139,7 +139,7 @@
           <span class="font-mono font-bold text-[10px] tracking-[0.18em] px-2 py-0.5 rounded-md bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-violet-200 border border-violet-400/40">HSSIM</span>
           <span data-i18n="footer_tagline">Help Sunday Sharply Improve Math</span>
         </a>
-        <span data-i18n="footer_credit">用数学之美点亮每个周日</span>
+        <span data-i18n="footer_credit">用数学之美点亮 Sunday 的每一天</span>
       </div>
     </footer>`;
   }

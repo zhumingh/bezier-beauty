@@ -17,6 +17,10 @@
       <div class="mb-6">
         <div class="section-title mb-2" data-i18n="kicker">TRIGONOMETRY</div>
         <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">单位圆与正弦波</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">三角函数 · 单位圆与正弦、余弦</span>
+        </div>
         <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动圆上的点或播放动画，看正弦和余弦如何描出波形。</p>
       </div>
 
@@ -55,6 +59,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=Q55T6LeTvsA" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-rose-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · YouTube</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-rose-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator/cpb0oammx7" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-rose-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-rose-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-circle-nodes text-rose-300"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/geometry/unit-circle.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-rose-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-rose-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Sine_and_cosine" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-rose-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-rose-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
     </main>
 
     <div id="hssim-footer"></div>
@@ -70,8 +109,25 @@
         intro: "拖那个红点绕圈跑，或者直接按播放。它有多高就是 sin θ，偏左偏右就是 cos θ——右边那条波浪，就是这么一点点描出来的。",
         play: "播放", pause: "暂停", show_cos: "也看看余弦", angle: "转到哪 θ",
         formula_title: "此刻的数值", r_deg: "角度", r_rad: "弧度",
+        formal_name: "三角函数 · 单位圆与正弦、余弦",
         concept_title: "说人话就是",
         concept: "单位圆就是个半径为 1 的圆。上面一个点对应角度 θ：它的高度（纵坐标）就是 sin θ，左右位置（横坐标）就是 cos θ，tan θ 就是两者相除。让 θ 一直变大，把这个高度顺着时间画下来，就得到一条平滑起伏的波浪。你听的每段声音、手机收的每个信号，本质上都是这种波叠在一起。",
+        ref_kicker: "想再多看一眼",
+        ref_title: "继续往下玩",
+        ref_subtitle: "如果“转圈变波浪”让你觉得神奇，下面这几个视频和网站能让你看得更过瘾。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · YouTube",
+        ref_a_title: "看波浪从圆圈里滚出来",
+        ref_a_desc: "一段超直观的动画：圆上的点一边转，右边的正弦波就一点点被画出来。",
+        ref_b_tag: "动手玩 · Desmos",
+        ref_b_title: "自己转动圆上的点",
+        ref_b_desc: "在 Desmos 里亲手转那个单位圆，看 sin、cos 怎么随着你的手一起变。",
+        ref_c_tag: "入门 · Math Is Fun",
+        ref_c_title: "单位圆，慢慢讲清楚",
+        ref_c_desc: "最友好的图文讲解，把角度、sin、cos、tan 一次说明白。",
+        ref_d_tag: "百科 · Wikipedia",
+        ref_d_title: "正弦与余弦（维基百科）",
+        ref_d_desc: "想深挖时来这里：完整定义、公式，还有它们怎么撑起声音和电波。",
       },
       en: {
         page_title: "Spin a circle, get a wave · HSSIM", nav_title: "Circle → wave", nav_subtitle: "what sound looks like",
@@ -79,8 +135,25 @@
         intro: "Drag the red dot around the circle, or just hit play. How high it is = sin θ; how far left/right = cos θ. That wave on the right? It's literally drawn from that height.",
         play: "Play", pause: "Pause", show_cos: "show cosine too", angle: "spun to θ",
         formula_title: "Right now", r_deg: "Degrees", r_rad: "Radians",
+        formal_name: "Trigonometry · the Unit Circle, Sine & Cosine",
         concept_title: "OK, the gist",
         concept: "The unit circle is just a circle with radius 1. A point on it sits at angle θ: its height (y) is sin θ, its left/right position (x) is cos θ, and tan θ is one divided by the other. Let θ keep growing and plot that height over time — you get a smooth rolling wave. Every sound you hear and every signal your phone catches is basically a stack of these waves.",
+        ref_kicker: "DIVE DEEPER",
+        ref_title: "Want to go further?",
+        ref_subtitle: "If circles-turning-into-waves blew your mind, these videos and pages take it further.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · YouTube",
+        ref_a_title: "Watch the wave roll out of a circle",
+        ref_a_desc: "A super-clear animation: as the dot spins around the circle, the sine wave draws itself on the right.",
+        ref_b_tag: "PLAY · Desmos",
+        ref_b_title: "Spin the dot yourself",
+        ref_b_desc: "Grab the unit circle in Desmos and watch sin and cos change right under your finger.",
+        ref_c_tag: "READ · Math Is Fun",
+        ref_c_title: "The Unit Circle, explained",
+        ref_c_desc: "The friendliest walk-through of angles, sin, cos and tan — all with pictures.",
+        ref_d_tag: "REFERENCE · Wikipedia",
+        ref_d_title: "Sine and cosine (Wikipedia)",
+        ref_d_desc: "For digging deeper: full definitions, formulas, and where these waves power sound and signals.",
       },
     });
 
@@ -181,5 +254,7 @@
     HSSIM.mount({ icon: 'fa-wave-square', gradient: 'from-rose-500 to-pink-500' });
     syncSlider(); render();
   </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
 </body>
 </html>
