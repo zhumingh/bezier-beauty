@@ -131,66 +131,79 @@
     const LESSONS = [
       {
         file: "bezier.html", icon: "fa-bezier-curve", grad: "from-violet-500 to-fuchsia-500", tag: "tag_fun",
+        formal: { zh: "贝塞尔曲线与伯恩斯坦多项式", en: "Bézier Curves & Bernstein Polynomials" },
         zh: { title: "会拐弯的魔法线", desc: "拽几个点，线就乖乖跟着扭。设计师和动画师天天偷偷用它。" },
         en: { title: "The bendy magic line", desc: "Yank a few dots and the line obeys. Designers and animators secretly use this all day." },
       },
       {
         file: "parabola.html", icon: "fa-chart-line", grad: "from-sky-500 to-cyan-500", tag: "tag_algebra",
+        formal: { zh: "二次函数与抛物线", en: "Quadratic Functions & the Parabola" },
         zh: { title: "为啥扔出去的东西都这么飞", desc: "投篮、喷泉、愤怒的小鸟，飞出来的弧线都是它。拖一拖看它变胖变瘦。" },
         en: { title: "Why everything you throw flies like this", desc: "Basketballs, fountains, Angry Birds — they all fly along this curve. Drag it fat or skinny." },
       },
       {
         file: "linear-systems.html", icon: "fa-slash", grad: "from-emerald-500 to-teal-500", tag: "tag_algebra",
+        formal: { zh: "一次函数与二元一次方程组", en: "Linear Functions & Systems of Equations" },
         zh: { title: "两条线的相遇现场", desc: "两条直线到底在哪儿撞上？那个交点就是答案——拖着玩马上懂。" },
         en: { title: "Two lines walk into a graph…", desc: "Where do two lines actually bump into each other? That crossing point is the punchline. Drag to find out." },
       },
       {
         file: "pythagoras.html", icon: "fa-vector-square", grad: "from-amber-500 to-orange-500", tag: "tag_geometry",
+        formal: { zh: "勾股定理（毕达哥拉斯定理）", en: "The Pythagorean Theorem" },
         zh: { title: "三角形的秘密暗号", desc: "古希腊人发现的三角形冷知识，用三个正方形当场给你证明。" },
         en: { title: "The triangle's secret handshake", desc: "An ancient-Greek flex about right triangles — proved on the spot with three real squares." },
       },
       {
         file: "trig.html", icon: "fa-wave-square", grad: "from-rose-500 to-pink-500", tag: "tag_trig",
+        formal: { zh: "三角函数 · 单位圆与正弦、余弦", en: "Trigonometry · the Unit Circle, Sine & Cosine" },
         zh: { title: "转圈圈，转出波浪", desc: "让一个点绕圈跑，它的高度居然画出完美波浪。声音和信号都靠它。" },
         en: { title: "Spin a circle, get a wave", desc: "Send a dot around a circle and its height draws a perfect wave. Sound and signals run on this." },
       },
       {
         file: "transformations.html", icon: "fa-arrows-up-down-left-right", grad: "from-indigo-500 to-violet-500", tag: "tag_algebra",
+        formal: { zh: "函数图像变换 · 平移 / 伸缩 / 反射", en: "Transformations of Functions · Translation / Scaling / Reflection" },
         zh: { title: "给曲线做个整容", desc: "推一推、翻一翻、拉一拉，同一条线能玩出无数花样。" },
         en: { title: "Give a graph a glow-up", desc: "Push it, flip it, stretch it — one curve, endless remixes." },
       },
       {
         file: "probability.html", icon: "fa-dice", grad: "from-fuchsia-500 to-purple-500", tag: "tag_stats",
+        formal: { zh: "概率论 · 二项分布与正态分布", en: "Probability · the Binomial & Normal Distributions" },
         zh: { title: "纯靠运气，居然也有规律", desc: "小球一路乱蹦，落下来却堆成漂亮的钟形山丘。原来运气也有套路。" },
         en: { title: "Pure chaos, weirdly organized", desc: "Balls bounce totally randomly, yet pile up into a tidy bell-shaped hill. Luck has a pattern." },
       },
       {
         file: "fibonacci.html", icon: "fa-spinner", grad: "from-lime-500 to-emerald-500", tag: "tag_fun",
+        formal: { zh: "斐波那契数列与黄金比 φ", en: "The Fibonacci Sequence & the Golden Ratio φ" },
         zh: { title: "大自然最偏爱的一串数字", desc: "向日葵、松果、台风、甚至股价，都在偷偷用同一串数字搭螺旋。" },
         en: { title: "Nature's favorite number trick", desc: "Sunflowers, pinecones, hurricanes, even stock charts secretly spiral with the same numbers." },
       },
       {
         file: "sierpinski.html", icon: "fa-shapes", grad: "from-cyan-500 to-blue-500", tag: "tag_fun",
+        formal: { zh: "分形几何 · 谢尔宾斯基三角形与混沌游戏", en: "Fractal Geometry · the Sierpiński Triangle & Chaos Game" },
         zh: { title: "掷骰子掷出一幅艺术品", desc: "规则简单到离谱：随机挑个角，走一半。结果却拼出超精致的图案。" },
         en: { title: "Roll dice, accidentally make art", desc: "Stupidly simple rules — pick a random corner, go halfway. Somehow it builds intricate art." },
       },
       {
         file: "unit-circle.html", icon: "fa-circle-notch", grad: "from-rose-500 to-pink-500", tag: "tag_trig",
+        formal: { zh: "单位圆与三角函数", en: "The Unit Circle & Trig Functions" },
         zh: { title: "转圈圈，转出波浪", desc: "让一个点绕圈跑，它的高度居然画出完美波浪。圆和波其实是同一回事。" },
         en: { title: "Spin a circle, get a wave", desc: "Send a dot around a circle and its height draws a perfect wave. A circle and a wave are the same thing." },
       },
       {
         file: "derivative.html", icon: "fa-chart-line", grad: "from-sky-500 to-indigo-500", tag: "tag_algebra",
+        formal: { zh: "导数与切线斜率", en: "The Derivative & Tangent Slope" },
         zh: { title: "陡不陡，谁说了算", desc: "把割线的间距慢慢缩到 0，它就贴成了切线——那条切线的斜率就是导数。" },
         en: { title: "What makes a curve steep", desc: "Shrink a secant's gap to zero and it snuggles into the tangent — that slope is the derivative." },
       },
       {
         file: "vectors.html", icon: "fa-arrows-up-down-left-right", grad: "from-emerald-500 to-sky-500", tag: "tag_geometry",
+        formal: { zh: "向量加法与点积", en: "Vector Addition & the Dot Product" },
         zh: { title: "两个箭头怎么相加", desc: "首尾相接拼出第三个箭头，再看一个箭头在另一个上投下多长的影子。" },
         en: { title: "How two arrows add up", desc: "Stick them tip-to-tail for a third arrow, then watch the shadow one casts on the other." },
       },
       {
         file: "conics.html", icon: "fa-circle-half-stroke", grad: "from-amber-500 to-rose-500", tag: "tag_geometry",
+        formal: { zh: "圆锥曲线", en: "Conic Sections" },
         zh: { title: "切一刀，切出四种曲线", desc: "同一个圆锥，切的角度不同，切口就是圆、椭圆、抛物线或双曲线。" },
         en: { title: "One cut, four curves", desc: "One cone, different cut angles — circle, ellipse, parabola, or hyperbola." },
       },
@@ -209,7 +222,11 @@
             </div>
             <span class="text-[10px] font-medium tracking-wide px-2.5 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400">${HSSIM.t(l.tag)}</span>
           </div>
-          <h3 class="font-display text-lg font-semibold tracking-tight mb-2">${c.title}</h3>
+          <h3 class="font-display text-lg font-semibold tracking-tight mb-1.5">${c.title}</h3>
+          <div class="flex items-start gap-x-1.5 text-[11px] text-slate-500 mb-2.5 leading-snug">
+            <i class="fa-solid fa-graduation-cap text-violet-400/70 mt-0.5"></i>
+            <span>${(l.formal && (l.formal[lang] || l.formal.zh)) || ""}</span>
+          </div>
           <p class="text-sm text-slate-400 leading-relaxed flex-1">${c.desc}</p>
           <div class="mt-4 text-sm text-violet-400 flex items-center gap-x-2 group-hover:gap-x-3 transition-all">
             <span>${HSSIM.t("cta_open")}</span>

@@ -57,6 +57,73 @@
         </div>
       </div>
 
+      <!-- ================= 3D · Fibonacci grows in <x,y,z> ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-6">
+          <div class="section-title mb-2" data-i18n="d3_kicker">FIBONACCI IN 3D</div>
+          <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="d3_title">让它在 ⟨x, y, z⟩ 里长起来</h2>
+          <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="d3_subtitle">把平面里的黄金螺旋抬进三维：每个立方体的边长就是一个斐波那契数，半径与高度也跟着它一圈圈往上盘旋。</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-8 min-w-0 space-y-3">
+            <div id="three-wrap" class="relative w-full bg-slate-900 border border-slate-700 rounded-3xl overflow-hidden cursor-grab"
+                 style="aspect-ratio: 900 / 560;">
+              <!-- floating mode switcher -->
+              <div class="absolute top-3 left-3 z-10 flex gap-1 p-1 rounded-2xl bg-slate-950/70 backdrop-blur border border-slate-700 text-xs">
+                <button data-mode="helix"     class="mode-btn px-3 py-1.5 rounded-xl font-medium transition-colors" data-i18n="d3_mode_helix">黄金螺旋塔</button>
+                <button data-mode="sunflower" class="mode-btn px-3 py-1.5 rounded-xl font-medium transition-colors" data-i18n="d3_mode_sun">向日葵盘</button>
+                <button data-mode="sphere"    class="mode-btn px-3 py-1.5 rounded-xl font-medium transition-colors" data-i18n="d3_mode_sphere">斐波那契球</button>
+              </div>
+              <!-- live readout -->
+              <div class="absolute top-3 right-3 z-10 px-3 py-1.5 rounded-xl bg-slate-950/70 backdrop-blur border border-slate-700 text-[11px] font-mono text-slate-300 text-right leading-tight">
+                <div><span class="text-slate-500" data-i18n="d3_stat_count">数量</span> <span id="r-count" class="text-violet-300"></span></div>
+                <div id="r-angle-row"><span class="text-slate-500" data-i18n="d3_stat_angle">发散角</span> <span id="r-angle" class="text-amber-300"></span></div>
+              </div>
+              <!-- hover tooltip -->
+              <div id="three-tip" class="absolute z-20 hidden pointer-events-none px-2 py-1 rounded-lg bg-slate-950/90 border border-slate-600 text-[11px] font-mono text-emerald-300 whitespace-nowrap"></div>
+              <!-- loading note -->
+              <div id="three-loading" class="absolute inset-0 flex items-center justify-center text-sm text-slate-500" data-i18n="d3_loading">正在加载 3D 引擎…</div>
+            </div>
+            <div class="flex items-center gap-x-2 text-xs text-slate-500">
+              <i class="fa-solid fa-arrows-up-down-left-right text-violet-400"></i>
+              <span data-i18n="d3_drag_hint">拖动旋转 · 滚轮缩放 · 悬停查看每一项</span>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 min-w-0 space-y-5">
+            <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+              <div class="section-title" data-i18n="controls">控制</div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span data-i18n="d3_terms">数量</span><span id="vn3" class="font-mono text-violet-400"></span></div>
+                <input type="range" id="sn3" min="3" max="12" step="1" value="8" class="w-full">
+              </div>
+              <div id="angle-control">
+                <div class="flex justify-between text-xs mb-1"><span data-i18n="d3_angle">发散角（每颗种子转过的角度）</span><span id="va3" class="font-mono text-amber-400"></span></div>
+                <input type="range" id="angle3" min="130" max="145" step="0.01" value="137.508" class="w-full">
+                <button id="snap3" class="mt-2 w-full text-xs font-medium rounded-xl px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-300 transition-colors">
+                  <i class="fa-solid fa-bullseye mr-1"></i><span data-i18n="d3_snap">对齐到黄金角 137.5°</span>
+                </button>
+              </div>
+              <button id="grow3" class="w-full text-sm font-semibold rounded-2xl px-4 py-2 bg-gradient-to-r from-lime-500 to-emerald-500 text-slate-900 hover:opacity-90 transition-opacity">
+                <i class="fa-solid fa-seedling mr-1.5"></i><span data-i18n="d3_grow">▶ 从头长一遍</span>
+              </button>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="show-helix" checked> <span data-i18n="d3_show_helix">螺旋线</span></label>
+                <label class="flex items-center gap-x-2 text-sm"><input type="checkbox" id="autorotate" checked> <span data-i18n="d3_autorotate">自动旋转</span></label>
+              </div>
+              <button id="reset3" class="w-full text-xs font-medium rounded-xl px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-300 transition-colors">
+                <i class="fa-solid fa-arrows-rotate mr-1"></i><span data-i18n="d3_reset">重置视角</span>
+              </button>
+            </div>
+            <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+              <div class="section-title mb-2" data-i18n="d3_concept_title">这里发生了什么</div>
+              <p class="text-xs text-slate-400 leading-relaxed" data-i18n="d3_concept"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ================= Fibonacci in everyday life ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -242,6 +309,8 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script src="assets/hssim.js"></script>
   <script>
     HSSIM.registerDict({
@@ -254,6 +323,27 @@
         ratio_title: "相邻两个一除 → 黄金比 φ", formal_name: "斐波那契数列与黄金比 φ",
         concept_title: "说人话就是",
         concept: "斐波那契数列 1, 1, 2, 3, 5, 8, 13… 的规则简单到离谱：每个数都是前面两个加起来。神奇的是，用这些数当边长的方块能严丝合缝拼成矩形，而相邻两个数一除，结果越来越靠近黄金比 φ ≈ 1.618。顺着这些方块画弧，就是大自然反复偷用的那条黄金螺旋。",
+        d3_kicker: "斐波那契 · 三维版",
+        d3_title: "让它在 ⟨x, y, z⟩ 里长起来",
+        d3_subtitle: "三种可旋转、可缩放的三维玩法：黄金螺旋塔、向日葵种子盘、斐波那契球。拖动「发散角」滑块，亲眼看着螺旋臂在黄金角处“咔”地对齐。",
+        d3_drag_hint: "拖动旋转 · 滚轮缩放 · 悬停查看每一项",
+        d3_terms: "数量",
+        d3_angle: "发散角（每颗种子转过的角度）",
+        d3_snap: "对齐到黄金角 137.5°",
+        d3_grow: "▶ 从头长一遍",
+        d3_show_helix: "螺旋线",
+        d3_autorotate: "自动旋转",
+        d3_reset: "重置视角",
+        d3_mode_helix: "黄金螺旋塔",
+        d3_mode_sun: "向日葵盘",
+        d3_mode_sphere: "斐波那契球",
+        d3_stat_count: "数量",
+        d3_stat_angle: "发散角",
+        d3_loading: "正在加载 3D 引擎…",
+        d3_tip_seed: "第 {0} 颗",
+        d3_tip_cube: "第 {0} 项 · 边长 {1}",
+        d3_concept_title: "这里发生了什么",
+        d3_concept: "三种模式，同一条规律。① 黄金螺旋塔：每转四分之一圈放一个立方体，边长是下一个斐波那契数，半径每圈约放大 φ≈1.618 倍，于是它在 x、y、z 上同时“按比例”盘旋升高。② 向日葵盘 / ③ 斐波那契球：每颗种子都比上一颗多转一个固定的“发散角”。当这个角等于黄金角 360°/φ²≈137.5° 时，种子既不挤成直线、也不留空隙，自动排成一对相邻斐波那契数的螺旋臂——这正是向日葵、松果的排种秘诀。试着把滑块从 137.5° 拨开一点点，整齐的螺旋臂立刻散架。",
         apps_kicker: "斐波那契无处不在",
         apps_title: "生活中的斐波那契",
         apps_subtitle: "从一朵向日葵到一张股价走势图，斐波那契数和黄金比 φ 一次次出现在我们身边。",
@@ -301,6 +391,27 @@
         ratio_title: "Divide two neighbors → golden ratio φ", formal_name: "The Fibonacci Sequence & the Golden Ratio φ",
         concept_title: "OK, the gist",
         concept: "The Fibonacci sequence 1, 1, 2, 3, 5, 8, 13… has a stupidly simple rule: each number is the previous two added together. The wild part: blocks with those side lengths tile perfectly into a rectangle, and dividing two neighbors gets closer and closer to the golden ratio φ ≈ 1.618. Sweep arcs through the blocks and you get the golden spiral nature keeps quietly reusing.",
+        d3_kicker: "FIBONACCI IN 3D",
+        d3_title: "Let it grow in ⟨x, y, z⟩",
+        d3_subtitle: "Three orbit-and-zoom 3D toys: the golden helix tower, the sunflower seed head, and the Fibonacci sphere. Drag the \"divergence angle\" slider and watch the spiral arms snap into place at the golden angle.",
+        d3_drag_hint: "Drag to orbit · scroll to zoom · hover any piece",
+        d3_terms: "Count",
+        d3_angle: "Divergence angle (turn between seeds)",
+        d3_snap: "Snap to golden angle 137.5°",
+        d3_grow: "▶ Grow from scratch",
+        d3_show_helix: "Spiral line",
+        d3_autorotate: "Auto-rotate",
+        d3_reset: "Reset view",
+        d3_mode_helix: "Helix Tower",
+        d3_mode_sun: "Sunflower",
+        d3_mode_sphere: "Fib. Sphere",
+        d3_stat_count: "count",
+        d3_stat_angle: "angle",
+        d3_loading: "Loading 3D engine…",
+        d3_tip_seed: "seed #{0}",
+        d3_tip_cube: "term #{0} · side {1}",
+        d3_concept_title: "What's happening here",
+        d3_concept: "Three modes, one rule. ① Helix Tower: every quarter-turn drops a cube whose edge is the next Fibonacci number; the radius grows ~φ≈1.618 per loop, so it coils up in proportion along x, y and z. ② Sunflower / ③ Fibonacci Sphere: each seed is turned by a fixed \"divergence angle\" from the last. When that angle equals the golden angle 360°/φ²≈137.5°, the seeds neither line up nor leave gaps — they self-organize into a pair of neighboring-Fibonacci spiral arms, exactly how sunflowers and pinecones pack their seeds. Nudge the slider off 137.5° and the tidy arms fall apart instantly.",
         apps_kicker: "FIBONACCI ALL AROUND US",
         apps_title: "Fibonacci in Everyday Life",
         apps_subtitle: "From a single sunflower to a stock chart, Fibonacci numbers and the golden ratio φ show up around us again and again.",
@@ -466,7 +577,330 @@
       }
     }
 
-    window.onLangChange = render;
+    /* ===================================================================
+       3D · Fibonacci in <x,y,z> — Three.js scene, three modes:
+         • Helix Tower   — Fibonacci cubes coiling up a golden cone
+         • Sunflower     — 3D phyllotaxis seed head (golden-angle packing)
+         • Fibonacci Sphere — even points on a sphere via the golden angle
+       Orbit + zoom (OrbitControls), hover tooltips, a growth animation,
+       and a live divergence-angle slider so the spiral arms visibly snap
+       into Fibonacci pairs exactly at the golden angle.
+       =================================================================== */
+    (function () {
+      const wrap = document.getElementById('three-wrap');
+      const loadingEl = document.getElementById('three-loading');
+      if (!wrap || !window.THREE) {                       // CDN blocked → graceful note
+        if (loadingEl) loadingEl.textContent = '3D engine unavailable';
+        window.draw3d = function () {};
+        return;
+      }
+      if (loadingEl) loadingEl.remove();
+
+      const PHI = (1 + Math.sqrt(5)) / 2;
+      const GOLDEN_DEG = 360 / (PHI * PHI);               // ≈ 137.50776°
+      const MODEL_R = 100;                                // models normalized to ~this radius
+      const Z_CLIMB = 0.62;                               // helix height per unit radius
+
+      // ---------- scene / camera / renderer ----------
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, 16 / 10, 0.1, 8000);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.domElement.style.display = 'block';
+      wrap.appendChild(renderer.domElement);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+      const key = new THREE.DirectionalLight(0xffffff, 0.95); key.position.set(120, 200, 160); scene.add(key);
+      const fill = new THREE.PointLight(0xa78bfa, 0.7, 0); fill.position.set(-180, 80, -160); scene.add(fill);
+      const rim = new THREE.PointLight(0xfbbf24, 0.5, 0); rim.position.set(160, -60, 120); scene.add(rim);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.08;
+      controls.autoRotate = true; controls.autoRotateSpeed = 1.1;
+      controls.minDistance = 80; controls.maxDistance = 1200;
+      camera.position.set(165, 120, 195);
+      controls.target.set(0, 0, 0); controls.update(); controls.saveState();
+
+      const root = new THREE.Group(); scene.add(root);
+      const hoverMark = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 16, 12),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9 }));
+      hoverMark.visible = false; scene.add(hoverMark);
+
+      // ---------- shared state ----------
+      let mode = 'helix';
+      let count = 8;
+      let divDeg = GOLDEN_DEG;
+      let showHelix = true;
+      let growProg = Infinity;     // Infinity = fully grown; otherwise leading edge index
+      let growing = false;
+
+      let helixCubes = [];
+      let helixLine = null, helixIdxCount = 0;
+      let inst = null;
+      const dummy = new THREE.Object3D();
+
+      function colorFor(t) {                               // violet → amber gradient
+        const hueDeg = 270 - 225 * Math.max(0, Math.min(1, t));
+        return new THREE.Color().setHSL(hueDeg / 360, 0.72, 0.58);
+      }
+
+      function clearRoot() {
+        while (root.children.length) {
+          const c = root.children.pop();
+          c.traverse(o => {
+            if (o.geometry) o.geometry.dispose();
+            if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose());
+          });
+          root.remove(c);
+        }
+        helixCubes = []; helixLine = null; inst = null; helixIdxCount = 0;
+        hoverMark.visible = false;
+      }
+
+      // ---------- mode 1 · helix tower ----------
+      function buildHelix() {
+        clearRoot();
+        const fib = [1, 1];
+        while (fib.length < count) fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
+        const nodes = [];
+        for (let k = 0; k < count; k++) {
+          const th = k * Math.PI / 2, r = fib[k];
+          nodes.push({ k, val: fib[k], s: fib[k], th, r, x: r * Math.cos(th), y: Z_CLIMB * r, z: r * Math.sin(th) });
+        }
+        let maxExt = 1, ymin = Infinity, ymax = -Infinity;
+        nodes.forEach(n => {
+          const h = n.s / 2;
+          maxExt = Math.max(maxExt, Math.hypot(n.x, n.z) + h);
+          ymin = Math.min(ymin, n.y - h); ymax = Math.max(ymax, n.y + h);
+        });
+        const yc = (ymin + ymax) / 2, sc = MODEL_R / maxExt;
+
+        nodes.forEach(n => {
+          const side = n.s * sc;
+          const col = colorFor(count > 1 ? n.k / (count - 1) : 0);
+          const geo = new THREE.BoxGeometry(side, side, side);
+          const mat = new THREE.MeshStandardMaterial({ color: col, metalness: 0.25, roughness: 0.45, transparent: true, opacity: 0.92 });
+          const m = new THREE.Mesh(geo, mat);
+          m.position.set(n.x * sc, (n.y - yc) * sc, n.z * sc);
+          m.userData = { k: n.k, val: n.val };
+          const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo),
+            new THREE.LineBasicMaterial({ color: col.clone().offsetHSL(0, 0, 0.18) }));
+          m.add(edges);
+          root.add(m); helixCubes.push(m);
+        });
+
+        const pts = [];
+        for (let k = 0; k < nodes.length - 1; k++) {
+          const a = nodes[k], b = nodes[k + 1], lnA = Math.log(a.r), lnB = Math.log(b.r);
+          for (let i = 0; i <= 20; i++) {
+            const f = i / 20, th = a.th + (b.th - a.th) * f;
+            const r = Math.exp(lnA + (lnB - lnA) * f), y = a.y + (b.y - a.y) * f;
+            pts.push(new THREE.Vector3(r * Math.cos(th) * sc, (y - yc) * sc, r * Math.sin(th) * sc));
+          }
+        }
+        if (pts.length > 1) {
+          const curve = new THREE.CatmullRomCurve3(pts);
+          const tube = new THREE.TubeGeometry(curve, pts.length * 2, MODEL_R * 0.016, 10, false);
+          helixIdxCount = tube.index ? tube.index.count : 0;
+          helixLine = new THREE.Mesh(tube, new THREE.MeshStandardMaterial(
+            { color: 0xfbbf24, emissive: 0xf59e0b, emissiveIntensity: 0.55, roughness: 0.3, metalness: 0.1 }));
+          root.add(helixLine);
+        }
+      }
+
+      function applyHelixGrow() {
+        helixCubes.forEach((m, i) => {
+          const g = growProg - i;
+          const e = g <= 0 ? 0 : g >= 1 ? 1 : g * g * (3 - 2 * g);
+          m.scale.setScalar(e); m.visible = e > 0.001;
+        });
+        if (helixLine) {
+          helixLine.visible = showHelix;
+          const frac = Math.min(1, growProg / Math.max(1, count - 1));
+          if (helixIdxCount) helixLine.geometry.setDrawRange(0, Math.floor(frac * helixIdxCount));
+        }
+      }
+
+      // ---------- modes 2 & 3 · phyllotaxis (instanced spheres) ----------
+      function rebuildInstanced() {
+        clearRoot();
+        const geo = new THREE.SphereGeometry(1, 12, 10);
+        const mat = new THREE.MeshStandardMaterial({ metalness: 0.15, roughness: 0.5, transparent: true, opacity: 0.96 });
+        inst = new THREE.InstancedMesh(geo, mat, count);
+        for (let i = 0; i < count; i++) inst.setColorAt(i, colorFor(count > 1 ? i / (count - 1) : 0));
+        if (inst.instanceColor) inst.instanceColor.needsUpdate = true;
+        inst.frustumCulled = false;
+        root.add(inst);
+        updateInstancedPositions();
+      }
+
+      function instCenter(i, divRad, geom) {
+        if (mode === 'sphere') {
+          const y = 1 - (i / Math.max(1, count - 1)) * 2;
+          const rad = Math.sqrt(Math.max(0, 1 - y * y)), a = i * divRad;
+          return [Math.cos(a) * rad * geom.SC, y * geom.SC, Math.sin(a) * rad * geom.SC];
+        }
+        // sunflower paraboloid dome
+        const r = Math.sqrt(i), a = i * divRad;
+        const dome = geom.DOME * (1 - (r / geom.maxR) * (r / geom.maxR));
+        return [r * Math.cos(a) * geom.SC, (dome - geom.yShift) * geom.SC, r * Math.sin(a) * geom.SC];
+      }
+
+      function instGeom() {
+        if (mode === 'sphere') return { SC: MODEL_R, seedR: 3.2 * MODEL_R / Math.sqrt(count) };
+        const maxR = Math.sqrt(Math.max(1, count - 1));
+        const DOME = maxR * 0.5;
+        return { SC: MODEL_R / maxR, maxR, DOME, yShift: DOME * 0.45, seedR: 1.5 * MODEL_R / Math.sqrt(count) };
+      }
+
+      function updateInstancedPositions() {
+        if (!inst) return;
+        const divRad = divDeg * Math.PI / 180, g = instGeom();
+        for (let i = 0; i < count; i++) {
+          const p = instCenter(i, divRad, g);
+          const grown = growProg - i;
+          let s = g.seedR;
+          if (grown <= 0) s = 0; else if (grown < 1) { const e = grown * grown * (3 - 2 * grown); s = g.seedR * e; }
+          dummy.position.set(p[0], p[1], p[2]);
+          dummy.scale.setScalar(s);
+          dummy.updateMatrix();
+          inst.setMatrixAt(i, dummy.matrix);
+        }
+        inst.instanceMatrix.needsUpdate = true;
+      }
+
+      // ---------- rebuild dispatcher ----------
+      function rebuild() {
+        if (mode === 'helix') { buildHelix(); applyHelixGrow(); }
+        else { rebuildInstanced(); }
+        controls.autoRotate = document.getElementById('autorotate').checked;
+      }
+
+      // ---------- readouts / mode switch ----------
+      function updateReadouts() {
+        const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+        set('vn3', count); set('r-count', count);
+        set('va3', divDeg.toFixed(2) + '°'); set('r-angle', divDeg.toFixed(2) + '°');
+        const isSeed = mode !== 'helix';
+        const ac = document.getElementById('angle-control'); if (ac) ac.style.display = isSeed ? 'block' : 'none';
+        const ar = document.getElementById('r-angle-row'); if (ar) ar.style.display = isSeed ? 'block' : 'none';
+        const ht = document.getElementById('show-helix').closest('label');
+        if (ht) ht.style.display = mode === 'helix' ? 'flex' : 'none';
+      }
+
+      function setMode(m) {
+        mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => {
+          const on = b.dataset.mode === m;
+          b.classList.toggle('bg-violet-600', on);
+          b.classList.toggle('text-white', on);
+          b.classList.toggle('text-slate-400', !on);
+        });
+        const sn = document.getElementById('sn3');
+        if (m === 'helix') { sn.min = 3; sn.max = 12; sn.step = 1; count = 8; }
+        else { sn.min = 60; sn.max = 900; sn.step = 1; count = 420; }
+        sn.value = count;
+        growProg = Infinity; growing = false;
+        updateReadouts();
+        rebuild();
+      }
+
+      // ---------- hover tooltip ----------
+      const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+      const tip = document.getElementById('three-tip');
+      const tmpV = new THREE.Vector3();
+      function tipText(kind, i, val) {
+        const en = (document.documentElement.lang || 'zh').startsWith('en');
+        if (kind === 'cube') return en ? `term #${i + 1} · side ${val}` : `第 ${i + 1} 项 · 边长 ${val}`;
+        return en ? `seed #${i + 1}` : `第 ${i + 1} 颗`;
+      }
+      renderer.domElement.addEventListener('pointermove', e => {
+        const rect = renderer.domElement.getBoundingClientRect();
+        ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        ndc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        ray.setFromCamera(ndc, camera);
+        let shown = false;
+        if (mode === 'helix' && helixCubes.length) {
+          const hits = ray.intersectObjects(helixCubes, false);
+          if (hits.length) {
+            const o = hits[0].object;
+            tip.textContent = tipText('cube', o.userData.k, o.userData.val);
+            hoverMark.position.copy(o.position);
+            hoverMark.scale.setScalar(o.geometry.parameters.width * o.scale.x * 0.62);
+            shown = true;
+          }
+        } else if (inst) {
+          const hits = ray.intersectObject(inst, false);
+          if (hits.length && hits[0].instanceId != null) {
+            const id = hits[0].instanceId;
+            inst.getMatrixAt(id, dummy.matrix);
+            tmpV.setFromMatrixPosition(dummy.matrix);
+            tip.textContent = tipText('seed', id);
+            hoverMark.position.copy(tmpV);
+            hoverMark.scale.setScalar(instGeom().seedR * 1.5);
+            shown = true;
+          }
+        }
+        hoverMark.visible = shown;
+        if (shown) {
+          tip.classList.remove('hidden');
+          tip.style.left = (e.clientX - rect.left + 14) + 'px';
+          tip.style.top = (e.clientY - rect.top + 12) + 'px';
+        } else { tip.classList.add('hidden'); }
+      });
+      renderer.domElement.addEventListener('pointerleave', () => { tip.classList.add('hidden'); hoverMark.visible = false; });
+
+      // ---------- controls wiring ----------
+      document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+      document.getElementById('sn3').oninput = e => {
+        count = parseInt(e.target.value); growProg = Infinity; growing = false;
+        updateReadouts(); rebuild();
+      };
+      document.getElementById('angle3').oninput = e => {
+        divDeg = parseFloat(e.target.value); updateReadouts();
+        if (mode !== 'helix') updateInstancedPositions();
+      };
+      document.getElementById('snap3').onclick = () => {
+        divDeg = GOLDEN_DEG; document.getElementById('angle3').value = GOLDEN_DEG.toFixed(3);
+        updateReadouts(); if (mode !== 'helix') updateInstancedPositions();
+      };
+      document.getElementById('grow3').onclick = () => { growProg = 0; growing = true; };
+      document.getElementById('show-helix').onchange = e => { showHelix = e.target.checked; if (helixLine) applyHelixGrow(); };
+      document.getElementById('autorotate').onchange = e => { controls.autoRotate = e.target.checked; };
+      document.getElementById('reset3').onclick = () => { controls.reset(); };
+
+      // ---------- main loop ----------
+      function animate() {
+        requestAnimationFrame(animate);
+        if (growing) {
+          growProg += Math.max(0.08, count / 110);
+          if (mode === 'helix') applyHelixGrow(); else updateInstancedPositions();
+          if (growProg >= count) { growProg = Infinity; growing = false; if (mode === 'helix') applyHelixGrow(); else updateInstancedPositions(); }
+        }
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      function resize() {
+        const w = wrap.clientWidth, h = wrap.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h);
+        camera.aspect = w / h; camera.updateProjectionMatrix();
+      }
+      if (window.ResizeObserver) new ResizeObserver(resize).observe(wrap);
+      window.addEventListener('resize', resize);
+
+      window.draw3d = updateReadouts;   // repaint numeric readouts on lang switch
+
+      // ---------- go ----------
+      document.getElementById('angle3').value = GOLDEN_DEG.toFixed(3);
+      setMode('helix');
+      resize();
+      animate();
+    })();
+
+    window.onLangChange = () => { render(); if (window.draw3d) window.draw3d(); };
     HSSIM.mount({ icon: 'fa-spinner', gradient: 'from-lime-500 to-emerald-500' });
     render();
     buildIllustrations();

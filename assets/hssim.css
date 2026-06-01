@@ -1,71 +1,302 @@
 /* ===================================================================
    HSSIM · Help Sunday Sharply Improve Math
-   Shared design system for every lesson page.
+   Shared design system — "Paper Almanac" theme.
+
+   A deliberate inversion of the AI-default dark-mode prototype look:
+   a warm ivory page like a vintage science almanac — ledger-ruled
+   paper with a faint grain, full serif type (Fraunces display +
+   Newsreader text), a single printer's-red accent, and the math
+   figures reframed as mounted DARK PLATES sitting on the paper.
+
+   It re-skins every page by retinting the Tailwind utility tokens the
+   pages already use, then forcing canvases / svg figures to stay dark.
    =================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap');
+
+:root {
+  /* paper grounds */
+  --paper:   #f1e9d8;   /* page ground (bg-slate-950 + body)     */
+  --paper-2: #fbf6ea;   /* cards / header (bg-slate-900)         */
+  --paper-3: #ece2cd;   /* chips / buttons (bg-slate-800)        */
+  --paper-4: #e2d7bf;   /* slider tracks (bg-slate-700)          */
+  --inset:   #ece2cd;   /* light insets (non-figure bg-slate-950) */
+  --plate:   #0f1417;   /* dark mounted figure plates            */
+
+  /* ink scale (inverts the slate scale: 200 = darkest text) */
+  --ink:     #2a241c;   /* text-slate-200  (primary)             */
+  --ink-2:   #403930;   /* text-slate-300                        */
+  --ink-mut: #6a6052;   /* text-slate-400                        */
+  --ink-mut2:#897e6c;   /* text-slate-500                        */
+  --ink-mut3:#a59a86;   /* text-slate-600                        */
+
+  /* hairline rules (ink, low alpha) */
+  --rule:        rgba(42,36,28,0.22);
+  --rule-soft:   rgba(42,36,28,0.11);
+  --rule-strong: rgba(42,36,28,0.36);
+
+  /* signature accent: printer's red */
+  --red:      #b23a2c;
+  --red-deep: #8c2c20;
+  --red-soft: #cf6354;
+
+  /* darkened versions of the per-page accent hues, legible on paper */
+  --c-emerald: #2f7a55;
+  --c-rose:    #b23a47;
+  --c-sky:     #2f6aa8;
+  --c-amber:   #a8741a;
+  --c-indigo:  #3f4aa0;
+  --c-cyan:    #1f7a86;
+  --c-lime:    #5f7d1c;
+  --c-pink:    #b04a73;
+  --c-blue:    #2f5fb0;
+
+  --r-lg: 0.5rem;
+  --r-md: 0.4rem;
+}
+
+/* ---------- type + paper ground ----------------------------------- */
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Newsreader', Georgia, serif !important;
+  font-size: 1.02rem;
+  color: var(--ink) !important;
+  background-color: var(--paper) !important;
+  background-image:
+    /* warm vignette of red + amber light */
+    radial-gradient(1100px 620px at 50% -10%, rgba(178,58,44,0.05), transparent 60%),
+    radial-gradient(900px 700px at 100% 0%, rgba(168,116,26,0.05), transparent 55%),
+    /* faint ledger rules */
+    repeating-linear-gradient(180deg, transparent 0 33px, rgba(42,36,28,0.045) 33px 34px);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+/* pressed-paper grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 .font-display {
-  font-family: 'Space Grotesk', 'Inter', sans-serif;
-}
-
-canvas {
-  touch-action: none;
-  border-radius: 16px;
-}
-
-.section-title {
-  font-size: 0.75rem;
-  letter-spacing: 1px;
+  font-family: 'Fraunces', 'Newsreader', serif !important;
+  font-optical-sizing: auto;
   font-weight: 600;
-  color: #64748b;
+  letter-spacing: -0.01em;
+}
+h1.font-display { font-weight: 600; letter-spacing: -0.022em; }
+
+/* italic Fraunces flourish for the formal-name / sub lines */
+.font-display + .mt-3 .font-medium,
+[data-i18n="formal_name"] { font-style: normal; }
+
+/* ---------- editorial section label ------------------------------- */
+.section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Newsreader', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  color: var(--red) !important;
   text-transform: uppercase;
 }
-
-/* KaTeX tuning to match dark theme */
-.katex-formula { font-size: 1.05rem; padding: 4px 0; }
-.katex { color: #e0e7ff !important; }
-.katex-display { margin: 0 !important; }
-
-/* HSSIM badge subtle pulse */
-.hssim-badge {
-  box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.45);
-  animation: hssim-pulse 2.6s ease-out infinite;
-  cursor: help;
-}
-@keyframes hssim-pulse {
-  0%   { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0.45); }
-  70%  { box-shadow: 0 0 0 6px rgba(167, 139, 250, 0);    }
-  100% { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0);    }
+.section-title::before {   /* a small printer's double-rule */
+  content: "";
+  width: 1.6rem;
+  height: 3px;
+  border-top: 1px solid var(--red);
+  border-bottom: 1px solid var(--red);
 }
 
-/* Card hover lift */
-.control-card {
-  transition: border-color 0.2s ease, transform 0.2s ease;
+/* ---------- Tailwind token retint (grounds → paper) --------------- */
+.bg-slate-950, .bg-slate-950\/70, .bg-slate-950\/90, .bg-slate-950\/80 { background-color: var(--inset) !important; }
+.bg-slate-900, .bg-slate-900\/80 { background-color: var(--paper-2) !important; }
+.bg-slate-900\/70 { background-color: rgba(251,246,234,0.82) !important; }
+.bg-slate-800 { background-color: var(--paper-3) !important; }
+.bg-slate-700 { background-color: var(--paper-4) !important; }
+.bg-slate-600 { background-color: #d6c9ad !important; }
+
+/* hairline borders (ink) */
+.border-slate-700 { border-color: var(--rule) !important; }
+.border-slate-800 { border-color: var(--rule-soft) !important; }
+.border-slate-600 { border-color: var(--rule-strong) !important; }
+
+/* ink scale (inverted) */
+.text-slate-200 { color: var(--ink) !important; }
+.text-slate-300 { color: var(--ink-2) !important; }
+.text-slate-400 { color: var(--ink-mut) !important; }
+.text-slate-500 { color: var(--ink-mut2) !important; }
+.text-slate-600 { color: var(--ink-mut3) !important; }
+
+/* ---------- accents: violet/fuchsia → red; darken bright hues ----- */
+.text-violet-400, .text-violet-300, .text-violet-200, .text-violet-400\/70,
+.text-fuchsia-400, .text-fuchsia-300 { color: var(--red) !important; }
+.text-emerald-400, .text-emerald-300 { color: var(--c-emerald) !important; }
+.text-rose-400, .text-rose-300       { color: var(--c-rose) !important; }
+.text-sky-400, .text-sky-300         { color: var(--c-sky) !important; }
+.text-amber-400, .text-amber-300     { color: var(--c-amber) !important; }
+.text-indigo-400, .text-indigo-300, .text-indigo-200 { color: var(--c-indigo) !important; }
+.text-cyan-400, .text-cyan-300, .text-cyan-200 { color: var(--c-cyan) !important; }
+.text-lime-400  { color: var(--c-lime) !important; }
+.text-pink-400  { color: var(--c-pink) !important; }
+.text-blue-400  { color: var(--c-blue) !important; }
+
+/* primary actions / active toggle → red, white text stays legible */
+.bg-violet-600, .bg-violet-700, .bg-violet-500 {
+  background-color: var(--red) !important;
+  background-image: linear-gradient(180deg, var(--red-soft), var(--red)) !important;
 }
-.control-card:hover {
-  border-color: rgb(71 85 105 / 0.9);
+.hover\:bg-violet-500:hover, .hover\:bg-violet-600:hover {
+  background-image: linear-gradient(180deg, #d06c5d, var(--red)) !important;
+}
+.bg-violet-600\/20, .bg-violet-500\/10, .bg-violet-400 { background-color: rgba(178,58,44,0.12) !important; }
+.border-violet-500, .border-violet-500\/60, .border-violet-500\/30,
+.border-violet-400\/50, .border-violet-400\/40 { border-color: rgba(178,58,44,0.55) !important; }
+
+/* recolor violet/fuchsia GRADIENTS (brand mark, badges, header rule) → red */
+[class*="from-violet-"], [class*="from-fuchsia-"] { --tw-gradient-from: var(--red) !important; }
+[class*="to-violet-"],   [class*="to-fuchsia-"]   { --tw-gradient-to: var(--red-deep) !important; }
+[class*="via-violet-"],  [class*="via-fuchsia-"]  { --tw-gradient-via: var(--red-soft) !important; }
+[class*="shadow-violet-"] { --tw-shadow-color: rgba(178,58,44,0.28) !important; --tw-shadow: var(--tw-shadow-colored) !important; }
+
+/* footer "HSSIM" seal lacks .hssim-badge — keep it a soft red stamp, not red-on-red */
+footer [class*="from-violet-"] {
+  background-image: linear-gradient(90deg, rgba(178,58,44,0.14), rgba(140,44,32,0.10)) !important;
+  color: var(--red-deep) !important;
+  border-color: rgba(178,58,44,0.45) !important;
 }
 
-/* Lesson hub cards */
+/* ---------- cards as almanac entries ------------------------------ */
+.control-card,
 .lesson-card {
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--paper-2) !important;
+  border-color: var(--rule) !important;
+  border-radius: var(--r-lg);
+  box-shadow:
+    inset 0 0 0 3px var(--paper-2),
+    inset 0 0 0 4px var(--rule-soft),
+    0 14px 30px -22px rgba(42,36,28,0.55);
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.control-card:hover { border-color: var(--rule-strong) !important; }
+
+.lesson-card {
+  position: relative;
+  overflow: hidden;
+  border-top: 2px solid var(--red) !important;
+}
+.lesson-card::before {           /* catalog plate number, auto-incremented */
+  content: counter(plate, decimal-leading-zero);
+  counter-increment: plate;
+  position: absolute;
+  right: 0.5rem;
+  bottom: -0.9rem;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 4.2rem;
+  line-height: 1;
+  color: rgba(42,36,28,0.06);
+  pointer-events: none;
 }
 .lesson-card:hover {
   transform: translateY(-4px);
-  border-color: rgb(139 92 246 / 0.6);
-  box-shadow: 0 20px 40px -20px rgba(139, 92, 246, 0.45);
+  border-color: var(--rule-strong) !important;
+  box-shadow:
+    inset 0 0 0 3px var(--paper-2),
+    inset 0 0 0 4px rgba(178,58,44,0.25),
+    0 24px 44px -24px rgba(42,36,28,0.6);
+}
+#lesson-grid { counter-reset: plate; }
+
+/* squarer, more printed corners across the board */
+.rounded-3xl { border-radius: var(--r-lg) !important; }
+.rounded-2xl { border-radius: var(--r-md) !important; }
+
+/* ---------- math figures stay DARK, mounted like plates ----------- */
+canvas[class],
+#three-wrap,
+.aspect-\[5\/3\],
+[class*="bg-slate-9"]:has(> svg),
+[class*="bg-slate-9"]:has(> canvas) {
+  background-color: var(--plate) !important;
+  border-color: rgba(42,36,28,0.45) !important;
+  box-shadow: 0 16px 34px -20px rgba(42,36,28,0.6), inset 0 0 0 1px rgba(255,255,255,0.03);
+}
+canvas { touch-action: none; border-radius: var(--r-md); }
+
+/* ---------- KaTeX on light insets --------------------------------- */
+.katex-formula { font-size: 1.05rem; padding: 4px 0; }
+.katex { color: var(--ink) !important; }
+.katex-display { margin: 0 !important; }
+
+/* ---------- HSSIM badge (red wax seal) ---------------------------- */
+.hssim-badge {
+  background-image: linear-gradient(90deg, rgba(178,58,44,0.16), rgba(140,44,32,0.10)) !important;
+  border-color: rgba(178,58,44,0.5) !important;
+  color: var(--red-deep) !important;
+  box-shadow: 0 0 0 0 rgba(178,58,44,0.4);
+  animation: hssim-pulse 2.8s ease-out infinite;
+  cursor: help;
+}
+@keyframes hssim-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(178,58,44,0.4); }
+  70%  { box-shadow: 0 0 0 7px rgba(178,58,44,0);   }
+  100% { box-shadow: 0 0 0 0   rgba(178,58,44,0);   }
 }
 
-/* Pretty range sliders everywhere */
-input[type="range"] { accent-color: #8b5cf6; }
+/* ---------- hand-tuned range sliders ------------------------------ */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--paper-4);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px; height: 15px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 2px solid var(--paper-2);
+  box-shadow: 0 0 0 1px var(--red-deep), 0 1px 3px rgba(42,36,28,0.4);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); background: var(--red-soft); }
+input[type="range"]::-moz-range-thumb {
+  width: 15px; height: 15px; border-radius: 50%;
+  background: var(--red); border: 2px solid var(--paper-2);
+  box-shadow: 0 0 0 1px var(--red-deep); cursor: pointer;
+}
+input[type="range"]::-moz-range-track { height: 3px; border-radius: 99px; background: var(--paper-4); }
+input[type="checkbox"] { accent-color: var(--red); }
 
-/* Fade-in helper */
-.fade-in { animation: fade-in 0.5s ease both; }
+/* ---------- focus, selection, scrollbar --------------------------- */
+a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+::selection { background: rgba(178,58,44,0.28); color: #2a241c; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--paper-4) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-thumb { background: var(--paper-4); border-radius: 99px; border: 3px solid var(--paper); }
+::-webkit-scrollbar-thumb:hover { background: #cdbf9f; }
+
+/* ---------- fade-in helper ---------------------------------------- */
+.fade-in { animation: fade-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
