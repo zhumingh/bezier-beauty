@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>波浪调音台 · Sine Wave Mixer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">SINE WAVE MIXER</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">波浪调音台</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">正弦波参数 A·sin(Bx+C)+D</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">四个旋钮：高矮 A、快慢 B、左右 C、上下 D。拧一拧，看同一条正弦波怎么随你变形。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="560"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 560;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_a">A · 振幅（高矮）</span><span id="va" class="font-mono text-rose-400"></span></div>
+              <input type="range" id="sa" min="0.2" max="3" step="0.1" value="1.5" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_b">B · 频率（快慢）</span><span id="vbb" class="font-mono text-amber-400"></span></div>
+              <input type="range" id="sbb" min="0.5" max="4" step="0.1" value="1" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_c">C · 相位（左右）</span><span id="vc" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sc" min="-3.14" max="3.14" step="0.05" value="0" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_d">D · 中线（上下）</span><span id="vd" class="font-mono text-emerald-400"></span></div>
+              <input type="range" id="sd" min="-2" max="2" step="0.1" value="0" class="w-full">
+            </div>
+            <button id="reset" class="w-full px-3 py-1.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium transition-colors" data-i18n="reset">恢复默认</button>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_amp">振幅</span><span id="r-amp" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_period">周期 = 2π/B</span><span id="r-period" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_shift">相位移 = −C/B</span><span id="r-shift" class="font-mono text-violet-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_mid">中线 / 范围</span><span id="r-mid" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">A 拉高拉矮、B 拉密拉疏、C 整条左右推、D 整条上下移。四个数字决定一条波的全部模样。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=sf2Mmh1zykw" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/amplitude-period-frequency-phase-shift.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Sine_wave" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "波浪调音台 · HSSIM", nav_title: "波浪调音台", nav_subtitle: "A·sin(Bx+C)+D",
+        kicker: "正弦波参数", title: "波浪调音台",
+        intro: "正弦波 y = A·sin(Bx + C) + D 里藏着四个旋钮：A 决定波多高、B 决定波多密、C 把整条波左右推、D 把整条波上下抬。拧一拧，立刻看出每个字母管什么。",
+        formula_title: "现场公式",
+        controls: "控制台", param_a: "A · 振幅（高矮）", param_b: "B · 频率（快慢）", param_c: "C · 相位（左右）", param_d: "D · 中线（上下）", reset: "恢复默认",
+        readout_title: "当前战况", r_amp: "振幅", r_period: "周期 = 2π/B", r_shift: "相位移 = −C/B", r_mid: "中线 / 范围",
+        formal_name: "正弦波参数 A·sin(Bx+C)+D",
+        concept_title: "说人话就是",
+        concept: "声音、潮汐、交流电、心跳……几乎一切“来回摆动”的东西都长成正弦波。它的全部模样只由四个数字决定：A 是振幅，波峰到中线的高度，A 越大波越高；B 控制频率，B 越大波挤得越密、周期 2π/B 越短；C 是相位，把整条波沿水平方向推（移动量是 −C/B）；D 是中线（竖直平移），决定波在上还是在下。记住这四个把手，你就能读懂任何正弦波。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "把好几条正弦波叠起来，就能拼出任何声音——这就是傅里叶的世界。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "振幅、周期、相位", ref_a_desc: "把 A、B、C、D 各自的作用一个一个拆开来讲清楚。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "参数全解析", ref_b_desc: "振幅、周期、频率、相位移，配图讲得明明白白。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己调一条波", ref_c_desc: "在 Desmos 里给 A、B、C、D 都加滑块，亲手拧。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "正弦波（维基百科）", ref_d_desc: "从数学定义到它在物理、信号里的角色，都在这里。",
+      },
+      en: {
+        page_title: "Sine Wave Mixer · HSSIM", nav_title: "Wave mixer", nav_subtitle: "A·sin(Bx+C)+D",
+        kicker: "SINE WAVE MIXER", title: "The wave mixing board",
+        intro: "The wave y = A·sin(Bx + C) + D hides four knobs: A sets how tall the wave is, B sets how tightly packed it is, C slides the whole wave left/right, and D lifts it up/down. Twist them and instantly see what each letter does.",
+        formula_title: "Live formula",
+        controls: "Controls", param_a: "A · amplitude (tall)", param_b: "B · frequency (fast)", param_c: "C · phase (slide)", param_d: "D · midline (lift)", reset: "Reset to default",
+        readout_title: "Live stats", r_amp: "Amplitude", r_period: "Period = 2π/B", r_shift: "Phase shift = −C/B", r_mid: "Midline / range",
+        formal_name: "Sine Wave Parameters A·sin(Bx+C)+D",
+        concept_title: "OK, the gist",
+        concept: "Sound, tides, AC current, a heartbeat — almost anything that swings back and forth looks like a sine wave. Its entire shape is pinned down by four numbers: A is the amplitude, the height from midline to peak — bigger A, taller wave; B controls frequency — bigger B packs the waves tighter and shortens the period 2π/B; C is the phase, sliding the whole wave horizontally (by −C/B); D is the midline (vertical shift), setting how high the wave floats. Learn these four handles and you can read any sine wave.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Stack enough sine waves and you can build any sound at all — that's the world of Fourier.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "Amplitude, period, phase", ref_a_desc: "Pulls A, B, C, D apart one at a time and shows what each one does.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Every parameter, explained", ref_b_desc: "Amplitude, period, frequency, and phase shift, laid out clearly with pictures.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Tune a wave yourself", ref_c_desc: "Add sliders for A, B, C, D in Desmos and twist them by hand.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Sine wave (Wikipedia)", ref_d_desc: "From the math definition to its role across physics and signals.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD = 50;
+    const XMIN = -2 * Math.PI, XMAX = 2 * Math.PI, YMIN = -5, YMAX = 5;
+    const PX = x => PAD + (x - XMIN) / (XMAX - XMIN) * (W - 2 * PAD);
+    const PY = y => H / 2 - y / YMAX * (H / 2 - PAD);
+
+    const DEF = { A: 1.5, B: 1, C: 0, D: 0 };
+    let A = DEF.A, B = DEF.B, C = DEF.C, D = DEF.D;
+    const f = x => A * Math.sin(B * x + C) + D;
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let k = -2; k <= 2; k++) { const x = PX(k * Math.PI); ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = -4; y <= 4; y++) { ctx.beginPath(); ctx.moveTo(PAD, PY(y)); ctx.lineTo(W - PAD, PY(y)); ctx.stroke(); }
+      // axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(PAD, PY(0)); ctx.lineTo(W - PAD, PY(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX(0), 0); ctx.lineTo(PX(0), H); ctx.stroke();
+      // x labels
+      ctx.fillStyle = '#64748b'; ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'center';
+      ['−2π', '−π', '0', 'π', '2π'].forEach((lab, i) => ctx.fillText(lab, PX((i - 2) * Math.PI), PY(0) + 18));
+
+      // midline D (emerald dashed)
+      ctx.strokeStyle = 'rgba(52,211,153,0.7)'; ctx.lineWidth = 2; ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(PAD, PY(D)); ctx.lineTo(W - PAD, PY(D)); ctx.stroke(); ctx.setLineDash([]);
+
+      // amplitude band
+      ctx.fillStyle = 'rgba(244,63,94,0.08)';
+      ctx.fillRect(PAD, PY(D + A), W - 2 * PAD, PY(D - A) - PY(D + A));
+
+      // the wave
+      ctx.strokeStyle = '#fb7185'; ctx.lineWidth = 3.5; ctx.lineJoin = 'round'; ctx.beginPath();
+      for (let px = PAD; px <= W - PAD; px += 1.5) {
+        const x = XMIN + (px - PAD) / (W - 2 * PAD) * (XMAX - XMIN);
+        const y = PY(f(x)); px === PAD ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+      }
+      ctx.stroke();
+
+      // amplitude arrow at x where sin peaks closest to center
+      ctx.strokeStyle = 'rgba(244,63,94,0.6)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+      const xa = PX(0.4);
+      ctx.beginPath(); ctx.moveTo(xa, PY(D)); ctx.lineTo(xa, PY(D + A)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#fb7185'; ctx.textAlign = 'left';
+      ctx.fillText('A = ' + fmt(A), xa + 6, (PY(D) + PY(D + A)) / 2);
+    }
+
+    function renderFormula() {
+      const cs = C >= 0 ? '+' + fmt(C) : fmt(C);
+      const ds = D >= 0 ? '+' + fmt(D) : fmt(D);
+      katex.render(`y = ${fmt(A)}\\,\\sin\\!\\left(${fmt(B)}x ${cs}\\right) ${ds}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      document.getElementById('va').textContent = fmt(A);
+      document.getElementById('vbb').textContent = fmt(B);
+      document.getElementById('vc').textContent = fmt(C);
+      document.getElementById('vd').textContent = fmt(D);
+      document.getElementById('r-amp').textContent = fmt(Math.abs(A));
+      document.getElementById('r-period').textContent = fmt(2 * Math.PI / B);
+      document.getElementById('r-shift').textContent = fmt(-C / B);
+      document.getElementById('r-mid').textContent = `${fmt(D)}  [${fmt(D - Math.abs(A))}, ${fmt(D + Math.abs(A))}]`;
+      draw(); renderFormula();
+    }
+
+    document.getElementById('sa').oninput = e => { A = parseFloat(e.target.value); update(); };
+    document.getElementById('sbb').oninput = e => { B = parseFloat(e.target.value); update(); };
+    document.getElementById('sc').oninput = e => { C = parseFloat(e.target.value); update(); };
+    document.getElementById('sd').oninput = e => { D = parseFloat(e.target.value); update(); };
+    document.getElementById('reset').onclick = () => {
+      A = DEF.A; B = DEF.B; C = DEF.C; D = DEF.D;
+      document.getElementById('sa').value = A; document.getElementById('sbb').value = B;
+      document.getElementById('sc').value = C; document.getElementById('sd').value = D;
+      update();
+    };
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-sliders', gradient: 'from-rose-500 to-pink-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

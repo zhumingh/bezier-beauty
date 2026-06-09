@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在一堆乱点里画出趋势 · Line of Best Fit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">LINE OF BEST FIT</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">在一堆乱点里画出趋势</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">散点图与最佳拟合线</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">在图上点一点撒下数据，程序会自动找到那条“离所有点最近”的直线。每个点的竖直虚线就是它的“误差”。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-crosshair"
+                  style="aspect-ratio: 900 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-3">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <p class="text-[11px] text-slate-500" data-i18n="hint">空白处点一下 = 加一个点；拖动已有的点；点到点上 = 删掉它。</p>
+            <div class="flex flex-wrap gap-2">
+              <button id="rand" class="px-3 py-1.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors" data-i18n="btn_rand">随机来一组</button>
+              <button id="clear" class="px-3 py-1.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium transition-colors" data-i18n="btn_clear">清空</button>
+            </div>
+            <label class="flex items-center gap-x-2 text-xs text-slate-400 pt-1">
+              <input type="checkbox" id="showRes" checked> <span data-i18n="show_res">显示每个点的误差</span>
+            </label>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_n">点的个数</span><span id="r-n" class="font-mono text-slate-200"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_slope">斜率 m</span><span id="r-slope" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_int">截距 b</span><span id="r-int" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_r2">拟合优度 R²</span><span id="r-r2" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_sse">误差平方和</span><span id="r-sse" class="font-mono text-rose-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">最佳拟合线让“所有竖直误差的平方之和”最小。这就是最小二乘法，也是机器学习的雏形。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=jEEJNz0RK4Q" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/data/least-squares-regression.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.geogebra.org/m/xshf4emq" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · GeoGebra</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Simple_linear_regression" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "在一堆乱点里画出趋势 · HSSIM", nav_title: "画出趋势", nav_subtitle: "散点图与最佳拟合线",
+        kicker: "最佳拟合线", title: "在一堆乱点里画出趋势",
+        intro: "撒一把看起来乱七八糟的点，程序会自动找出那条“离所有点最近”的直线。每个点到直线的竖直距离就是它的误差——最佳拟合线让这些误差的平方和最小。",
+        formula_title: "现场公式",
+        controls: "控制台", hint: "空白处点一下 = 加一个点；可以拖动已有的点；点到点上 = 删掉它。",
+        btn_rand: "随机来一组", btn_clear: "清空", show_res: "显示每个点的误差",
+        readout_title: "当前战况", r_n: "点的个数", r_slope: "斜率 m", r_int: "截距 b", r_r2: "拟合优度 R²", r_sse: "误差平方和",
+        formal_name: "散点图与最佳拟合线",
+        concept_title: "说人话就是",
+        concept: "现实数据从来不会乖乖排成一条直线，但我们常常想用一条直线去“概括”它的趋势。怎么算“最好”的那条？看每个点到直线的竖直距离（残差），把它们各自平方再相加——这条让“平方和”最小的直线，就是最佳拟合线，这套方法叫最小二乘法。R² 衡量直线解释了多少趋势：越接近 1 越贴合。身高体重、学习时间与分数、广告与销量……还有今天所有机器学习的回归模型，根子都在这儿。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "把直线换成更复杂的函数，再加亿点点数据，最小二乘就长成了机器学习。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "最小二乘回归", ref_a_desc: "从残差讲到那条最优直线，思路非常清楚。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "最小二乘法", ref_b_desc: "手把手带你算一遍斜率和截距，例子很friendly。",
+        ref_c_tag: "动手玩 · GeoGebra", ref_c_title: "自己拖点试试", ref_c_desc: "在 GeoGebra 里加点、拖点，看拟合线怎么跟着动。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "一元线性回归（维基）", ref_d_desc: "公式推导、假设、R² 的含义，全套都在这儿。",
+      },
+      en: {
+        page_title: "Find the trend in a cloud of dots · HSSIM", nav_title: "The trend line", nav_subtitle: "scatter & best fit",
+        kicker: "LINE OF BEST FIT", title: "Find the trend in a cloud of dots",
+        intro: "Scatter some messy-looking points and the program finds the line that sits closest to all of them. Each point's vertical distance to the line is its error — the best-fit line makes the sum of those squared errors as small as possible.",
+        formula_title: "Live formula",
+        controls: "Controls", hint: "Click empty space = add a point; drag existing points; click a point = delete it.",
+        btn_rand: "Random batch", btn_clear: "Clear", show_res: "Show each point's error",
+        readout_title: "Live stats", r_n: "Number of points", r_slope: "Slope m", r_int: "Intercept b", r_r2: "Goodness of fit R²", r_sse: "Sum of squared error",
+        formal_name: "Scatter Plots & the Line of Best Fit",
+        concept_title: "OK, the gist",
+        concept: "Real data never lines up neatly, yet we often want one straight line to capture its trend. How do we define the 'best' one? Take each point's vertical distance to the line (its residual), square each, and add them up — the line that makes that total as small as possible is the line of best fit, and the method is called least squares. R² measures how much of the trend the line explains: closer to 1 means a tighter fit. Height vs weight, study time vs grades, ad spend vs sales — and every regression model in today's machine learning — all trace back to this.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Swap the straight line for fancier functions, add a ton more data, and least squares grows up into machine learning.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "Least-squares regression", ref_a_desc: "From residuals to the optimal line — a very clear walkthrough.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "The least-squares method", ref_b_desc: "Walks you through computing the slope and intercept with a friendly example.",
+        ref_c_tag: "PLAY · GeoGebra", ref_c_title: "Drag points yourself", ref_c_desc: "Add and drag points in GeoGebra and watch the fit line follow.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Simple linear regression", ref_d_desc: "Derivation, assumptions, and what R² really means, all in one place.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD = 50;
+    const XMIN = 0, XMAX = 10, YMIN = 0, YMAX = 10;
+    const PX = x => PAD + (x - XMIN) / (XMAX - XMIN) * (W - 2 * PAD);
+    const PY = y => H - PAD - (y - YMIN) / (YMAX - YMIN) * (H - 2 * PAD);
+    const wx = px => XMIN + (px - PAD) / (W - 2 * PAD) * (XMAX - XMIN);
+    const wy = py => YMIN + (H - PAD - py) / (H - 2 * PAD) * (YMAX - YMIN);
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+
+    let pts = [];
+    let showRes = true, drag = -1;
+
+    function randomBatch() {
+      pts = [];
+      const m = (Math.random() * 1.4 + 0.3) * (Math.random() < 0.5 ? -1 : 1);
+      const b = 5 - m * 5;
+      for (let i = 0; i < 9; i++) {
+        const x = 0.7 + i * 1.05 + (Math.random() - 0.5) * 0.5;
+        const y = m * x + b + (Math.random() - 0.5) * 3;
+        pts.push({ x: Math.max(0.3, Math.min(9.7, x)), y: Math.max(0.3, Math.min(9.7, y)) });
+      }
+    }
+
+    function fit() {
+      const n = pts.length;
+      if (n < 2) return null;
+      let sx = 0, sy = 0, sxx = 0, sxy = 0;
+      pts.forEach(p => { sx += p.x; sy += p.y; sxx += p.x*p.x; sxy += p.x*p.y; });
+      const denom = n*sxx - sx*sx;
+      if (Math.abs(denom) < 1e-9) return null;
+      const m = (n*sxy - sx*sy) / denom;
+      const b = (sy - m*sx) / n;
+      const my = sy / n;
+      let sse = 0, sst = 0;
+      pts.forEach(p => { const pred = m*p.x + b; sse += (p.y-pred)**2; sst += (p.y-my)**2; });
+      const r2 = sst < 1e-9 ? 1 : 1 - sse/sst;
+      return { m, b, sse, r2 };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let g = 0; g <= 10; g++) {
+        ctx.beginPath(); ctx.moveTo(PX(g), PAD); ctx.lineTo(PX(g), H - PAD); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(PAD, PY(g)); ctx.lineTo(W - PAD, PY(g)); ctx.stroke();
+      }
+      // axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(PAD, PY(0)); ctx.lineTo(W - PAD, PY(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX(0), PAD); ctx.lineTo(PX(0), H - PAD); ctx.stroke();
+
+      const f = fit();
+      if (f) {
+        // residuals
+        if (showRes) {
+          ctx.strokeStyle = 'rgba(244,63,94,0.55)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          pts.forEach(p => { const pred = f.m*p.x + f.b; ctx.beginPath(); ctx.moveTo(PX(p.x), PY(p.y)); ctx.lineTo(PX(p.x), PY(pred)); ctx.stroke(); });
+          ctx.setLineDash([]);
+        }
+        // best-fit line
+        ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3.5;
+        ctx.beginPath(); ctx.moveTo(PX(XMIN), PY(f.m*XMIN + f.b)); ctx.lineTo(PX(XMAX), PY(f.m*XMAX + f.b)); ctx.stroke();
+      }
+      // points
+      pts.forEach(p => {
+        ctx.fillStyle = '#a78bfa'; ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 8, 0, 7); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(PX(p.x), PY(p.y), 3, 0, 7); ctx.fill();
+      });
+    }
+
+    function renderFormula() {
+      const f = fit();
+      if (!f) { katex.render('\\hat{y} = m\\,x + b \\quad (\\text{需要至少 2 个点})', document.getElementById('f-main'), { throwOnError: false, displayMode: true }); return; }
+      const bs = f.b >= 0 ? '+ ' + fmt(f.b) : '- ' + fmt(-f.b);
+      katex.render(`\\hat{y} = ${fmt(f.m)}\\,x ${bs} \\qquad R^2 = ${fmt(f.r2)}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const f = fit();
+      document.getElementById('r-n').textContent = pts.length;
+      document.getElementById('r-slope').textContent = f ? fmt(f.m) : '—';
+      document.getElementById('r-int').textContent = f ? fmt(f.b) : '—';
+      document.getElementById('r-r2').textContent = f ? fmt(f.r2) : '—';
+      document.getElementById('r-sse').textContent = f ? fmt(f.sse) : '—';
+      draw(); renderFormula();
+    }
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+    }
+    function pick(p) { for (let i = 0; i < pts.length; i++) if (Math.hypot(p.x - PX(pts[i].x), p.y - PY(pts[i].y)) < 16) return i; return -1; }
+
+    let downPt = null, moved = false;
+    canvas.addEventListener('mousedown', e => { const p = pos(e); downPt = p; drag = pick(p); moved = false; });
+    window.addEventListener('mousemove', e => {
+      if (drag < 0 || !downPt) return;
+      const p = pos(e); moved = true;
+      pts[drag] = { x: Math.max(0.1, Math.min(9.9, wx(p.x))), y: Math.max(0.1, Math.min(9.9, wy(p.y))) };
+      update();
+    });
+    window.addEventListener('mouseup', e => {
+      if (!downPt) return;
+      const p = pos(e);
+      if (drag >= 0 && !moved) { pts.splice(drag, 1); update(); }       // click on a point = delete
+      else if (drag < 0 && p.x > PAD && p.x < W - PAD && p.y > PAD && p.y < H - PAD) {
+        pts.push({ x: wx(p.x), y: wy(p.y) }); update();                 // click empty = add
+      }
+      downPt = null; drag = -1;
+    });
+    canvas.addEventListener('touchstart', e => { const p = pos(e.touches[0]); downPt = p; drag = pick(p); moved = false; e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => {
+      if (drag < 0) return; const p = pos(e.touches[0]); moved = true;
+      pts[drag] = { x: Math.max(0.1, Math.min(9.9, wx(p.x))), y: Math.max(0.1, Math.min(9.9, wy(p.y))) };
+      update(); e.preventDefault();
+    }, { passive: false });
+    canvas.addEventListener('touchend', e => {
+      if (!downPt) return; const p = downPt;
+      if (drag >= 0 && !moved) { pts.splice(drag, 1); update(); }
+      else if (drag < 0) { pts.push({ x: wx(p.x), y: wy(p.y) }); update(); }
+      downPt = null; drag = -1;
+    });
+
+    document.getElementById('rand').onclick = () => { randomBatch(); update(); };
+    document.getElementById('clear').onclick = () => { pts = []; update(); };
+    document.getElementById('showRes').onchange = e => { showRes = e.target.checked; update(); };
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-arrow-trend-up', gradient: 'from-sky-500 to-blue-500' });
+    randomBatch(); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

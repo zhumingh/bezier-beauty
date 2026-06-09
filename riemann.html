@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用一堆小方块量出面积 · Riemann Sums</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">RIEMANN SUMS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">用一堆小方块量出面积</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">曲线下面积与黎曼和</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">曲线下面那块地有多大？用一排长方形去填，方块越细，加起来的总面积就越贴近真实答案。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="580"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 580;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="text-xs text-slate-400 mb-2" data-i18n="pick_fn">挑一条曲线</div>
+              <div class="flex flex-wrap gap-2">
+                <button data-fn="parab" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">0.4x²+0.3</button>
+                <button data-fn="sine" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">2+1.5sin x</button>
+                <button data-fn="root" class="fn-btn px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800">2√x</button>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400 mb-2" data-i18n="pick_mode">取哪边的高度</div>
+              <div class="flex gap-2">
+                <button data-mode="left" class="mode-btn flex-1 px-2 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="m_left">左端</button>
+                <button data-mode="mid" class="mode-btn flex-1 px-2 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="m_mid">中点</button>
+                <button data-mode="right" class="mode-btn flex-1 px-2 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="m_right">右端</button>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_n">方块数量 n</span><span id="vn" class="font-mono text-cyan-400"></span></div>
+              <input type="range" id="sn" min="1" max="80" step="1" value="8" class="w-full">
+            </div>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_approx">方块总面积（估计）</span><span id="r-approx" class="font-mono text-cyan-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_true">真实面积（积分）</span><span id="r-true" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_err">误差</span><span id="r-err" class="font-mono text-rose-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">把面积切成许多细长方形求和，就是黎曼和。当方块数 n → ∞，它趋于真正的定积分。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=rfG8ce4nNh0" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/calculus/integration-introduction.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="derivative.html" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">站内 · HSSIM</span><i class="fa-solid fa-arrow-right text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-chart-line text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Riemann_sum" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "用一堆小方块量出面积 · HSSIM", nav_title: "小方块量面积", nav_subtitle: "黎曼和与定积分",
+        kicker: "黎曼和 · 定积分", title: "用一堆小方块量出面积",
+        intro: "弯弯曲曲的曲线下面那块地，面积到底多大？没有现成公式，那就用一排长方形去把它填满，再把每块面积加起来。方块切得越细，估计就越接近真实面积——这就是积分的核心思路。",
+        formula_title: "现场公式",
+        controls: "控制台", pick_fn: "挑一条曲线", pick_mode: "取哪边的高度",
+        m_left: "左端", m_mid: "中点", m_right: "右端", param_n: "方块数量 n",
+        readout_title: "当前战况", r_approx: "方块总面积（估计）", r_true: "真实面积（积分）", r_err: "误差",
+        formal_name: "曲线下面积与黎曼和",
+        concept_title: "说人话就是",
+        concept: "求“直边图形”的面积很容易，可曲线下的面积没有现成公式。黎曼的招数很朴素：把区间切成 n 段，每段上立一个长方形，宽是 Δx、高取这一段某点的函数值，然后把 n 个 “高 × 宽” 加起来当作估计。用左端、右端还是中点取高度会略有差别，但只要不停把方块切细（n 越来越大），这些差别都会消失，总和收敛到同一个精确值——那个值就是定积分 ∫f(x)dx，也就是曲线下的真实面积。距离、体积、概率、做功……全是“某个东西在曲线下的面积”。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "积分是导数的逆操作——这条联系就是大名鼎鼎的微积分基本定理。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown", ref_a_title: "积分与面积", ref_a_desc: "把“面积是无穷多细条之和”讲到无比直观。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "积分入门", ref_b_desc: "从加方块到积分符号，循序渐进不吓人。",
+        ref_c_tag: "站内 · HSSIM", ref_c_title: "回去看导数", ref_c_desc: "积分的“反操作”就是导数——顺路再玩玩切线斜率。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "黎曼和（维基）", ref_d_desc: "左/右/中点和、上下和、收敛性，定义都在这里。",
+      },
+      en: {
+        page_title: "Measure area with a pile of bars · HSSIM", nav_title: "Bars → area", nav_subtitle: "Riemann sums & integrals",
+        kicker: "RIEMANN SUMS", title: "Measure area with a pile of bars",
+        intro: "How big is the patch of ground under a curvy line? There's no ready-made formula, so we pack it with a row of rectangles and add up their areas. The thinner the bars, the closer the estimate gets to the true area — that's the whole idea behind integration.",
+        formula_title: "Live formula",
+        controls: "Controls", pick_fn: "Pick a curve", pick_mode: "Take height from",
+        m_left: "Left", m_mid: "Midpoint", m_right: "Right", param_n: "Number of bars n",
+        readout_title: "Live stats", r_approx: "Total bar area (estimate)", r_true: "True area (integral)", r_err: "Error",
+        formal_name: "Area Under a Curve · Riemann Sums",
+        concept_title: "OK, the gist",
+        concept: "Finding the area of a straight-edged shape is easy, but the area under a curve has no off-the-shelf formula. Riemann's trick is humble: chop the interval into n slices, stand a rectangle on each one — width Δx, height the function value at some point in that slice — and add up all the 'height × width' pieces as an estimate. Taking the height at the left, right, or midpoint gives slightly different answers, but as you keep slicing thinner (n → ∞), those differences vanish and the total converges to one exact value — the definite integral ∫f(x)dx, the true area under the curve. Distance, volume, probability, work done — they're all 'the area under some curve'.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Integration undoes differentiation — that link is the celebrated Fundamental Theorem of Calculus.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown", ref_a_title: "Integrals & area", ref_a_desc: "Makes 'area = a sum of infinitely many thin strips' wonderfully intuitive.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Intro to integration", ref_b_desc: "From stacking bars to the integral sign, step by step and unscary.",
+        ref_c_tag: "ON SITE · HSSIM", ref_c_title: "Back to the derivative", ref_c_desc: "Integration's inverse is the derivative — go replay tangent slopes.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Riemann sum (Wikipedia)", ref_d_desc: "Left/right/midpoint sums, upper/lower sums, and convergence defined.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD_L = 55, PAD_R = 30, PAD_T = 30, PAD_B = 45;
+
+    const FNS = {
+      parab: { a: 0, b: 4, f: x => 0.4*x*x + 0.3,        F: x => 0.4*x*x*x/3 + 0.3*x,        tex: 'f(x)=0.4x^2+0.3' },
+      sine:  { a: 0, b: 2*Math.PI, f: x => 2 + 1.5*Math.sin(x), F: x => 2*x - 1.5*Math.cos(x), tex: 'f(x)=2+1.5\\sin x' },
+      root:  { a: 0, b: 4, f: x => 2*Math.sqrt(x),        F: x => (4/3)*Math.pow(x, 1.5),     tex: 'f(x)=2\\sqrt{x}' },
+    };
+    let fn = 'parab', mode = 'mid', N = 8;
+    const fmt = n => (Math.round(n * 1000) / 1000).toString();
+
+    function sample(i, dx, a) { return mode === 'left' ? a + i*dx : mode === 'right' ? a + (i+1)*dx : a + (i+0.5)*dx; }
+    function approxArea() {
+      const F = FNS[fn]; const dx = (F.b - F.a) / N; let s = 0;
+      for (let i = 0; i < N; i++) s += F.f(sample(i, dx, F.a)) * dx;
+      return s;
+    }
+    function trueArea() { const F = FNS[fn]; return F.F(F.b) - F.F(F.a); }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const F = FNS[fn], a = F.a, b = F.b;
+      let ymax = 0; for (let x = a; x <= b; x += (b-a)/200) ymax = Math.max(ymax, F.f(x)); ymax *= 1.12;
+      const PX = x => PAD_L + (x - a) / (b - a) * (W - PAD_L - PAD_R);
+      const PY = y => H - PAD_B - y / ymax * (H - PAD_T - PAD_B);
+      const dx = (b - a) / N;
+
+      // grid + axes
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1; ctx.fillStyle = '#64748b';
+      ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'right';
+      for (let g = 0; g <= 4; g++) { const v = ymax*g/4, y = PY(v); ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W-PAD_R, y); ctx.stroke(); ctx.fillText(fmt(v), PAD_L-8, y+4); }
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(PAD_L, PY(0)); ctx.lineTo(W-PAD_R, PY(0)); ctx.stroke();
+
+      // rectangles
+      for (let i = 0; i < N; i++) {
+        const xs = sample(i, dx, a), h = F.f(xs);
+        const x0 = PX(a + i*dx), x1 = PX(a + (i+1)*dx);
+        ctx.fillStyle = 'rgba(34,211,238,0.28)';
+        ctx.fillRect(x0, PY(h), x1 - x0, PY(0) - PY(h));
+        ctx.strokeStyle = 'rgba(34,211,238,0.85)'; ctx.lineWidth = N > 40 ? 0.4 : 1;
+        ctx.strokeRect(x0, PY(h), x1 - x0, PY(0) - PY(h));
+      }
+
+      // the curve
+      ctx.strokeStyle = '#34d399'; ctx.lineWidth = 3.5; ctx.beginPath();
+      for (let x = a; x <= b; x += (b-a)/400) { const px = PX(x), py = PY(F.f(x)); x === a ? ctx.moveTo(px, py) : ctx.lineTo(px, py); }
+      ctx.stroke();
+
+      // x ticks
+      ctx.fillStyle = '#64748b'; ctx.textAlign = 'center';
+      ctx.fillText(fmt(a), PX(a), H - PAD_B + 18); ctx.fillText(fmt(b), PX(b), H - PAD_B + 18);
+    }
+
+    function renderFormula() {
+      const F = FNS[fn];
+      katex.render(`\\displaystyle\\int_{${fmt(F.a)}}^{${fmt(F.b)}} ${F.tex.split('=')[1]}\\,dx \\;\\approx\\; \\sum_{i=1}^{${N}} f(x_i)\\,\\Delta x = ${fmt(approxArea())}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const ap = approxArea(), tr = trueArea();
+      document.getElementById('vn').textContent = N;
+      document.getElementById('r-approx').textContent = fmt(ap);
+      document.getElementById('r-true').textContent = fmt(tr);
+      document.getElementById('r-err').textContent = fmt(Math.abs(ap - tr));
+      draw(); renderFormula();
+    }
+
+    function refreshBtns() {
+      document.querySelectorAll('.fn-btn').forEach(b => { const on = b.dataset.fn === fn; b.classList.toggle('bg-violet-600', on); b.classList.toggle('text-white', on); b.classList.toggle('border-violet-500', on); b.classList.toggle('bg-slate-800', !on); });
+      document.querySelectorAll('.mode-btn').forEach(b => { const on = b.dataset.mode === mode; b.classList.toggle('bg-violet-600', on); b.classList.toggle('text-white', on); b.classList.toggle('border-violet-500', on); b.classList.toggle('bg-slate-800', !on); });
+    }
+    document.querySelectorAll('.fn-btn').forEach(b => b.onclick = () => { fn = b.dataset.fn; refreshBtns(); update(); });
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => { mode = b.dataset.mode; refreshBtns(); update(); });
+    document.getElementById('sn').oninput = e => { N = parseInt(e.target.value); update(); };
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-chart-column', gradient: 'from-cyan-500 to-teal-500' });
+    refreshBtns(); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

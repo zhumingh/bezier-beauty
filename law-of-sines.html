@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>不是直角也能算三角形 · Law of Sines & Cosines</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">LAW OF SINES &amp; COSINES</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">不是直角也能算三角形</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">正弦定理与余弦定理</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动三角形的三个顶点，看每条边、每个角实时变化——以及三个 边/sin角 的比值始终相等。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="sines_form">正弦定理：三个比值相等</div>
+                <div id="f-sines" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="cosines_form">余弦定理：算出角 C</div>
+                <div id="f-cosines" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">三条边</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400">a = BC</span><span id="r-a" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">b = CA</span><span id="r-b" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">c = AB</span><span id="r-c" class="font-mono text-sky-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="angles_title">三个角</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_angA">角 A · a/sinA</span><span id="r-A" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_angB">角 B · b/sinB</span><span id="r-B" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_angC">角 C · c/sinC</span><span id="r-C" class="font-mono text-sky-400"></span></li>
+              <li class="flex justify-between border-t border-slate-700 pt-2"><span class="text-slate-400" data-i18n="r_sum">三角之和</span><span id="r-sum" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">勾股定理只对直角三角形有效；正弦/余弦定理对任意三角形都成立。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=APNkWrD-U1k" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/trig-sine-law.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/trig-cosine-law.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">入门 · 余弦定理</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Law_of_sines" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "不是直角也能算三角形 · HSSIM", nav_title: "任意三角形", nav_subtitle: "正弦定理与余弦定理",
+        kicker: "正弦定理 · 余弦定理", title: "不是直角也能算三角形",
+        intro: "勾股定理只疼直角三角形。正弦定理和余弦定理对任何三角形都好使。拖动三个顶点，看三条边、三个角实时变化——而三个“边 ÷ sin(对角)”的比值，永远相等。",
+        formula_title: "现场公式", sines_form: "正弦定理：三个比值相等", cosines_form: "余弦定理：算出角 C",
+        readout_title: "三条边", angles_title: "三个角",
+        r_angA: "角 A · a/sinA", r_angB: "角 B · b/sinB", r_angC: "角 C · c/sinC", r_sum: "三角之和",
+        formal_name: "正弦定理与余弦定理",
+        concept_title: "说人话就是",
+        concept: "直角三角形有勾股定理撑腰，可现实里的三角形大多不是直角。这时两条定律登场：正弦定理说，每条边除以它“对面那个角”的正弦，三组结果完全相等（都等于外接圆直径 2R）——已知一边一角，就能推出其它边角。余弦定理则是勾股定理的升级版：c² = a² + b² − 2ab·cosC，那个多出来的 −2ab·cosC 正好修正了“角不是 90°”带来的偏差；当 C = 90° 时 cosC = 0，它立刻退化回勾股定理。测距、导航、工程里到处是它俩。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "GPS 定位、测量、天文……只要要从角度反推距离，就少不了这两条定律。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "正弦定理怎么用", ref_a_desc: "用具体例子演示已知两角一边、怎么求出其它边。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "正弦定理", ref_b_desc: "图文并茂，把 a/sinA = b/sinB 讲到一看就懂。",
+        ref_c_tag: "入门 · 余弦定理", ref_c_title: "余弦定理", ref_c_desc: "看它如何当“升级版勾股定理”，处理任意角。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "正弦定理（维基百科）", ref_d_desc: "证明、外接圆、各种变形，要深入就来这儿。",
+      },
+      en: {
+        page_title: "Solve any triangle · HSSIM", nav_title: "Any triangle", nav_subtitle: "law of sines & cosines",
+        kicker: "LAW OF SINES & COSINES", title: "Solve any triangle, not just right ones",
+        intro: "Pythagoras only loves right triangles. The laws of sines and cosines work on every triangle. Drag the three corners and watch the sides and angles update — while all three ratios 'side ÷ sin(opposite angle)' stay equal.",
+        formula_title: "Live formula", sines_form: "Law of sines: three equal ratios", cosines_form: "Law of cosines: solve angle C",
+        readout_title: "The three sides", angles_title: "The three angles",
+        r_angA: "Angle A · a/sinA", r_angB: "Angle B · b/sinB", r_angC: "Angle C · c/sinC", r_sum: "Angle sum",
+        formal_name: "Law of Sines & Law of Cosines",
+        concept_title: "OK, the gist",
+        concept: "Right triangles get Pythagoras, but most real triangles aren't right-angled. Two laws step in. The law of sines says every side divided by the sine of its opposite angle gives the exact same value (the circumcircle's diameter 2R) — so one side and one angle unlock the rest. The law of cosines is Pythagoras upgraded: c² = a² + b² − 2ab·cosC, where that extra −2ab·cosC term corrects for the angle not being 90°; when C = 90°, cosC = 0 and it collapses right back into Pythagoras. Surveying, navigation, and engineering lean on both constantly.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "GPS, surveying, astronomy — any time you turn angles into distances, these two laws show up.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "Using the law of sines", ref_a_desc: "Works a concrete example: given two angles and a side, find the rest.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "The law of sines", ref_b_desc: "Pictures and all — makes a/sinA = b/sinB click instantly.",
+        ref_c_tag: "READ · Cosine law", ref_c_title: "The law of cosines", ref_c_desc: "See how it acts as 'Pythagoras, upgraded' for any angle.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Law of sines (Wikipedia)", ref_d_desc: "Proof, circumcircle, and every variation when you want to dig deeper.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    // vertices in pixel space
+    let P = { A: { x: 200, y: 470 }, B: { x: 690, y: 470 }, C: { x: 470, y: 150 } };
+    let drag = null;
+    const SCALE = 0.02;                       // px → "units" for readable side lengths
+    const dist = (p, q) => Math.hypot(p.x - q.x, p.y - q.y);
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+    const COL = { A: '#fb7185', B: '#fbbf24', C: '#38bdf8' };
+
+    function geom() {
+      const a = dist(P.B, P.C), b = dist(P.C, P.A), c = dist(P.A, P.B);   // px
+      // angles via law of cosines
+      const angA = Math.acos((b*b + c*c - a*a) / (2*b*c));
+      const angB = Math.acos((a*a + c*c - b*b) / (2*a*c));
+      const angC = Math.acos((a*a + b*b - c*c) / (2*a*b));
+      return { a, b, c, angA, angB, angC };
+    }
+
+    function midAngleDir(v, p1, p2) {
+      // unit vector bisecting the two edges from vertex v (for placing the arc/label inward)
+      const u1 = { x: p1.x - v.x, y: p1.y - v.y }, u2 = { x: p2.x - v.x, y: p2.y - v.y };
+      const n1 = Math.hypot(u1.x, u1.y), n2 = Math.hypot(u2.x, u2.y);
+      const bx = u1.x/n1 + u2.x/n2, by = u1.y/n1 + u2.y/n2;
+      const nb = Math.hypot(bx, by) || 1;
+      return { x: bx/nb, y: by/nb };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const g = geom();
+
+      // filled triangle
+      ctx.beginPath();
+      ctx.moveTo(P.A.x, P.A.y); ctx.lineTo(P.B.x, P.B.y); ctx.lineTo(P.C.x, P.C.y); ctx.closePath();
+      ctx.fillStyle = 'rgba(56,189,248,0.08)'; ctx.fill();
+
+      // edges colored by opposite vertex
+      const edge = (p, q, col) => { ctx.strokeStyle = col; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); };
+      edge(P.B, P.C, COL.A);   // side a opposite A
+      edge(P.C, P.A, COL.B);   // side b opposite B
+      edge(P.A, P.B, COL.C);   // side c opposite C
+
+      // side labels at midpoints
+      ctx.font = 'bold 16px -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const lbl = (p, q, txt, col) => { ctx.fillStyle = col; ctx.fillText(txt, (p.x+q.x)/2, (p.y+q.y)/2 - 14); };
+      lbl(P.B, P.C, 'a=' + fmt(g.a*SCALE), COL.A);
+      lbl(P.C, P.A, 'b=' + fmt(g.b*SCALE), COL.B);
+      lbl(P.A, P.B, 'c=' + fmt(g.c*SCALE), COL.C);
+
+      // angle arcs + degree labels
+      const arc = (v, p1, p2, ang, col, name) => {
+        const a1 = Math.atan2(p1.y - v.y, p1.x - v.x), a2 = Math.atan2(p2.y - v.y, p2.x - v.x);
+        ctx.strokeStyle = col; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(v.x, v.y, 34, a1, a2, crossesShorter(a1, a2)); ctx.stroke();
+        const d = midAngleDir(v, p1, p2);
+        ctx.fillStyle = col; ctx.font = 'bold 14px -apple-system, sans-serif';
+        ctx.fillText(name + (Math.round(ang*180/Math.PI)) + '°', v.x + d.x*60, v.y + d.y*60);
+      };
+      arc(P.A, P.B, P.C, g.angA, COL.A, 'A=');
+      arc(P.B, P.C, P.A, g.angB, COL.B, 'B=');
+      arc(P.C, P.A, P.B, g.angC, COL.C, 'C=');
+
+      // vertices
+      Object.entries(P).forEach(([k, v]) => {
+        ctx.fillStyle = COL[k]; ctx.beginPath(); ctx.arc(v.x, v.y, 11, 0, 7); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(v.x, v.y, 4.5, 0, 7); ctx.fill();
+      });
+    }
+    // pick arc sweep direction that draws the interior (smaller) angle
+    function crossesShorter(a1, a2) {
+      let d = a2 - a1; while (d < -Math.PI) d += 2*Math.PI; while (d > Math.PI) d -= 2*Math.PI;
+      return d < 0;
+    }
+
+    function renderFormulas() {
+      const g = geom();
+      const a = g.a*SCALE, b = g.b*SCALE, c = g.c*SCALE;
+      const r = x => fmt(x);
+      katex.render(
+        `\\dfrac{a}{\\sin A}=\\dfrac{b}{\\sin B}=\\dfrac{c}{\\sin C}\\;\\Rightarrow\\; ${r(a/Math.sin(g.angA))}=${r(b/Math.sin(g.angB))}=${r(c/Math.sin(g.angC))}`,
+        document.getElementById('f-sines'), { throwOnError: false, displayMode: true });
+      katex.render(
+        `c^2=a^2+b^2-2ab\\cos C \\;\\Rightarrow\\; C=${Math.round(g.angC*180/Math.PI)}^\\circ`,
+        document.getElementById('f-cosines'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const g = geom();
+      const a = g.a*SCALE, b = g.b*SCALE, c = g.c*SCALE;
+      document.getElementById('r-a').textContent = fmt(a);
+      document.getElementById('r-b').textContent = fmt(b);
+      document.getElementById('r-c').textContent = fmt(c);
+      document.getElementById('r-A').textContent = `${Math.round(g.angA*180/Math.PI)}°  ·  ${fmt(a/Math.sin(g.angA))}`;
+      document.getElementById('r-B').textContent = `${Math.round(g.angB*180/Math.PI)}°  ·  ${fmt(b/Math.sin(g.angB))}`;
+      document.getElementById('r-C').textContent = `${Math.round(g.angC*180/Math.PI)}°  ·  ${fmt(c/Math.sin(g.angC))}`;
+      document.getElementById('r-sum').textContent = `${Math.round((g.angA+g.angB+g.angC)*180/Math.PI)}°`;
+      draw(); renderFormulas();
+    }
+
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: (e.clientX - rect.left) * (W / rect.width), y: (e.clientY - rect.top) * (H / rect.height) };
+    }
+    function pick(p) {
+      for (const k of ['A', 'B', 'C']) if (Math.hypot(p.x - P[k].x, p.y - P[k].y) < 26) return k;
+      return null;
+    }
+    function moveTo(p) {
+      if (!drag) return;
+      P[drag].x = Math.max(20, Math.min(W - 20, p.x));
+      P[drag].y = Math.max(20, Math.min(H - 20, p.y));
+      update();
+    }
+    canvas.addEventListener('mousedown', e => { drag = pick(pos(e)); });
+    window.addEventListener('mousemove', e => { if (drag) moveTo(pos(e)); });
+    window.addEventListener('mouseup', () => drag = null);
+    canvas.addEventListener('touchstart', e => { drag = pick(pos(e.touches[0])); if (drag) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (drag) { moveTo(pos(e.touches[0])); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => drag = null);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-ruler-combined', gradient: 'from-amber-500 to-yellow-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

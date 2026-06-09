@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每个数都是头顶俩数之和 · Pascal's Triangle</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">PASCAL'S TRIANGLE</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">每个数都是头顶俩数之和</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">杨辉三角与二项式定理</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">点任意一个数，看它怎么由头顶那两个数相加而来。再打开“奇偶上色”，谢尔宾斯基三角形就冒出来了。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula overflow-x-auto"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_rows">行数</span><span id="vr" class="font-mono text-indigo-400"></span></div>
+              <input type="range" id="sr" min="3" max="16" step="1" value="9" class="w-full">
+            </div>
+            <label class="flex items-center gap-x-2 text-xs text-slate-400">
+              <input type="checkbox" id="mod2"> <span data-i18n="mod2">奇偶上色（→ 谢尔宾斯基）</span>
+            </label>
+            <p class="text-[11px] text-slate-500" data-i18n="hint">提示：点任意一个数，看它的两个“父母”高亮。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_cell">选中的数 C(n,k)</span><span id="r-cell" class="font-mono text-indigo-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_parents">= 头顶两数之和</span><span id="r-parents" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_rowsum">该行之和 = 2ⁿ</span><span id="r-rowsum" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">第 n 行第 k 个数就是组合数 C(n,k)，也正好是 (a+b)ⁿ 展开后 aⁿ⁻ᵏbᵏ 前面的系数。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=0iMtlus-afo" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · TED-Ed</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/pascals-triangle.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="sierpinski.html" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">站内 · HSSIM</span><i class="fa-solid fa-arrow-right text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-shapes text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Pascal%27s_triangle" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "每个数都是头顶俩数之和 · HSSIM", nav_title: "杨辉三角", nav_subtitle: "Pascal's triangle",
+        kicker: "杨辉三角 · 二项式", title: "每个数都是头顶俩数之和",
+        intro: "杨辉三角（西方叫 Pascal 三角）的规矩简单到离谱：每个数都等于它头顶左上 + 右上两个数之和，两条斜边永远是 1。点任意一个数，看它的两个“父母”高亮起来。",
+        formula_title: "现场公式（选中行的二项式展开）",
+        controls: "控制台", param_rows: "行数", mod2: "奇偶上色（→ 谢尔宾斯基）", hint: "提示：点任意一个数，看它的两个“父母”高亮。",
+        readout_title: "当前战况", r_cell: "选中的数 C(n,k)", r_parents: "= 头顶两数之和", r_rowsum: "该行之和 = 2ⁿ",
+        formal_name: "杨辉三角与二项式定理",
+        concept_title: "说人话就是",
+        concept: "顶上写个 1，往下每个位置都填“左上 + 右上”，斜边补 1——这就造出了整座三角。它一身都是宝：第 n 行第 k 个数正是组合数 C(n,k)，也就是“从 n 个里挑 k 个”的方法数；同一个数还是 (a+b)ⁿ 展开后各项的系数（二项式定理）；每一行加起来恰好是 2ⁿ；而把奇数涂黑、偶数留白，整座三角竟然变成谢尔宾斯基分形。一个加法规则，藏着组合、代数、分形三件大礼。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "组合数、概率、二项式、分形……这座小三角是它们共同的老家。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · TED-Ed", ref_a_title: "杨三角的秘密", ref_a_desc: "几分钟带你看遍这座三角里藏着的惊人规律。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "Pascal 三角", ref_b_desc: "把规律、组合、二项式一条条列清楚，例子很多。",
+        ref_c_tag: "站内 · HSSIM", ref_c_title: "去看谢尔宾斯基", ref_c_desc: "奇偶上色出现的那个分形，去混沌游戏里再玩一次。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "杨辉三角（维基）", ref_d_desc: "历史、性质、各种隐藏数列，深挖就来这儿。",
+      },
+      en: {
+        page_title: "Every number is the two above it · HSSIM", nav_title: "Pascal's triangle", nav_subtitle: "the addition triangle",
+        kicker: "PASCAL'S TRIANGLE", title: "Every number = the two above it",
+        intro: "Pascal's triangle (known in China as Yang Hui's triangle) follows one absurdly simple rule: every number equals the sum of the two just above it (upper-left + upper-right), and the edges are always 1. Click any number to light up its two 'parents'.",
+        formula_title: "Live formula (binomial expansion of the selected row)",
+        controls: "Controls", param_rows: "Rows", mod2: "Color by parity (→ Sierpinski)", hint: "Tip: click any number to highlight its two parents.",
+        readout_title: "Live stats", r_cell: "Selected number C(n,k)", r_parents: "= sum of the two above", r_rowsum: "Row sum = 2ⁿ",
+        formal_name: "Pascal's Triangle & the Binomial Theorem",
+        concept_title: "OK, the gist",
+        concept: "Write a 1 at the top, then fill every spot below with 'upper-left + upper-right', padding the edges with 1 — that's the whole triangle. It's loaded with treasure: the k-th number in row n is exactly the binomial coefficient C(n,k), the number of ways to choose k things from n; the same numbers are the coefficients in the expansion of (a+b)ⁿ (the binomial theorem); each row adds up to exactly 2ⁿ; and if you paint the odd numbers black and leave evens white, the whole triangle becomes the Sierpinski fractal. One addition rule, three gifts: combinatorics, algebra, and fractals.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Combinations, probability, binomials, fractals — this little triangle is their shared hometown.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · TED-Ed", ref_a_title: "Secrets of Pascal's triangle", ref_a_desc: "A few minutes touring the surprising patterns hiding in the triangle.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Pascal's triangle", ref_b_desc: "Lays out the patterns, combinations, and binomials with lots of examples.",
+        ref_c_tag: "ON SITE · HSSIM", ref_c_title: "See the Sierpinski", ref_c_desc: "That fractal from the parity coloring — go play it again as a chaos game.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Pascal's triangle (Wikipedia)", ref_d_desc: "History, properties, and every hidden sequence when you want to dig.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    let rows = 9, mod2 = false;
+    let sel = { n: 4, k: 2 };
+    let tri = [];
+
+    function build() {
+      tri = [];
+      for (let n = 0; n < rows; n++) {
+        const row = [];
+        for (let k = 0; k <= n; k++) row.push(k === 0 || k === n ? 1 : tri[n-1][k-1] + tri[n-1][k]);
+        tri.push(row);
+      }
+      if (sel.n >= rows) sel = { n: rows - 1, k: Math.floor((rows - 1) / 2) };
+    }
+
+    function layout() {
+      const top = 40, bottom = H - 30;
+      const dy = (bottom - top) / Math.max(1, rows - 1);
+      const r = Math.min(26, dy * 0.42, (W * 0.92 / rows) * 0.46);
+      const dx = Math.min(dy * 1.0, (W - 80) / rows);
+      return { top, dy, r, dx };
+    }
+    function cellPos(n, k) {
+      const L = layout();
+      const y = L.top + n * L.dy;
+      const x = W / 2 + (k - n / 2) * L.dx;
+      return { x, y, r: L.r };
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const L = layout();
+      for (let n = 0; n < rows; n++) {
+        for (let k = 0; k <= n; k++) {
+          const { x, y, r } = cellPos(n, k);
+          const val = tri[n][k];
+          const odd = val % 2 === 1;
+          const isSel = n === sel.n && k === sel.k;
+          const isParent = n === sel.n - 1 && (k === sel.k - 1 || k === sel.k);
+          let fill = '#1e293b';
+          if (mod2) fill = odd ? '#6366f1' : 'rgba(99,102,241,0.08)';
+          if (isParent) fill = '#b45309';
+          if (isSel) fill = '#6366f1';
+          ctx.fillStyle = fill;
+          ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+          if (isSel || isParent) { ctx.strokeStyle = isSel ? '#a5b4fc' : '#fbbf24'; ctx.lineWidth = 2.5; ctx.stroke(); }
+          // number
+          if (!mod2 || r > 13) {
+            ctx.fillStyle = (mod2 && !odd) ? '#64748b' : '#fff';
+            ctx.font = `${Math.max(9, Math.min(15, r * 0.8))}px -apple-system, sans-serif`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(val, x, y);
+          }
+        }
+      }
+      // connector from parents to selected
+      if (sel.n > 0) {
+        const c = cellPos(sel.n, sel.k);
+        [sel.k - 1, sel.k].forEach(pk => {
+          if (pk < 0 || pk > sel.n - 1) return;
+          const p = cellPos(sel.n - 1, pk);
+          ctx.strokeStyle = 'rgba(251,191,36,0.7)'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(c.x, c.y); ctx.stroke();
+        });
+      }
+    }
+
+    function renderFormula() {
+      const n = sel.n, row = tri[n];
+      if (n <= 9) {
+        let terms = [];
+        for (let k = 0; k <= n; k++) {
+          const c = row[k] === 1 ? '' : row[k];
+          const ap = n - k === 0 ? '' : (n - k === 1 ? 'a' : `a^{${n-k}}`);
+          const bp = k === 0 ? '' : (k === 1 ? 'b' : `b^{${k}}`);
+          let term = `${c}${ap}${bp}`; if (term === '') term = '1';
+          terms.push(term);
+        }
+        katex.render(`(a+b)^{${n}} = ${terms.join(' + ')}`, document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+      } else {
+        katex.render(`\\sum_{k=0}^{${n}} \\binom{${n}}{k} a^{${n}-k} b^{k}, \\quad \\text{row sum} = 2^{${n}} = ${Math.pow(2, n)}`,
+          document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+      }
+    }
+
+    function update() {
+      build();
+      const n = sel.n, k = sel.k, val = tri[n][k];
+      document.getElementById('vr').textContent = rows;
+      document.getElementById('r-cell').textContent = `C(${n},${k}) = ${val}`;
+      const p1 = (k - 1 >= 0 && n - 1 >= 0) ? tri[n-1][k-1] : 0;
+      const p2 = (k <= n - 1 && n - 1 >= 0) ? tri[n-1][k] : 0;
+      document.getElementById('r-parents').textContent = n === 0 ? '—（顶点）' : `${p1} + ${p2} = ${p1 + p2}`;
+      document.getElementById('r-rowsum').textContent = `${tri[n].reduce((a,b)=>a+b,0)} = 2^${n}`;
+      draw(); renderFormula();
+    }
+
+    document.getElementById('sr').oninput = e => { rows = parseInt(e.target.value); update(); };
+    document.getElementById('mod2').onchange = e => { mod2 = e.target.checked; update(); };
+
+    function pickCell(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      for (let n = 0; n < rows; n++) for (let k = 0; k <= n; k++) {
+        const { x, y, r } = cellPos(n, k);
+        if (Math.hypot(mx - x, my - y) < r + 2) { sel = { n, k }; update(); return; }
+      }
+    }
+    canvas.addEventListener('click', pickCell);
+    canvas.addEventListener('touchstart', e => { pickCell(e.touches[0]); e.preventDefault(); }, { passive: false });
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-sort-down', gradient: 'from-indigo-500 to-violet-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

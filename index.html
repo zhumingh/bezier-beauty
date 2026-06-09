@@ -6,6 +6,7 @@
   <title>HSSIM · 交互式数学课堂 · Interactive Math Lessons</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -206,6 +207,66 @@
         formal: { zh: "圆锥曲线", en: "Conic Sections" },
         zh: { title: "切一刀，切出四种曲线", desc: "同一个圆锥，切的角度不同，切口就是圆、椭圆、抛物线或双曲线。" },
         en: { title: "One cut, four curves", desc: "One cone, different cut angles — circle, ellipse, parabola, or hyperbola." },
+      },
+      {
+        file: "exponential.html", icon: "fa-rocket", grad: "from-orange-500 to-red-500", tag: "tag_algebra",
+        formal: { zh: "指数增长与复利", en: "Exponential Growth & Compound Interest" },
+        zh: { title: "一开始慢吞吞，后来吓死人", desc: "直线和指数赛跑，前半程不分上下，后半程指数直接起飞、把直线甩到看不见。" },
+        en: { title: "Starts slow, then terrifying", desc: "Race a straight line against an exponential. Neck-and-neck early — then it takes off and leaves the line in the dust." },
+      },
+      {
+        file: "logarithms.html", icon: "fa-magnifying-glass-chart", grad: "from-teal-500 to-emerald-500", tag: "tag_algebra",
+        formal: { zh: "对数与对数刻度", en: "Logarithms & the Log Scale" },
+        zh: { title: "把天文数字塞进一把尺子", desc: "对数是指数的反操作。换上对数刻度，从蚂蚁到银河系居然能挤在同一行。" },
+        en: { title: "Squeeze huge numbers onto one ruler", desc: "A log undoes an exponent. Flip to a log scale and ants-to-galaxies all fit on one line." },
+      },
+      {
+        file: "sine-mixer.html", icon: "fa-sliders", grad: "from-rose-500 to-pink-500", tag: "tag_trig",
+        formal: { zh: "正弦波参数 A·sin(Bx+C)+D", en: "Sine Wave Parameters A·sin(Bx+C)+D" },
+        zh: { title: "波浪调音台", desc: "四个旋钮：高矮(A)、快慢(B)、左右(C)、上下(D)。拧一拧，同一条波浪随你捏。" },
+        en: { title: "The wave mixing board", desc: "Four knobs — tall (A), fast (B), slide (C), lift (D). Twist them and reshape one wave any way you like." },
+      },
+      {
+        file: "law-of-sines.html", icon: "fa-ruler-combined", grad: "from-amber-500 to-yellow-500", tag: "tag_trig",
+        formal: { zh: "正弦定理与余弦定理", en: "Law of Sines & Law of Cosines" },
+        zh: { title: "不是直角也能算三角形", desc: "勾股定理只管直角？这两条定律对任何三角形都好使——拖动顶点，边和角自己算给你看。" },
+        en: { title: "Solve any triangle, not just right ones", desc: "Pythagoras only loves right angles. These two laws crack every triangle — drag a corner and watch sides and angles solve themselves." },
+      },
+      {
+        file: "best-fit.html", icon: "fa-arrow-trend-up", grad: "from-sky-500 to-blue-500", tag: "tag_stats",
+        formal: { zh: "散点图与最佳拟合线", en: "Scatter Plots & the Line of Best Fit" },
+        zh: { title: "在一堆乱点里画出趋势", desc: "撒一把点，让程序找到那条离所有点最近的直线。这就是机器学习最朴素的祖先。" },
+        en: { title: "Find the trend in a cloud of dots", desc: "Scatter some points and let it snap the closest line through them all. This is machine learning's humble grandparent." },
+      },
+      {
+        file: "std-dev.html", icon: "fa-arrows-left-right-to-line", grad: "from-fuchsia-500 to-purple-500", tag: "tag_stats",
+        formal: { zh: "标准差与离散程度", en: "Standard Deviation & Spread" },
+        zh: { title: "平均数一样，差别可大了", desc: "两组数平均分相同，一组挤成一团、一组到处乱跑。标准差就是用来量这个“乱”的。" },
+        en: { title: "Same average, totally different vibe", desc: "Two data sets, identical mean — one tightly packed, one all over the place. Standard deviation measures that 'spread'." },
+      },
+      {
+        file: "pascal.html", icon: "fa-sort-down", grad: "from-indigo-500 to-violet-500", tag: "tag_stats",
+        formal: { zh: "杨辉三角与二项式定理", en: "Pascal's Triangle & the Binomial Theorem" },
+        zh: { title: "每个数都是头顶俩数之和", desc: "一个简单到不行的加法三角，却藏着组合数、二项式展开，甚至谢尔宾斯基分形。" },
+        en: { title: "Every number = the two above it", desc: "A stupidly simple addition triangle that secretly hides combinations, binomial expansions, even the Sierpinski fractal." },
+      },
+      {
+        file: "sequences.html", icon: "fa-stairs", grad: "from-lime-500 to-green-500", tag: "tag_algebra",
+        formal: { zh: "等差数列与等比数列", en: "Arithmetic & Geometric Sequences" },
+        zh: { title: "每次加一点，还是乘一点?", desc: "每步加固定数是等差，每步乘固定数是等比——一个稳稳上楼梯，一个坐火箭。" },
+        en: { title: "Keep adding, or keep multiplying?", desc: "Add the same amount each step (arithmetic) vs multiply by the same factor (geometric) — one climbs stairs, one rides a rocket." },
+      },
+      {
+        file: "riemann.html", icon: "fa-chart-column", grad: "from-cyan-500 to-teal-500", tag: "tag_algebra",
+        formal: { zh: "曲线下面积与黎曼和", en: "Area Under a Curve · Riemann Sums" },
+        zh: { title: "用一堆小方块量出面积", desc: "弯弯曲曲的曲线下面有多少地方？塞满细长方块，越塞越细，就越接近真实面积。" },
+        en: { title: "Measure area with a pile of bars", desc: "How much space sits under a curvy line? Pack it with skinny rectangles — thinner bars, closer to the true area." },
+      },
+      {
+        file: "matrix-grid.html", icon: "fa-table-cells", grad: "from-violet-500 to-indigo-500", tag: "tag_geometry",
+        formal: { zh: "2×2 矩阵对网格的变换", en: "2×2 Matrix Transformations of a Grid" },
+        zh: { title: "四个数字，扭曲整个空间", desc: "一个 2×2 矩阵就能把整张方格纸旋转、拉伸、剪切。游戏和图形引擎全靠它。" },
+        en: { title: "Four numbers warp all of space", desc: "A single 2×2 matrix can rotate, stretch, and shear an entire grid. Games and graphics engines run on this." },
       },
     ];
 

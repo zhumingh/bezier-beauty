@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每次加一点，还是乘一点 · Sequences</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">SEQUENCES &amp; SERIES</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">每次加一点，还是乘一点？</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">等差数列与等比数列</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">每步加固定数 → 等差（稳稳上楼梯）；每步乘固定倍 → 等比（坐火箭）。切换两种模式，看每一项和累加和怎么长。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="560"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 560;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="nth_form">第 n 项</div>
+                <div id="f-nth" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="sum_form">前 n 项之和</div>
+                <div id="f-sum" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div class="flex gap-2">
+              <button data-mode="arith" class="mode-btn flex-1 px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="mode_arith">等差（加）</button>
+              <button data-mode="geo" class="mode-btn flex-1 px-3 py-1.5 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="mode_geo">等比（乘）</button>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_a1">首项 a₁</span><span id="va1" class="font-mono text-lime-400"></span></div>
+              <input type="range" id="sa1" min="1" max="10" step="0.5" value="2" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span id="step-label" data-i18n="param_d">公差 d</span><span id="vstep" class="font-mono text-amber-400"></span></div>
+              <input type="range" id="sstep" min="-4" max="4" step="0.5" value="2" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_n">项数 n</span><span id="vn" class="font-mono text-emerald-400"></span></div>
+              <input type="range" id="sn" min="2" max="15" step="1" value="8" class="w-full">
+            </div>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_seq">数列前几项</span><span id="r-seq" class="font-mono text-lime-400 text-right text-xs"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_last">第 n 项 aₙ</span><span id="r-last" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_sum">前 n 项和 Sₙ</span><span id="r-sum" class="font-mono text-emerald-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">等差是“匀速”——每项差固定；等比是“按比例”——每项倍数固定，所以会越长越快。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=XHViaA4hVRE" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/sequences-series.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="exponential.html" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">站内 · HSSIM</span><i class="fa-solid fa-arrow-right text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-rocket text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "每次加一点，还是乘一点 · HSSIM", nav_title: "加 or 乘", nav_subtitle: "等差与等比数列",
+        kicker: "等差 · 等比", title: "每次加一点，还是乘一点？",
+        intro: "等差数列：每一项都比上一项多固定的 d，像匀速上楼梯。等比数列：每一项都是上一项的固定倍数 r，像坐火箭。切换两种模式，亲眼看每一项（柱子）和累加和（折线）怎么长。",
+        formula_title: "现场公式", nth_form: "第 n 项", sum_form: "前 n 项之和",
+        controls: "控制台", mode_arith: "等差（加）", mode_geo: "等比（乘）",
+        param_a1: "首项 a₁", param_d: "公差 d", param_r: "公比 r", param_n: "项数 n",
+        readout_title: "当前战况", r_seq: "数列前几项", r_last: "第 n 项 aₙ", r_sum: "前 n 项和 Sₙ",
+        formal_name: "等差数列与等比数列",
+        concept_title: "说人话就是",
+        concept: "数列就是按规律排好的一串数。两种最常见：等差数列每次“加”同一个数 d，所以 aₙ = a₁ + (n−1)d，画成柱子是匀速变高，累加和是一条向上的抛物线；等比数列每次“乘”同一个数 r，所以 aₙ = a₁·rⁿ⁻¹，只要 r>1 就越长越猛——这正是复利和指数增长的源头。把它们加起来就成了“级数”：等差和 = 项数 × 平均值，等比和有个漂亮公式 a₁(1−rⁿ)/(1−r)。存钱、还贷、人口、折纸……背后都是这两串数。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "把一张纸对折 42 次就能够到月球——那就是等比数列的疯狂。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "等差与等比", ref_a_desc: "把两种数列的通项和求和公式讲得清清楚楚。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "数列与级数", ref_b_desc: "从找规律到求和公式，例子多、节奏稳。",
+        ref_c_tag: "站内 · HSSIM", ref_c_title: "去看指数增长", ref_c_desc: "等比数列长大就是指数——顺路去看那条吓人的曲线。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "等比级数（维基）", ref_d_desc: "求和公式怎么来的、什么时候收敛，都在这里。",
+      },
+      en: {
+        page_title: "Keep adding, or keep multiplying · HSSIM", nav_title: "Add or multiply", nav_subtitle: "arithmetic & geometric",
+        kicker: "SEQUENCES & SERIES", title: "Keep adding, or keep multiplying?",
+        intro: "Arithmetic sequence: each term is a fixed amount d more than the last — like climbing stairs at a steady pace. Geometric sequence: each term is a fixed multiple r of the last — like a rocket. Switch modes and watch the terms (bars) and the running sum (line) grow.",
+        formula_title: "Live formula", nth_form: "The n-th term", sum_form: "Sum of the first n terms",
+        controls: "Controls", mode_arith: "Arithmetic (+)", mode_geo: "Geometric (×)",
+        param_a1: "First term a₁", param_d: "Common difference d", param_r: "Common ratio r", param_n: "Number of terms n",
+        readout_title: "Live stats", r_seq: "First terms", r_last: "n-th term aₙ", r_sum: "Sum Sₙ",
+        formal_name: "Arithmetic & Geometric Sequences",
+        concept_title: "OK, the gist",
+        concept: "A sequence is just a list of numbers built by a rule. The two classics: an arithmetic sequence adds the same number d each time, so aₙ = a₁ + (n−1)d — the bars rise at a steady pace and the running sum traces an upward parabola. A geometric sequence multiplies by the same number r each time, so aₙ = a₁·rⁿ⁻¹ — and if r>1 it explodes, which is exactly the source of compound interest and exponential growth. Add the terms up and you get a 'series': the arithmetic sum is terms × average, and the geometric sum has a tidy formula a₁(1−rⁿ)/(1−r). Saving, loans, populations, paper-folding — all run on these two lists.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Fold a sheet of paper 42 times and it reaches the Moon — that's the madness of a geometric sequence.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "Arithmetic & geometric", ref_a_desc: "Lays out the n-th-term and sum formulas for both, crisply.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Sequences and series", ref_b_desc: "From spotting the pattern to the sum formulas, with plenty of examples.",
+        ref_c_tag: "ON SITE · HSSIM", ref_c_title: "See exponential growth", ref_c_desc: "A geometric sequence grown up is just exponential — go meet that scary curve.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Geometric series (Wikipedia)", ref_d_desc: "Where the sum formula comes from and when it converges.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD_L = 60, PAD_R = 30, PAD_T = 30, PAD_B = 50;
+
+    let mode = 'arith', a1 = 2, step = 2, N = 8;
+    const fmt = n => { const r = Math.round(n * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString(); };
+
+    function terms() {
+      const t = [];
+      for (let i = 0; i < N; i++) t.push(mode === 'arith' ? a1 + i * step : a1 * Math.pow(step, i));
+      return t;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const t = terms();
+      const partial = []; let run = 0; t.forEach(v => { run += v; partial.push(run); });
+      const vals = t.concat(partial);
+      const vmax = Math.max(1, ...vals), vmin = Math.min(0, ...vals);
+      const PX = i => PAD_L + (i + 0.5) / N * (W - PAD_L - PAD_R);
+      const PY = v => H - PAD_B - (v - vmin) / (vmax - vmin) * (H - PAD_T - PAD_B);
+      const bw = (W - PAD_L - PAD_R) / N * 0.55;
+
+      // grid + y labels
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1; ctx.fillStyle = '#64748b';
+      ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'right';
+      for (let g = 0; g <= 5; g++) { const v = vmin + (vmax - vmin) * g / 5, y = PY(v); ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W - PAD_R, y); ctx.stroke(); ctx.fillText(fmt(v), PAD_L - 8, y + 4); }
+      // zero axis
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(PAD_L, PY(0)); ctx.lineTo(W - PAD_R, PY(0)); ctx.stroke();
+
+      // term bars (lime)
+      t.forEach((v, i) => {
+        ctx.fillStyle = 'rgba(132,204,22,0.85)';
+        const y0 = PY(0), y1 = PY(v);
+        ctx.fillRect(PX(i) - bw / 2, Math.min(y0, y1), bw, Math.abs(y1 - y0));
+        ctx.fillStyle = '#bef264'; ctx.textAlign = 'center';
+        ctx.fillText(fmt(v), PX(i), Math.min(y0, y1) - 6);
+      });
+      // x labels
+      ctx.fillStyle = '#64748b';
+      t.forEach((v, i) => ctx.fillText('a' + (i + 1), PX(i), H - PAD_B + 20));
+
+      // running sum (emerald line)
+      ctx.strokeStyle = '#34d399'; ctx.lineWidth = 3; ctx.beginPath();
+      partial.forEach((v, i) => { const x = PX(i), y = PY(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+      ctx.stroke();
+      partial.forEach((v, i) => { ctx.fillStyle = '#34d399'; ctx.beginPath(); ctx.arc(PX(i), PY(v), 4, 0, 7); ctx.fill(); });
+      ctx.fillStyle = '#34d399'; ctx.textAlign = 'left';
+      ctx.fillText(HSSIM.getLang() === 'zh' ? '累加和 Sₙ' : 'running sum Sₙ', PX(N - 1) - 80, PY(partial[N - 1]) - 12);
+    }
+
+    function renderFormulas() {
+      const t = terms();
+      const last = t[N - 1], sum = t.reduce((a, b) => a + b, 0);
+      if (mode === 'arith') {
+        katex.render(`a_n = a_1 + (n-1)d = ${fmt(a1)} + (n-1)(${fmt(step)})`, document.getElementById('f-nth'), { throwOnError: false, displayMode: true });
+        katex.render(`S_n = \\dfrac{n}{2}\\,(a_1 + a_n) = ${fmt(sum)}`, document.getElementById('f-sum'), { throwOnError: false, displayMode: true });
+      } else {
+        katex.render(`a_n = a_1\\,r^{\\,n-1} = ${fmt(a1)}\\cdot(${fmt(step)})^{\\,n-1}`, document.getElementById('f-nth'), { throwOnError: false, displayMode: true });
+        const sf = Math.abs(step - 1) < 1e-9 ? `n\\,a_1 = ${fmt(sum)}` : `a_1\\dfrac{1-r^{\\,n}}{1-r} = ${fmt(sum)}`;
+        katex.render(`S_n = ${sf}`, document.getElementById('f-sum'), { throwOnError: false, displayMode: true });
+      }
+    }
+
+    function update() {
+      const t = terms();
+      document.getElementById('va1').textContent = fmt(a1);
+      document.getElementById('vstep').textContent = fmt(step);
+      document.getElementById('vn').textContent = N;
+      document.getElementById('r-seq').textContent = t.slice(0, 6).map(fmt).join(', ') + (N > 6 ? ' …' : '');
+      document.getElementById('r-last').textContent = fmt(t[N - 1]);
+      document.getElementById('r-sum').textContent = fmt(t.reduce((a, b) => a + b, 0));
+      draw(); renderFormulas();
+    }
+
+    function refreshMode() {
+      document.querySelectorAll('.mode-btn').forEach(b => {
+        const on = b.dataset.mode === mode;
+        b.classList.toggle('bg-violet-600', on); b.classList.toggle('text-white', on);
+        b.classList.toggle('border-violet-500', on); b.classList.toggle('bg-slate-800', !on);
+      });
+      const sstep = document.getElementById('sstep'), lab = document.getElementById('step-label');
+      if (mode === 'arith') { sstep.min = -4; sstep.max = 4; sstep.step = 0.5; if (step < -4 || step > 4) step = 2; sstep.value = step; lab.textContent = HSSIM.t('param_d'); lab.setAttribute('data-i18n', 'param_d'); }
+      else { sstep.min = 0.3; sstep.max = 2; sstep.step = 0.05; if (step < 0.3 || step > 2) step = 1.5; sstep.value = step; lab.textContent = HSSIM.t('param_r'); lab.setAttribute('data-i18n', 'param_r'); }
+    }
+    document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => { mode = b.dataset.mode; refreshMode(); update(); });
+    document.getElementById('sa1').oninput = e => { a1 = parseFloat(e.target.value); update(); };
+    document.getElementById('sstep').oninput = e => { step = parseFloat(e.target.value); update(); };
+    document.getElementById('sn').oninput = e => { N = parseInt(e.target.value); update(); };
+
+    window.onLangChange = () => { refreshMode(); update(); };
+    HSSIM.mount({ icon: 'fa-stairs', gradient: 'from-lime-500 to-green-500' });
+    refreshMode(); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

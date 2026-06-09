@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>把天文数字塞进一把尺子 · Logarithms</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">LOGARITHMS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">把天文数字塞进一把尺子</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">对数与对数刻度</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">对数是指数的“反操作”。拖动曲线上的点，看 bˣ 和 log_b x 如何隔着 y=x 镜像对称；再看对数刻度怎么把巨大的数压扁。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="660"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 660;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="exp_form">指数：底的几次方</div>
+                <div id="f-exp" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="log_form">对数：反过来问“几次方”</div>
+                <div id="f-log" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_base">底数 b</span><span id="vb" class="font-mono text-teal-400"></span></div>
+              <input type="range" id="sb" min="2" max="10" step="1" value="2" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_x">指数 x</span><span id="vx" class="font-mono text-orange-400"></span></div>
+              <input type="range" id="sx" min="0" max="5" step="0.05" value="3" class="w-full">
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="drag_hint">提示：橙色点可以直接拖。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_pow">bˣ（这个数）</span><span id="r-pow" class="font-mono text-orange-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_log">log_b(那个数)</span><span id="r-log" class="font-mono text-teal-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_digits">它有几位数</span><span id="r-digits" class="font-mono text-violet-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">log_b(N) 在问：“b 要几次方才等于 N？”它是指数的反函数，所以图像沿 y=x 镜像。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=cEvgcoZprhk" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/logarithms.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Logarithmic_scale" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "把天文数字塞进一把尺子 · HSSIM", nav_title: "塞进一把尺子", nav_subtitle: "对数与对数刻度",
+        kicker: "对数 · 对数刻度", title: "把天文数字塞进一把尺子",
+        intro: "对数是指数的反操作：log_b(N) 就是在问“b 要几次方才能变成 N”。拖动橙色点，看 bˣ 与它的镜像 log_b x 隔着虚线 y=x 完美对称。上方那条对数尺子，把 1 到一百万压在了同一行里。",
+        formula_title: "现场公式", exp_form: "指数：底的几次方", log_form: "对数：反过来问“几次方”",
+        controls: "控制台", param_base: "底数 b", param_x: "指数 x",
+        drag_hint: "偷懒提示：橙色点可以直接拖，左右滑就行。",
+        readout_title: "当前战况", r_pow: "bˣ（这个数）", r_log: "log_b(那个数)", r_digits: "它有几位数",
+        formal_name: "对数与对数刻度",
+        concept_title: "说人话就是",
+        concept: "指数在问“b 乘自己 x 次等于多少”；对数反过来问“要乘几次才到 N”——所以 log 和指数是一对反函数，图像沿 y=x 镜像。对数最神奇的用处是“压缩”：在普通刻度上，1 和一百万差了一百万格；换成对数刻度，每走一格代表“×10”，于是 1、10、100、……、一百万被均匀地排成一行。地震震级、声音分贝、pH 值、星星亮度，用的全是这把尺子。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "分贝、里氏震级、pH、音程……生活里一切“跨越好几个数量级”的东西都靠对数。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "对数到底是啥", ref_a_desc: "从“指数反过来”讲起，把对数讲到一听就懂。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "对数，慢慢看懂", ref_b_desc: "定义、换底、运算法则，配着例子一步步来。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己画一对镜像", ref_c_desc: "在 Desmos 里同时画 b^x 和 log_b(x)，看它们关于 y=x 对称。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "对数刻度（维基百科）", ref_d_desc: "为什么对数刻度能装下天文数字，例子和图都在这里。",
+      },
+      en: {
+        page_title: "Squeeze huge numbers onto one ruler · HSSIM", nav_title: "One ruler", nav_subtitle: "logarithms & the log scale",
+        kicker: "LOGARITHMS", title: "Squeeze huge numbers onto one ruler",
+        intro: "A logarithm undoes an exponent: log_b(N) asks 'what power of b gives N?'. Drag the orange dot and watch bˣ and its mirror log_b x sit perfectly symmetric across the dashed y=x line. The log ruler up top packs 1 to a million onto a single row.",
+        formula_title: "Live formula", exp_form: "Exponent: b to some power", log_form: "Log: ask 'which power?' in reverse",
+        controls: "Controls", param_base: "Base b", param_x: "Exponent x",
+        drag_hint: "Lazy tip: just drag the orange dot left/right.",
+        readout_title: "Live stats", r_pow: "bˣ (this number)", r_log: "log_b(that number)", r_digits: "How many digits",
+        formal_name: "Logarithms & the Log Scale",
+        concept_title: "OK, the gist",
+        concept: "An exponent asks 'what is b multiplied by itself x times?'. A logarithm flips it: 'how many times do I multiply to reach N?'. So log and exp are inverse functions, and their graphs mirror across y=x. The log's superpower is compression: on a normal scale 1 and a million are a million steps apart; on a log scale each step means '×10', so 1, 10, 100, … , a million line up evenly. Earthquake magnitude, decibels, pH, and star brightness all run on this ruler.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Decibels, Richter scale, pH, musical octaves — anything spanning many orders of magnitude leans on logs.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "What a logarithm is", ref_a_desc: "Starts from 'the inverse of an exponent' and makes it instantly click.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Logarithms, explained", ref_b_desc: "Definition, change of base, and the log laws, walked through with examples.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Plot a mirror pair", ref_c_desc: "Graph b^x and log_b(x) together in Desmos and watch the y=x symmetry.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Logarithmic scale (Wikipedia)", ref_d_desc: "Why a log scale can hold astronomical numbers, with examples and charts.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const RIBBON = 90;                       // top log-scale ribbon height
+    const PAD = 50;                          // plot padding
+    const VMIN = -1, VMAX = 6;               // square view window for both axes
+    const plotTop = RIBBON + 20, plotBot = H - PAD, plotL = PAD + 20, plotR = W - PAD;
+    const PX = v => plotL + (v - VMIN) / (VMAX - VMIN) * (plotR - plotL);
+    const PY = v => plotBot - (v - VMIN) / (VMAX - VMIN) * (plotBot - plotTop);
+
+    let base = 2, xExp = 3;
+    const fmtNum = n => n >= 1e4 ? n.toLocaleString('en-US', { maximumFractionDigits: 0 })
+                                 : (Math.round(n * 100) / 100).toString();
+
+    function drawRibbon() {
+      const x0 = plotL, x1 = plotR, y = RIBBON / 2 + 14;
+      ctx.fillStyle = '#64748b'; ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('LOG SCALE · 1 → 1,000,000', (x0 + x1) / 2, 22);
+      // baseline
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+      // ticks at powers of 10
+      for (let p = 0; p <= 6; p++) {
+        const fx = x0 + (p / 6) * (x1 - x0);
+        ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(fx, y - 8); ctx.lineTo(fx, y + 8); ctx.stroke();
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('10' + (p ? '^' + p : '⁰'), fx, y + 26);
+      }
+      // marker for current number N = base^xExp (clamped to 1..1e6)
+      const N = Math.pow(base, xExp);
+      const lg = Math.log10(Math.max(1, Math.min(1e6, N)));
+      const mx = x0 + (lg / 6) * (x1 - x0);
+      ctx.fillStyle = '#fb923c';
+      ctx.beginPath(); ctx.arc(mx, y, 8, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(mx, y, 3, 0, 7); ctx.fill();
+    }
+
+    function curve(fn, color, lw) {
+      ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.beginPath(); let started = false;
+      for (let px = plotL; px <= plotR; px += 2) {
+        const v = VMIN + (px - plotL) / (plotR - plotL) * (VMAX - VMIN);
+        const yv = fn(v);
+        if (!isFinite(yv) || yv < VMIN - 1 || yv > VMAX + 1) { started = false; continue; }
+        const py = PY(yv);
+        if (!started) { ctx.moveTo(px, py); started = true; } else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      drawRibbon();
+
+      // grid
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      for (let v = Math.ceil(VMIN); v <= VMAX; v++) {
+        ctx.beginPath(); ctx.moveTo(PX(v), plotTop); ctx.lineTo(PX(v), plotBot); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(plotL, PY(v)); ctx.lineTo(plotR, PY(v)); ctx.stroke();
+      }
+      // axes
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(plotL, PY(0)); ctx.lineTo(plotR, PY(0)); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(PX(0), plotTop); ctx.lineTo(PX(0), plotBot); ctx.stroke();
+      // y = x mirror line
+      ctx.strokeStyle = 'rgba(148,163,184,0.45)'; ctx.setLineDash([6, 6]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(PX(VMIN), PY(VMIN)); ctx.lineTo(PX(VMAX), PY(VMAX)); ctx.stroke(); ctx.setLineDash([]);
+
+      curve(v => Math.pow(base, v), '#fb923c', 3.5);                      // exp
+      curve(v => v > 0 ? Math.log(v) / Math.log(base) : NaN, '#2dd4bf', 3.5); // log
+
+      // points
+      const N = Math.pow(base, xExp);
+      const ey = Math.min(VMAX + 0.5, N);
+      ctx.fillStyle = '#2dd4bf'; ctx.beginPath(); ctx.arc(PX(Math.min(VMAX, N)), PY(xExp), 7, 0, 7); ctx.fill(); // mirror on log
+      ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(PX(xExp), PY(ey), 9, 0, 7); ctx.fill();              // on exp
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(PX(xExp), PY(ey), 4, 0, 7); ctx.fill();
+      // connector showing the swap
+      ctx.strokeStyle = 'rgba(148,163,184,0.4)'; ctx.setLineDash([3, 4]); ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(PX(xExp), PY(ey)); ctx.lineTo(PX(Math.min(VMAX, N)), PY(xExp)); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    function renderFormulas() {
+      const N = Math.pow(base, xExp);
+      katex.render(`${base}^{${(Math.round(xExp*100)/100)}} = ${fmtNum(N)}`,
+        document.getElementById('f-exp'), { throwOnError: false, displayMode: true });
+      katex.render(`\\log_{${base}}\\!\\left(${fmtNum(N)}\\right) = ${(Math.round(xExp*100)/100)}`,
+        document.getElementById('f-log'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const N = Math.pow(base, xExp);
+      document.getElementById('vb').textContent = base;
+      document.getElementById('vx').textContent = (Math.round(xExp * 100) / 100);
+      document.getElementById('r-pow').textContent = fmtNum(N);
+      document.getElementById('r-log').textContent = (Math.round(xExp * 100) / 100);
+      document.getElementById('r-digits').textContent = Math.floor(Math.log10(Math.max(1, N))) + 1;
+      document.getElementById('sb').value = base;
+      document.getElementById('sx').value = xExp;
+      draw(); renderFormulas();
+    }
+
+    document.getElementById('sb').oninput = e => { base = parseInt(e.target.value); update(); };
+    document.getElementById('sx').oninput = e => { xExp = parseFloat(e.target.value); update(); };
+
+    // drag the orange point horizontally (controls the exponent x)
+    let dragging = false;
+    function hit(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const my = (e.clientY - rect.top) * (H / rect.height);
+      const N = Math.min(VMAX + 0.5, Math.pow(base, xExp));
+      return Math.hypot(mx - PX(xExp), my - PY(N)) < 30;
+    }
+    function moveDot(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const v = VMIN + (mx - plotL) / (plotR - plotL) * (VMAX - VMIN);
+      xExp = Math.max(0, Math.min(5, v)); update();
+    }
+    canvas.addEventListener('mousedown', e => { if (hit(e)) dragging = true; });
+    window.addEventListener('mousemove', e => { if (dragging) moveDot(e); });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { if (hit(e.touches[0])) { dragging = true; e.preventDefault(); } }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { moveDot(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-magnifying-glass-chart', gradient: 'from-teal-500 to-emerald-500' });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>
