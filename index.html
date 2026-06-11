@@ -66,7 +66,18 @@
             <div class="section-title mb-2" data-i18n="lessons_kicker">INTERACTIVE LESSONS</div>
             <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="lessons_title">交互式课程</h2>
           </div>
-          <div id="lesson-count" class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-700"></div>
+          <div class="flex items-center gap-3">
+            <!-- view mode toggle -->
+            <div class="flex items-center bg-slate-900 border border-slate-700 rounded-2xl p-0.5 text-xs">
+              <button id="view-btn-all" onclick="setView('all')" class="px-3 py-1 rounded-[14px] transition-colors flex items-center gap-x-1.5">
+                <i class="fa-solid fa-grip"></i><span data-i18n="view_all">一锅端</span>
+              </button>
+              <button id="view-btn-cat" onclick="setView('cat')" class="px-3 py-1 rounded-[14px] transition-colors flex items-center gap-x-1.5">
+                <i class="fa-solid fa-layer-group"></i><span data-i18n="view_cat">按类别</span>
+              </button>
+            </div>
+            <div id="lesson-count" class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-700"></div>
+          </div>
         </div>
 
         <div id="lesson-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
@@ -96,6 +107,14 @@
         lessons_kicker: "随便挑一个开玩",
         lessons_title: "全部玩意儿",
         lesson_count: (n) => `${n} 个 · 还在悄悄加`,
+        view_all: "一锅端",
+        view_cat: "按类别",
+        cat_count: (n) => `${n} 个`,
+        catdesc_algebra: "方程、函数和它们的小脾气",
+        catdesc_geometry: "三角形、箭头和被扭来扭去的空间",
+        catdesc_trig: "一切绕圈和起伏的东西",
+        catdesc_stats: "随机里偷偷藏着的规律",
+        catdesc_fun: "数学里最像玩具的角落",
         tag_algebra: "字母数字",
         tag_geometry: "形状",
         tag_trig: "圆圈与波浪",
@@ -119,6 +138,14 @@
         lessons_kicker: "PICK ONE, GO WILD",
         lessons_title: "The whole toy box",
         lesson_count: (n) => `${n} toys · more dropping soon`,
+        view_all: "one big pile",
+        view_cat: "by category",
+        cat_count: (n) => `${n} toys`,
+        catdesc_algebra: "equations, functions, and their little quirks",
+        catdesc_geometry: "triangles, arrows, and warped space",
+        catdesc_trig: "everything that spins or ripples",
+        catdesc_stats: "the patterns hiding inside randomness",
+        catdesc_fun: "the most toy-like corner of math",
         tag_algebra: "letters & numbers",
         tag_geometry: "shapes",
         tag_trig: "circles & waves",
@@ -270,12 +297,21 @@
       },
     ];
 
-    function renderLessons() {
-      const grid = document.getElementById("lesson-grid");
+    // ---- the five categories, in display order ---------------------------
+    const CATS = [
+      { tag: "tag_algebra",  desc: "catdesc_algebra",  icon: "fa-superscript",         grad: "from-sky-500 to-cyan-500" },
+      { tag: "tag_geometry", desc: "catdesc_geometry", icon: "fa-shapes",              grad: "from-amber-500 to-orange-500" },
+      { tag: "tag_trig",     desc: "catdesc_trig",     icon: "fa-wave-square",         grad: "from-rose-500 to-pink-500" },
+      { tag: "tag_stats",    desc: "catdesc_stats",    icon: "fa-dice",                grad: "from-fuchsia-500 to-purple-500" },
+      { tag: "tag_fun",      desc: "catdesc_fun",      icon: "fa-wand-magic-sparkles", grad: "from-violet-500 to-fuchsia-500" },
+    ];
+
+    let viewMode = localStorage.getItem("hssim_view") || "all";
+
+    function cardHTML(l, i) {
       const lang = HSSIM.getLang();
-      grid.innerHTML = LESSONS.map((l, i) => {
-        const c = l[lang] || l.zh;
-        return `
+      const c = l[lang] || l.zh;
+      return `
         <a href="${l.file}" class="lesson-card group bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col fade-in" style="animation-delay:${i * 40}ms">
           <div class="flex items-center justify-between mb-4">
             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${l.grad} flex items-center justify-center shadow-lg shadow-violet-500/20">
@@ -294,9 +330,53 @@
             <i class="fa-solid fa-arrow-right text-xs"></i>
           </div>
         </a>`;
-      }).join("");
+    }
 
+    function renderLessons() {
+      const grid = document.getElementById("lesson-grid");
+
+      if (viewMode === "cat") {
+        grid.className = "space-y-12";
+        grid.innerHTML = CATS.map((cat) => {
+          const items = LESSONS.filter((l) => l.tag === cat.tag);
+          if (!items.length) return "";
+          return `
+          <section class="fade-in">
+            <div class="flex items-center gap-x-3 mb-5">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-br ${cat.grad} flex items-center justify-center shadow-lg shadow-violet-500/20">
+                <i class="fa-solid ${cat.icon} text-white text-sm"></i>
+              </div>
+              <div>
+                <h3 class="font-display text-xl font-semibold tracking-tight">${HSSIM.t(cat.tag)}</h3>
+                <p class="text-xs text-slate-500">${HSSIM.t(cat.desc)} · ${HSSIM.t("cat_count", items.length)}</p>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">${items.map(cardHTML).join("")}</div>
+          </section>`;
+        }).join("");
+      } else {
+        grid.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5";
+        grid.innerHTML = LESSONS.map(cardHTML).join("");
+      }
+
+      updateViewToggle();
       document.getElementById("lesson-count").textContent = HSSIM.t("lesson_count", LESSONS.length);
+    }
+
+    function updateViewToggle() {
+      const all = document.getElementById("view-btn-all");
+      const cat = document.getElementById("view-btn-cat");
+      [[all, viewMode === "all"], [cat, viewMode === "cat"]].forEach(([btn, on]) => {
+        btn.classList.toggle("bg-violet-600", on);
+        btn.classList.toggle("text-white", on);
+        btn.classList.toggle("text-slate-400", !on);
+      });
+    }
+
+    function setView(mode) {
+      viewMode = mode;
+      localStorage.setItem("hssim_view", mode);
+      renderLessons();
     }
 
     // re-render cards whenever the language flips

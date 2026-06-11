@@ -76,6 +76,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -131,6 +133,17 @@
         formal_name: "对数与对数刻度",
         concept_title: "说人话就是",
         concept: "指数在问“b 乘自己 x 次等于多少”；对数反过来问“要乘几次才到 N”——所以 log 和指数是一对反函数，图像沿 y=x 镜像。对数最神奇的用处是“压缩”：在普通刻度上，1 和一百万差了一百万格；换成对数刻度，每走一格代表“×10”，于是 1、10、100、……、一百万被均匀地排成一行。地震震级、声音分贝、pH 值、星星亮度，用的全是这把尺子。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "对数其实无处不在",
+        apps_subtitle: "凡是数字大到离谱的地方，都得请对数来压一压。",
+        app_a_title: "地震震级",
+        app_a_desc: "震级每加 1，地面晃动强 10 倍。7 级不是比 5 级强 40%，是强 100 倍——对数刻度的威力。",
+        app_b_title: "分贝",
+        app_b_desc: "音量加 10 分贝等于声音强度乘 10。耳机开最大比轻声说话强一百万倍，但耳朵只觉得差几档——耳朵天生按对数听。",
+        app_c_title: "pH 值",
+        app_c_desc: "pH 每差 1，酸度差 10 倍。可乐 pH≈2.5，比 pH≈7 的水酸三万多倍——听着吓人，其实就是对数。",
+        app_d_title: "股票长线图",
+        app_d_desc: "看几十年的股价必须切对数坐标，不然早年的波动全被压成地板——涨 10 倍在图上才占同样高度。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "分贝、里氏震级、pH、音程……生活里一切“跨越好几个数量级”的东西都靠对数。",
         ref_for: "送给 Sunday",
@@ -150,6 +163,17 @@
         formal_name: "Logarithms & the Log Scale",
         concept_title: "OK, the gist",
         concept: "An exponent asks 'what is b multiplied by itself x times?'. A logarithm flips it: 'how many times do I multiply to reach N?'. So log and exp are inverse functions, and their graphs mirror across y=x. The log's superpower is compression: on a normal scale 1 and a million are a million steps apart; on a log scale each step means '×10', so 1, 10, 100, … , a million line up evenly. Earthquake magnitude, decibels, pH, and star brightness all run on this ruler.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Logarithms are secretly everywhere",
+        apps_subtitle: "Wherever numbers get absurdly huge, a logarithm is called in to squash them.",
+        app_a_title: "Earthquake scales",
+        app_a_desc: "Each magnitude step means 10× the shaking. A 7 isn't 40% worse than a 5 — it's 100× worse. That's a log scale talking.",
+        app_b_title: "Decibels",
+        app_b_desc: "+10 dB means 10× the sound power. Max headphones are a million times a whisper, yet your ears feel a few notches — ears hear in logs.",
+        app_c_title: "The pH scale",
+        app_c_desc: "Each pH unit is 10× the acidity. Cola at pH 2.5 is ~30,000× more acidic than water — scary-sounding, but it's just a log.",
+        app_d_title: "Stock charts",
+        app_d_desc: "Long-term stock charts use log axes, or early decades flatten into the floor. On a log chart, every 10× climb takes equal height.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Decibels, Richter scale, pH, musical octaves — anything spanning many orders of magnitude leans on logs.",
         ref_for: "for Sunday",
@@ -288,7 +312,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-magnifying-glass-chart', gradient: 'from-teal-500 to-emerald-500' });
+    HSSIM.mount({ icon: 'fa-magnifying-glass-chart', gradient: 'from-teal-500 to-emerald-500', apps: [
+      { icon: 'fa-house-crack', grad: 'from-amber-500 to-orange-500', k: 'app_a' },
+      { icon: 'fa-volume-high', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-flask', grad: 'from-emerald-500 to-teal-500', k: 'app_c' },
+      { icon: 'fa-chart-line', grad: 'from-sky-500 to-indigo-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

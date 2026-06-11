@@ -76,6 +76,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -130,6 +132,17 @@
         formal_name: "正弦波参数 A·sin(Bx+C)+D",
         concept_title: "说人话就是",
         concept: "声音、潮汐、交流电、心跳……几乎一切“来回摆动”的东西都长成正弦波。它的全部模样只由四个数字决定：A 是振幅，波峰到中线的高度，A 越大波越高；B 控制频率，B 越大波挤得越密、周期 2π/B 越短；C 是相位，把整条波沿水平方向推（移动量是 −C/B）；D 是中线（竖直平移），决定波在上还是在下。记住这四个把手，你就能读懂任何正弦波。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这四个旋钮其实无处不在",
+        apps_subtitle: "A、B、C、D 不只是字母——调音师、工程师、医生天天都在拧。",
+        app_a_title: "合成器",
+        app_a_desc: "电子音乐的合成器就是一排正弦波发生器：A 是音量，B 是音高，几条波一叠就是音色。",
+        app_b_title: "降噪耳机",
+        app_b_desc: "耳机听到噪音后，实时播放一条上下翻转的反波（把相位 C 挪半个周期），正负一抵消，世界安静了。",
+        app_c_title: "AM / FM 电台",
+        app_c_desc: "FM 广播靠不停微调载波的 B（频率）来携带声音；AM 调的是 A（振幅）。这俩名字就是这么来的。",
+        app_d_title: "心电图",
+        app_d_desc: "心电、呼吸、脑电波都是周期波形。医生看图判断 A 和 B 正不正常，跟你在这页做的事一样。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "把好几条正弦波叠起来，就能拼出任何声音——这就是傅里叶的世界。",
         ref_for: "送给 Sunday",
@@ -148,6 +161,17 @@
         formal_name: "Sine Wave Parameters A·sin(Bx+C)+D",
         concept_title: "OK, the gist",
         concept: "Sound, tides, AC current, a heartbeat — almost anything that swings back and forth looks like a sine wave. Its entire shape is pinned down by four numbers: A is the amplitude, the height from midline to peak — bigger A, taller wave; B controls frequency — bigger B packs the waves tighter and shortens the period 2π/B; C is the phase, sliding the whole wave horizontally (by −C/B); D is the midline (vertical shift), setting how high the wave floats. Learn these four handles and you can read any sine wave.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "These four knobs are secretly everywhere",
+        apps_subtitle: "A, B, C and D aren't just letters — sound engineers, electricians and doctors twist them daily.",
+        app_a_title: "Synthesizers",
+        app_a_desc: "A synth is a rack of sine generators: A is the volume, B is the pitch, and stacking waves builds the timbre.",
+        app_b_title: "Noise-cancelling headphones",
+        app_b_desc: "The earcup hears the noise and plays it flipped — phase C shifted half a cycle. Wave plus anti-wave equals silence.",
+        app_c_title: "AM / FM radio",
+        app_c_desc: "FM smuggles sound by nudging the carrier's B (frequency); AM wiggles the A (amplitude). The names are literal.",
+        app_d_title: "Heartbeat monitors",
+        app_d_desc: "ECGs, breathing, brain waves — all periodic waveforms. Doctors eyeball the A and B for trouble, exactly what you're doing here.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Stack enough sine waves and you can build any sound at all — that's the world of Fourier.",
         ref_for: "for Sunday",
@@ -240,7 +264,12 @@
     };
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-sliders', gradient: 'from-rose-500 to-pink-500' });
+    HSSIM.mount({ icon: 'fa-sliders', gradient: 'from-rose-500 to-pink-500', apps: [
+      { icon: 'fa-music', grad: 'from-violet-500 to-fuchsia-500', k: 'app_a' },
+      { icon: 'fa-headphones', grad: 'from-sky-500 to-indigo-500', k: 'app_b' },
+      { icon: 'fa-radio', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-heart-pulse', grad: 'from-rose-500 to-pink-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

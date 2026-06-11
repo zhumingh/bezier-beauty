@@ -69,6 +69,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -124,6 +126,17 @@
         formal_name: "圆锥曲线",
         concept_title: "说人话就是",
         concept: "圆、椭圆、抛物线、双曲线，其实是同一个东西——拿平面去切圆锥，切口的形状。关键看刀切得有多斜（β），跟圆锥侧面的倾角（φ）比一比：水平切是正圆；稍微斜一点是椭圆；斜到刚好和侧面平行，切口闭不上了，就是抛物线；再斜下去，一刀同时切到上下两个锥，得到两支双曲线。离心率 e 就是这份“斜的程度”：e=0 是圆，0<e<1 椭圆，e=1 抛物线，e>1 双曲线。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这四条切口其实无处不在",
+        apps_subtitle: "从行星轨道到卫星锅，圆锥曲线包揽了宇宙里最重要的几条路线。",
+        app_a_title: "行星轨道",
+        app_a_desc: "开普勒发现行星绕太阳走的是椭圆，太阳就坐在一个焦点上。彗星走的是更扁的椭圆，甚至一去不回的双曲线。",
+        app_b_title: "卫星锅",
+        app_b_desc: "抛物面把天上来的平行信号全弹到焦点上，接收头就装在那儿——名字都叫焦点了。",
+        app_c_title: "回音壁",
+        app_c_desc: "椭圆屋顶有个魔法：在一个焦点小声说话，另一个焦点听得一清二楚。北京天坛和美国国会大厦都有。",
+        app_d_title: "双曲线定位",
+        app_d_desc: "两个基站收到信号的时间差，把你锁在一条双曲线上；再来一对基站，交点就是你。GPS 之前的导航就这么干。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "行星轨道、卫星天线、彗星路径……宇宙特别偏爱这四条曲线。",
         ref_for: "送给 Sunday",
@@ -143,6 +156,17 @@
         formal_name: "Conic Sections",
         concept_title: "OK, the gist",
         concept: "Circles, ellipses, parabolas and hyperbolas are all the same thing — the shape you get when a flat plane slices a cone. It all comes down to how steep the cut is (β) versus the cone's own slant (φ): cut flat and you get a circle; tilt a little for an ellipse; tilt until the cut runs exactly parallel to the side and it can't close up — that's a parabola; tilt further and a single cut catches both cones at once, giving the two branches of a hyperbola. Eccentricity e is that 'steepness': e=0 circle, 0<e<1 ellipse, e=1 parabola, e>1 hyperbola.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "These four cuts are secretly everywhere",
+        apps_subtitle: "From planet orbits to satellite dishes, conic sections run the universe's most important routes.",
+        app_a_title: "Planetary orbits",
+        app_a_desc: "Kepler found planets ride ellipses with the Sun parked at one focus. Comets take stretched ellipses — or hyperbolas, never to return.",
+        app_b_title: "Satellite dishes",
+        app_b_desc: "A parabolic dish bounces parallel signals from space onto one focus, where the receiver sits. The name focus is literal.",
+        app_c_title: "Whispering galleries",
+        app_c_desc: "Under an elliptical ceiling, whisper at one focus and a friend at the other hears you perfectly. Try the U.S. Capitol — or the Temple of Heaven.",
+        app_d_title: "Hyperbola positioning",
+        app_d_desc: "A timing gap between two stations pins you to one hyperbola; a second pair pins another. You're at the crossing — pre-GPS navigation worked exactly this way.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Planet orbits, satellite dishes, comet paths — the universe loves these four curves.",
         ref_for: "for Sunday",
@@ -308,7 +332,12 @@
     });
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-circle-half-stroke', gradient: 'from-amber-500 to-rose-500' });
+    HSSIM.mount({ icon: 'fa-circle-half-stroke', gradient: 'from-amber-500 to-rose-500', apps: [
+      { icon: 'fa-globe', grad: 'from-sky-500 to-indigo-500', k: 'app_a' },
+      { icon: 'fa-satellite-dish', grad: 'from-emerald-500 to-teal-500', k: 'app_b' },
+      { icon: 'fa-ear-listen', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-location-crosshairs', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

@@ -69,6 +69,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -124,6 +126,17 @@
         formal_name: "标准差与离散程度",
         concept_title: "说人话就是",
         concept: "只看平均数会骗人：两个班平均分都是 70，可能一个班大家都考 68~72，另一个班有人 40 有人 100。标准差回答的是“数据通常离平均数多远”。算法是：每个数减去平均数得到“偏差”，把偏差平方（这样正负不抵消、离得越远惩罚越重），求平均得到方差 σ²，再开平方变回原来的单位，就是标准差 σ。图中浅色带是 μ±σ，更浅的是 μ±2σ——绝大多数数据都落在 2σ 之内。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "稳不稳这件事，其实无处不在",
+        apps_subtitle: "平均数只讲一半故事，另一半全靠标准差。",
+        app_a_title: "两个射手",
+        app_a_desc: "两个选手平均环数一样：一个枪枪 9 环，一个忽而 10 忽而 6。教练选谁？看标准差。",
+        app_b_title: "海边 vs 内陆",
+        app_b_desc: "两座城年平均温度可能一样，但内陆冬夏能差 40 度。宜居不宜居，不看平均看离散。",
+        app_c_title: "薯片克重",
+        app_c_desc: "每包差几克没事，差几十克就得停机检修。工厂的质检红线就画在几个标准差上。",
+        app_d_title: "投资风险",
+        app_d_desc: "金融里的波动率就是收益的标准差。两只基金收益一样，标准差小的那只让你睡得着觉。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "考试分数、股票波动、产品质检……凡是要谈“稳不稳定”，都在说标准差。",
         ref_for: "送给 Sunday",
@@ -143,6 +156,17 @@
         formal_name: "Standard Deviation & Spread",
         concept_title: "OK, the gist",
         concept: "The average alone can lie: two classes both average 70, but one might be everyone scoring 68–72 while the other has 40s and 100s. Standard deviation answers 'how far from the average do the values usually sit?'. The recipe: subtract the mean from each value to get a deviation, square it (so signs don't cancel and far-out points get punished harder), average those to get the variance σ², then square-root it back to the original units — that's σ. The lighter band is μ±σ, the fainter one μ±2σ — almost all data lands within 2σ.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "The how-spread-out question is secretly everywhere",
+        apps_subtitle: "The average tells half the story. Standard deviation tells the other half.",
+        app_a_title: "Two archers",
+        app_a_desc: "Same average score: one hits 9 every single time, the other swings between 10 and 6. Coaches pick by standard deviation.",
+        app_b_title: "Coastal vs inland",
+        app_b_desc: "Same yearly average temperature — but inland swings 40 degrees between seasons. Comfort is about spread, not the mean.",
+        app_c_title: "Factory tolerances",
+        app_c_desc: "A few grams of bag-to-bag wiggle is fine; dozens means stop the line. Factory limits are drawn at a few standard deviations.",
+        app_d_title: "Investment risk",
+        app_d_desc: "Finance's volatility is the standard deviation of returns. Same gains, smaller deviation — that's the fund that lets you sleep.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Test scores, stock volatility, quality control — anytime you talk about 'how consistent', you're talking standard deviation.",
         ref_for: "for Sunday",
@@ -268,7 +292,12 @@
     window.addEventListener('touchend', () => { if (drag >= 0) { drag = -1; snapshot(); update(); } });
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-arrows-left-right-to-line', gradient: 'from-fuchsia-500 to-purple-500' });
+    HSSIM.mount({ icon: 'fa-arrows-left-right-to-line', gradient: 'from-fuchsia-500 to-purple-500', apps: [
+      { icon: 'fa-bullseye', grad: 'from-rose-500 to-pink-500', k: 'app_a' },
+      { icon: 'fa-temperature-half', grad: 'from-sky-500 to-cyan-500', k: 'app_b' },
+      { icon: 'fa-industry', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-arrow-trend-up', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
     genRandom(14); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

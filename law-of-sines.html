@@ -73,6 +73,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -127,6 +129,17 @@
         formal_name: "正弦定理与余弦定理",
         concept_title: "说人话就是",
         concept: "直角三角形有勾股定理撑腰，可现实里的三角形大多不是直角。这时两条定律登场：正弦定理说，每条边除以它“对面那个角”的正弦，三组结果完全相等（都等于外接圆直径 2R）——已知一边一角，就能推出其它边角。余弦定理则是勾股定理的升级版：c² = a² + b² − 2ab·cosC，那个多出来的 −2ab·cosC 正好修正了“角不是 90°”带来的偏差；当 C = 90° 时 cosC = 0，它立刻退化回勾股定理。测距、导航、工程里到处是它俩。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "解三角形其实无处不在",
+        apps_subtitle: "够不着、量不了的距离，都靠这两条定理隔空算出来。",
+        app_a_title: "隔空测山高",
+        app_a_desc: "测量员在两处各量一个仰角，正弦定理立刻给出山顶多高——根本不用爬。",
+        app_b_title: "航海定位",
+        app_b_desc: "看见两座灯塔的方位角，余弦定理就能算出船在哪、离岸多远。GPS 出现前船长们全靠它。",
+        app_c_title: "量星星有多远",
+        app_c_desc: "冬天和夏天各看一次同一颗星，视角差一点点——拿地球轨道当底边解三角形，星星的距离就出来了。",
+        app_d_title: "手机三角定位",
+        app_d_desc: "几个基站各自知道到你的距离和角度，解几个三角形，你的位置就被字面意义地三角定位了。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "GPS 定位、测量、天文……只要要从角度反推距离，就少不了这两条定律。",
         ref_for: "送给 Sunday",
@@ -145,6 +158,17 @@
         formal_name: "Law of Sines & Law of Cosines",
         concept_title: "OK, the gist",
         concept: "Right triangles get Pythagoras, but most real triangles aren't right-angled. Two laws step in. The law of sines says every side divided by the sine of its opposite angle gives the exact same value (the circumcircle's diameter 2R) — so one side and one angle unlock the rest. The law of cosines is Pythagoras upgraded: c² = a² + b² − 2ab·cosC, where that extra −2ab·cosC term corrects for the angle not being 90°; when C = 90°, cosC = 0 and it collapses right back into Pythagoras. Surveying, navigation, and engineering lean on both constantly.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Triangle-solving is secretly everywhere",
+        apps_subtitle: "Distances you can't reach or measure get solved from afar with these two laws.",
+        app_a_title: "Measuring mountains",
+        app_a_desc: "A surveyor reads two angles from two spots and the Law of Sines hands over the summit height — no climbing involved.",
+        app_b_title: "Ship navigation",
+        app_b_desc: "Bearings to two lighthouses plus the Law of Cosines pin the ship's position. Pre-GPS captains lived on this.",
+        app_c_title: "Distances to stars",
+        app_c_desc: "Sight a star from summer Earth and winter Earth; the tiny angle shift plus Earth's orbit as a baseline solves the triangle — and the star's distance.",
+        app_d_title: "Cell triangulation",
+        app_d_desc: "A few towers each know a distance and an angle to your phone. Solve the triangles and you've been — literally — triangulated.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "GPS, surveying, astronomy — any time you turn angles into distances, these two laws show up.",
         ref_for: "for Sunday",
@@ -279,7 +303,12 @@
     window.addEventListener('touchend', () => drag = null);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-ruler-combined', gradient: 'from-amber-500 to-yellow-500' });
+    HSSIM.mount({ icon: 'fa-ruler-combined', gradient: 'from-amber-500 to-yellow-500', apps: [
+      { icon: 'fa-mountain-sun', grad: 'from-emerald-500 to-teal-500', k: 'app_a' },
+      { icon: 'fa-ship', grad: 'from-sky-500 to-blue-500', k: 'app_b' },
+      { icon: 'fa-star', grad: 'from-violet-500 to-fuchsia-500', k: 'app_c' },
+      { icon: 'fa-location-dot', grad: 'from-rose-500 to-pink-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

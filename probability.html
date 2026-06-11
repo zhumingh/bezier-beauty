@@ -59,6 +59,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -112,6 +114,17 @@
         formal_name: "概率论 · 二项分布与正态分布",
         concept_title: "说人话就是",
         concept: "小球落进第几个格子，概率服从“二项分布” C(n, i) / 2ⁿ。球越多、层数越多，它就越接近大名鼎鼎的正态分布（钟形曲线）。意思是：哪怕每一步都纯靠掷硬币，海量随机事件叠在一起，最后会冒出一个稳得离谱的规律——这正是整个统计学站得住脚的原因。考试分数、身高、各种误差，几乎都长这个样。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这座钟形山其实无处不在",
+        apps_subtitle: "只要把大量随机的小事加在一起，就会冒出同一个形状。",
+        app_a_title: "考试分布",
+        app_a_desc: "全年级的成绩摊开看，大多挤在平均分附近，两头都是少数——标准钟形。",
+        app_b_title: "保险公司",
+        app_b_desc: "保险公司不知道谁会出事，却知道总体概率长什么样，于是保费定得稳赚不赔。",
+        app_c_title: "工厂抽检",
+        app_c_desc: "每包薯片克重不可能完全一样。只要分布形状对、偏差够小，整条生产线就算合格。",
+        app_d_title: "民调误差",
+        app_d_desc: "问 1000 个人就敢预测几亿人怎么投票，±3% 的误差范围就是从这套数学里算出来的。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "如果钉板堆出钟形让你惊讶，下面这几个会让你更上头。",
@@ -139,6 +152,17 @@
         formal_name: "Probability · the Binomial & Normal Distributions",
         concept_title: "OK, the gist",
         concept: "Which bin a ball lands in follows the 'binomial distribution' C(n, i) / 2ⁿ. More balls and more rows push it closer and closer to the famous normal distribution (bell curve). Translation: even when every step is a pure coin flip, a huge pile of random events produces a suspiciously reliable pattern — which is exactly why statistics works. Test scores, heights, measurement errors: nearly all bell-shaped.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This bell-shaped hill is secretly everywhere",
+        apps_subtitle: "Pile up enough little random things and the same shape pops out every time.",
+        app_a_title: "Exam scores",
+        app_a_desc: "Spread out a whole grade's scores: most huddle near the average, a few sit at each end — a textbook bell.",
+        app_b_title: "Insurance math",
+        app_b_desc: "Insurers can't know who will crash — but they know the distribution exactly, so premiums are priced to win.",
+        app_c_title: "Quality control",
+        app_c_desc: "No two chip bags weigh exactly the same. As long as the bell is the right shape and width, the line passes.",
+        app_d_title: "Polling error",
+        app_d_desc: "Ask 1,000 people, predict millions of votes. That ±3% margin comes straight from this math.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "If the pegboard building a bell shape surprised you, these go further.",
@@ -282,7 +306,12 @@
       document.getElementById('r-paths').textContent = Math.pow(2, rows).toLocaleString();
     }
     window.onLangChange = () => { document.getElementById('auto').textContent = HSSIM.t(autoOn ? 'stop' : 'auto'); };
-    HSSIM.mount({ icon: 'fa-dice', gradient: 'from-fuchsia-500 to-purple-500' });
+    HSSIM.mount({ icon: 'fa-dice', gradient: 'from-fuchsia-500 to-purple-500', apps: [
+      { icon: 'fa-graduation-cap', grad: 'from-sky-500 to-blue-500', k: 'app_a' },
+      { icon: 'fa-shield-halved', grad: 'from-emerald-500 to-teal-500', k: 'app_b' },
+      { icon: 'fa-industry', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-square-poll-vertical', grad: 'from-rose-500 to-pink-500', k: 'app_d' },
+    ] });
     refreshStatic(); draw();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

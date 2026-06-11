@@ -66,6 +66,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -120,6 +122,17 @@
         formal_name: "杨辉三角与二项式定理",
         concept_title: "说人话就是",
         concept: "顶上写个 1，往下每个位置都填“左上 + 右上”，斜边补 1——这就造出了整座三角。它一身都是宝：第 n 行第 k 个数正是组合数 C(n,k)，也就是“从 n 个里挑 k 个”的方法数；同一个数还是 (a+b)ⁿ 展开后各项的系数（二项式定理）；每一行加起来恰好是 2ⁿ；而把奇数涂黑、偶数留白，整座三角竟然变成谢尔宾斯基分形。一个加法规则，藏着组合、代数、分形三件大礼。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这座三角其实无处不在",
+        apps_subtitle: "组合、概率、代数展开……一座加法堆出来的三角，身兼数职。",
+        app_a_title: "抛硬币计数",
+        app_a_desc: "抛 5 次硬币恰好 3 次正面有几种花样？去第 5 行找第 3 个数，答案 10 早就躺在那儿了。",
+        app_b_title: "彩票概率",
+        app_b_desc: "49 选 6 共有 13,983,816 种组合，这个数就是 C(49,6)——杨辉三角第 49 行的住户。",
+        app_c_title: "展开 (a+b)ⁿ",
+        app_c_desc: "懒得把 (a+b)⁵ 乘开？第 5 行的 1, 5, 10, 10, 5, 1 直接就是各项系数。二项式定理就是这座三角的官方说法。",
+        app_d_title: "程序员的老朋友",
+        app_d_desc: "算法题里的走格子路径数、各种组合计数，背后都是同一批三角形数字。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "组合数、概率、二项式、分形……这座小三角是它们共同的老家。",
         ref_for: "送给 Sunday",
@@ -138,6 +151,17 @@
         formal_name: "Pascal's Triangle & the Binomial Theorem",
         concept_title: "OK, the gist",
         concept: "Write a 1 at the top, then fill every spot below with 'upper-left + upper-right', padding the edges with 1 — that's the whole triangle. It's loaded with treasure: the k-th number in row n is exactly the binomial coefficient C(n,k), the number of ways to choose k things from n; the same numbers are the coefficients in the expansion of (a+b)ⁿ (the binomial theorem); each row adds up to exactly 2ⁿ; and if you paint the odd numbers black and leave evens white, the whole triangle becomes the Sierpinski fractal. One addition rule, three gifts: combinatorics, algebra, and fractals.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This triangle is secretly everywhere",
+        apps_subtitle: "Combinations, probabilities, algebra expansions — one addition triangle, many day jobs.",
+        app_a_title: "Coin-flip counting",
+        app_a_desc: "How many ways to get exactly 3 heads in 5 flips? Row 5, entry 3 — the answer (10) has been sitting there all along.",
+        app_b_title: "Lottery odds",
+        app_b_desc: "Pick-6-of-49 has 13,983,816 combos — that's C(49,6), a resident of row 49 of this very triangle.",
+        app_c_title: "Expanding (a+b)ⁿ",
+        app_c_desc: "Too lazy to multiply out (a+b)⁵? Row 5 — 1, 5, 10, 10, 5, 1 — is the coefficients, done. The binomial theorem is this triangle in formal dress.",
+        app_d_title: "A programmer's friend",
+        app_d_desc: "Grid-path counting and the combinatorics puzzles in coding interviews all reach for the same triangle numbers.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Combinations, probability, binomials, fractals — this little triangle is their shared hometown.",
         ref_for: "for Sunday",
@@ -263,7 +287,12 @@
     canvas.addEventListener('touchstart', e => { pickCell(e.touches[0]); e.preventDefault(); }, { passive: false });
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-sort-down', gradient: 'from-indigo-500 to-violet-500' });
+    HSSIM.mount({ icon: 'fa-sort-down', gradient: 'from-indigo-500 to-violet-500', apps: [
+      { icon: 'fa-coins', grad: 'from-amber-500 to-orange-500', k: 'app_a' },
+      { icon: 'fa-ticket', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-superscript', grad: 'from-sky-500 to-indigo-500', k: 'app_c' },
+      { icon: 'fa-code', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

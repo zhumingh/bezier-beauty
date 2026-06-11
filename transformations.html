@@ -67,6 +67,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -120,6 +122,17 @@
         formal_name: "函数图像变换 · 平移 / 伸缩 / 反射",
         concept_title: "说人话就是",
         concept: "任何函数都能用同一套招式改造：a 把它拉高或压扁，a 是负的就上下翻个面；b 把它左右挤，b 是负的就左右照镜子；h 让它左右挪（注意是 x − h）；k 让它上下挪。记住这四个旋钮，几乎所有曲线图你都能一眼看穿它做了啥。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "平移翻转，其实天天在用",
+        apps_subtitle: "只要有图像被挪动、放大、镜像，就是函数变换在干活。",
+        app_a_title: "修图与缩放",
+        app_a_desc: "双指放大照片是伸缩，旋转裁剪是变换——修图软件的每个手势都是函数变换。",
+        app_b_title: "游戏镜像",
+        app_b_desc: "游戏角色往左走？美术只画朝右的，引擎一个 -x 反射就搞定另一半。",
+        app_c_title: "歌曲升降调",
+        app_c_desc: "把整首歌升两个 key，就是给声波函数做平移和伸缩。KTV 那个按钮背后全是它。",
+        app_d_title: "数据归一化",
+        app_d_desc: "机器学习先把数据平移到 0、压缩到 1 再训练——专业名字叫归一化，其实就是 f(x) 的平移加伸缩。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "学会这四个旋钮，几乎所有函数图你都能一眼看穿。",
@@ -146,6 +159,17 @@
         formal_name: "Transformations of Functions · Translation / Scaling / Reflection",
         concept_title: "OK, the gist",
         concept: "Any function can be remixed with the same four moves: a makes it taller or flatter (and flips it upside-down when negative); b squeezes it sideways (and mirrors it when negative); h slides it left/right (mind the x − h); k slides it up/down. Learn these four knobs and you can read almost any graph at a glance.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Shift, flip, stretch — you use them daily",
+        apps_subtitle: "Every time a picture gets moved, zoomed or mirrored, a function transformation is on shift.",
+        app_a_title: "Photo editing",
+        app_a_desc: "Pinch-to-zoom is a scaling, crop-and-rotate is a transform — every gesture in a photo app is a function transformation.",
+        app_b_title: "Game sprites",
+        app_b_desc: "Characters walking left? Artists draw only the right-facing one — the engine flips it with a -x reflection.",
+        app_c_title: "Changing the key",
+        app_c_desc: "Transposing a song up two keys is shifting and scaling the sound wave — that karaoke button is pure function transformation.",
+        app_d_title: "Normalizing data",
+        app_d_desc: "Machine learning shifts data to 0 and squeezes it to 1 before training. Fancy name: normalization. Actual content: shift and stretch.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "Master these four knobs and you can read almost any graph at a glance.",
@@ -250,7 +274,12 @@
     };
 
     window.onLangChange = render;
-    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-indigo-500 to-violet-500' });
+    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-indigo-500 to-violet-500', apps: [
+      { icon: 'fa-image', grad: 'from-sky-500 to-cyan-500', k: 'app_a' },
+      { icon: 'fa-gamepad', grad: 'from-violet-500 to-fuchsia-500', k: 'app_b' },
+      { icon: 'fa-music', grad: 'from-rose-500 to-pink-500', k: 'app_c' },
+      { icon: 'fa-chart-line', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
     buildParents(); render();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

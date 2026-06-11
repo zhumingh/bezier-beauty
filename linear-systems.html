@@ -59,6 +59,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -114,6 +116,17 @@
         formal_name: "一次函数与二元一次方程组",
         concept_title: "说人话就是",
         concept: "y = mx + b 画出来就是一条直线：m 表示它有多陡（往右走一步往上跳多高），b 是它从 y 轴哪儿出发。把两条这样的方程摆一起，就叫“方程组”。它俩交叉的那个点同时满足两条线，所以那一点就是答案。平行线永远撞不上（无解）；要是俩其实是同一条线，那处处都算撞上（无穷多解）。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "两条线打架，生活里天天有",
+        apps_subtitle: "哪边更划算、什么时候回本——答案几乎都藏在两条直线的交点上。",
+        app_a_title: "选手机套餐",
+        app_a_desc: "月租贵但流量便宜 vs 月租便宜但流量贵——两条费用线的交点，就是你的换套餐时机。",
+        app_b_title: "奶茶店回本点",
+        app_b_desc: "开一家奶茶店：成本线和收入线相交的那一天，叫回本。老板们管它叫盈亏平衡点。",
+        app_c_title: "供需定价",
+        app_c_desc: "供给线和需求线一相交，市场价格就定了。经济学第一课画的就是这两条线。",
+        app_d_title: "追及问题",
+        app_d_desc: "你先走、我后追，什么时候追上？两条位置-时间直线的交点就是会合现场。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "两条线在哪儿相遇，背后其实是一整门超有用的数学。",
@@ -142,6 +155,17 @@
         formal_name: "Linear Functions & Systems of Equations",
         concept_title: "OK, the gist",
         concept: "y = mx + b draws a straight line: m is how steep it is (how high it jumps per step right) and b is where it starts on the y-axis. Stack two of these equations and you've got a 'system'. The point where they cross satisfies both lines at once, so that point is the answer. Parallel lines never meet (no solution); if they're secretly the same line, they meet everywhere (infinitely many).",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Two crossing lines run your daily life",
+        apps_subtitle: "Which deal is better, when do you break even — the answer usually hides at the crossing point of two straight lines.",
+        app_a_title: "Picking a phone plan",
+        app_a_desc: "High base fee + cheap data vs the opposite — the crossing of the two cost lines tells you exactly when to switch.",
+        app_b_title: "Break-even point",
+        app_b_desc: "Open a bubble-tea shop: the day the revenue line crosses the cost line, you break even. Business folks live by this point.",
+        app_c_title: "Supply meets demand",
+        app_c_desc: "Where the supply line meets the demand line, the market price is born. It's the first picture in every economics class.",
+        app_d_title: "The catch-up problem",
+        app_d_desc: "You start first, I chase later — when do I catch you? The intersection of two position-time lines is the meeting spot.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "Where two lines meet opens up a whole world of surprisingly useful math.",
@@ -259,7 +283,12 @@
     window.addEventListener('touchend', () => drag = null);
 
     window.onLangChange = render;
-    HSSIM.mount({ icon: 'fa-slash', gradient: 'from-emerald-500 to-teal-500' });
+    HSSIM.mount({ icon: 'fa-slash', gradient: 'from-emerald-500 to-teal-500', apps: [
+      { icon: 'fa-mobile-screen', grad: 'from-sky-500 to-blue-500', k: 'app_a' },
+      { icon: 'fa-store', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-scale-balanced', grad: 'from-emerald-500 to-teal-500', k: 'app_c' },
+      { icon: 'fa-person-running', grad: 'from-rose-500 to-pink-500', k: 'app_d' },
+    ] });
     render();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

@@ -68,6 +68,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -123,6 +125,17 @@
         formal_name: "散点图与最佳拟合线",
         concept_title: "说人话就是",
         concept: "现实数据从来不会乖乖排成一条直线，但我们常常想用一条直线去“概括”它的趋势。怎么算“最好”的那条？看每个点到直线的竖直距离（残差），把它们各自平方再相加——这条让“平方和”最小的直线，就是最佳拟合线，这套方法叫最小二乘法。R² 衡量直线解释了多少趋势：越接近 1 越贴合。身高体重、学习时间与分数、广告与销量……还有今天所有机器学习的回归模型，根子都在这儿。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这条趋势线其实无处不在",
+        apps_subtitle: "从天气到房价到体育，本质都是往一堆乱点里塞一条最贴的线。",
+        app_a_title: "气候趋势",
+        app_a_desc: "一百多年的气温点云很乱，但最佳拟合线的斜率清清楚楚——变暖了多少度就是这么算的。",
+        app_b_title: "房价估算",
+        app_b_desc: "面积越大越贵，但贵多少？拿成交记录拟合一条线，中介和银行都在用它估价。",
+        app_c_title: "点球成金",
+        app_c_desc: "《点球成金》的核心玩法：用回归从数据里挖出被低估的球员，花小钱赢大比赛。",
+        app_d_title: "机器学习的鼻祖",
+        app_d_desc: "线性回归就是最小号的机器学习：定义误差，然后把它调到最小。今天的大模型仍是同一思路的亿倍放大版。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "把直线换成更复杂的函数，再加亿点点数据，最小二乘就长成了机器学习。",
         ref_for: "送给 Sunday",
@@ -142,6 +155,17 @@
         formal_name: "Scatter Plots & the Line of Best Fit",
         concept_title: "OK, the gist",
         concept: "Real data never lines up neatly, yet we often want one straight line to capture its trend. How do we define the 'best' one? Take each point's vertical distance to the line (its residual), square each, and add them up — the line that makes that total as small as possible is the line of best fit, and the method is called least squares. R² measures how much of the trend the line explains: closer to 1 means a tighter fit. Height vs weight, study time vs grades, ad spend vs sales — and every regression model in today's machine learning — all trace back to this.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This trend line is secretly everywhere",
+        apps_subtitle: "Weather, house prices, sports stats — under the hood it's all snapping the closest line through a cloud of dots.",
+        app_a_title: "Climate trends",
+        app_a_desc: "A century of temperature dots is noisy, but the best-fit line's slope is crystal clear — that's where degrees-of-warming numbers come from.",
+        app_b_title: "House prices",
+        app_b_desc: "Bigger is pricier — but how much? Fit a line through sale records and you've built the estimator agents and banks actually use.",
+        app_c_title: "Moneyball",
+        app_c_desc: "The whole Moneyball play: regression digs undervalued players out of the stats, winning big games on a small budget.",
+        app_d_title: "ML's grandparent",
+        app_d_desc: "Linear regression is the smallest machine-learning model: define the error, minimize it. Today's giant models are the same idea scaled a billion-fold.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Swap the straight line for fancier functions, add a ton more data, and least squares grows up into machine learning.",
         ref_for: "for Sunday",
@@ -284,7 +308,12 @@
     document.getElementById('showRes').onchange = e => { showRes = e.target.checked; update(); };
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-arrow-trend-up', gradient: 'from-sky-500 to-blue-500' });
+    HSSIM.mount({ icon: 'fa-arrow-trend-up', gradient: 'from-sky-500 to-blue-500', apps: [
+      { icon: 'fa-temperature-half', grad: 'from-emerald-500 to-teal-500', k: 'app_a' },
+      { icon: 'fa-house', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-medal', grad: 'from-rose-500 to-pink-500', k: 'app_c' },
+      { icon: 'fa-brain', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     randomBatch(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

@@ -83,6 +83,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -138,6 +140,17 @@
         formal_name: "等差数列与等比数列",
         concept_title: "说人话就是",
         concept: "数列就是按规律排好的一串数。两种最常见：等差数列每次“加”同一个数 d，所以 aₙ = a₁ + (n−1)d，画成柱子是匀速变高，累加和是一条向上的抛物线；等比数列每次“乘”同一个数 r，所以 aₙ = a₁·rⁿ⁻¹，只要 r>1 就越长越猛——这正是复利和指数增长的源头。把它们加起来就成了“级数”：等差和 = 项数 × 平均值，等比和有个漂亮公式 a₁(1−rⁿ)/(1−r)。存钱、还贷、人口、折纸……背后都是这两串数。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这两种涨法其实无处不在",
+        apps_subtitle: "工资、房贷、琴键、转发——不是在等差，就是在等比。",
+        app_a_title: "攒钱与工资",
+        app_a_desc: "每月固定存 500 是等差；年薪每年涨 5% 是等比。几十年后，差距大到离谱。",
+        app_b_title: "房贷月供表",
+        app_b_desc: "房贷账单就是数列题：本金按等差还，利息按等比滚。银行的表格里全是这两兄弟。",
+        app_c_title: "钢琴音阶",
+        app_c_desc: "琴键看着等距（等差），频率其实每 12 个键翻一倍（等比，比值是 2 的 12 次方根）。音乐是耳朵里的等比数列。",
+        app_d_title: "转发裂变",
+        app_d_desc: "一条消息每人转给 3 个朋友：1、3、9、27……十几步就盖过全城。病毒式传播是字面意义上的等比数列。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "把一张纸对折 42 次就能够到月球——那就是等比数列的疯狂。",
         ref_for: "送给 Sunday",
@@ -157,6 +170,17 @@
         formal_name: "Arithmetic & Geometric Sequences",
         concept_title: "OK, the gist",
         concept: "A sequence is just a list of numbers built by a rule. The two classics: an arithmetic sequence adds the same number d each time, so aₙ = a₁ + (n−1)d — the bars rise at a steady pace and the running sum traces an upward parabola. A geometric sequence multiplies by the same number r each time, so aₙ = a₁·rⁿ⁻¹ — and if r>1 it explodes, which is exactly the source of compound interest and exponential growth. Add the terms up and you get a 'series': the arithmetic sum is terms × average, and the geometric sum has a tidy formula a₁(1−rⁿ)/(1−r). Saving, loans, populations, paper-folding — all run on these two lists.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "These two growth styles are secretly everywhere",
+        apps_subtitle: "Salaries, mortgages, piano keys, retweets — everything either climbs the stairs or rides the rocket.",
+        app_a_title: "Saving & salaries",
+        app_a_desc: "Stashing a fixed $500 a month is arithmetic; a 5% yearly raise is geometric. Decades later the gap is absurd.",
+        app_b_title: "Mortgage tables",
+        app_b_desc: "A mortgage schedule is sequence homework: principal retires arithmetically, interest compounds geometrically. Banks live in these tables.",
+        app_c_title: "Piano keys",
+        app_c_desc: "Keys look evenly spaced (arithmetic) but frequencies double every 12 keys (geometric, ratio the 12th root of 2). Music is a geometric sequence for your ears.",
+        app_d_title: "Going viral",
+        app_d_desc: "Each person forwards to 3 friends: 1, 3, 9, 27… a dozen steps swallows a city. Viral is literally a geometric sequence.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Fold a sheet of paper 42 times and it reaches the Moon — that's the madness of a geometric sequence.",
         ref_for: "for Sunday",
@@ -259,7 +283,12 @@
     document.getElementById('sn').oninput = e => { N = parseInt(e.target.value); update(); };
 
     window.onLangChange = () => { refreshMode(); update(); };
-    HSSIM.mount({ icon: 'fa-stairs', gradient: 'from-lime-500 to-green-500' });
+    HSSIM.mount({ icon: 'fa-stairs', gradient: 'from-lime-500 to-green-500', apps: [
+      { icon: 'fa-piggy-bank', grad: 'from-emerald-500 to-teal-500', k: 'app_a' },
+      { icon: 'fa-house', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-music', grad: 'from-rose-500 to-pink-500', k: 'app_c' },
+      { icon: 'fa-share-nodes', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     refreshMode(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

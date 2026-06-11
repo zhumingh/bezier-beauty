@@ -81,6 +81,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -136,6 +138,17 @@
         formal_name: "指数增长与复利",
         concept_title: "说人话就是",
         concept: "“每年加同样多的钱”是单利，画出来是一条笔直的斜线。“每年在现有总额上再涨百分之几”是复利——今年的利息明年也会生利息，于是越滚越快。复利前期跟单利几乎贴在一起，让人以为差不多；可一旦时间拉长，指数那条线会突然拐头往上冲，把直线远远甩在身后。这就是为什么“越早开始存钱”威力惊人。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "指数其实无处不在",
+        apps_subtitle: "凡是越多就长得越快的东西，都在指数曲线上飞。",
+        app_a_title: "复利滚雪球",
+        app_a_desc: "利息生利息，雪球越滚越快。爱因斯坦（据说）管复利叫世界第八大奇迹。",
+        app_b_title: "病毒传播",
+        app_b_desc: "一传三、三传九……疫情早期的确诊曲线就是指数。翻倍时间是流行病学家最盯的数字。",
+        app_c_title: "碳定年",
+        app_c_desc: "放射性原子按指数衰减，每过一个半衰期剩一半。考古学家靠碳-14 算出木乃伊几岁。",
+        app_d_title: "摩尔定律",
+        app_d_desc: "芯片晶体管数量大约每两年翻一倍，翻了半个多世纪——你的手机比登月计算机强一百万倍就是这么来的。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "病毒传播、人口、利息、摩尔定律……指数增长是理解现代世界的关键直觉。",
         ref_for: "送给 Sunday",
@@ -155,6 +168,17 @@
         formal_name: "Exponential Growth & Compound Interest",
         concept_title: "OK, the gist",
         concept: "Adding the same amount of money every year is simple interest — a perfectly straight line. Earning a fixed percentage on your whole balance every year is compound interest: this year's interest earns interest next year, so it snowballs. Early on, compound hugs the straight line and feels no different. But stretch the time out and the exponential line suddenly hooks upward and rockets past it. That's exactly why starting to save early is so absurdly powerful.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Exponentials are secretly everywhere",
+        apps_subtitle: "Anything that grows faster the bigger it gets is riding an exponential.",
+        app_a_title: "Compound interest",
+        app_a_desc: "Interest earns interest, and the snowball accelerates. Einstein (allegedly) called it the eighth wonder of the world.",
+        app_b_title: "How outbreaks spread",
+        app_b_desc: "One infects three, three infect nine. Early epidemic curves are exponential — doubling time is the number epidemiologists watch.",
+        app_c_title: "Carbon dating",
+        app_c_desc: "Radioactive atoms decay exponentially — half gone per half-life. That's how archaeologists age a mummy with carbon-14.",
+        app_d_title: "Moore's law",
+        app_d_desc: "Transistor counts doubled roughly every two years for half a century. That's why your phone out-computes the Apollo guidance computer a million-fold.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Viral spread, population, interest, Moore's law — exponential growth is core intuition for the modern world.",
         ref_for: "for Sunday",
@@ -265,7 +289,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-rocket', gradient: 'from-orange-500 to-red-500' });
+    HSSIM.mount({ icon: 'fa-rocket', gradient: 'from-orange-500 to-red-500', apps: [
+      { icon: 'fa-piggy-bank', grad: 'from-emerald-500 to-teal-500', k: 'app_a' },
+      { icon: 'fa-virus', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-radiation', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-microchip', grad: 'from-sky-500 to-indigo-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

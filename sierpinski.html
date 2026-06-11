@@ -62,6 +62,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -115,6 +117,17 @@
         points: "已经点了", formal_name: "分形几何 · 谢尔宾斯基三角形与混沌游戏",
         concept_title: "说人话就是",
         concept: "在三角形上玩“混沌游戏”：随便从哪儿出发，每次随机挑一个角、走到中点、点一下。看起来就是瞎点，结果却必然拼出谢尔宾斯基三角形——一个放大多少倍都长一个样的分形。它告诉你：简单规则 + 随机，照样能造出超有秩序、还能复现的图案。把角数改成 4、5、6，会蹦出完全不同的花样，自己试试！",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "分形其实无处不在",
+        apps_subtitle: "放大一小块，长得还跟整体一样——大自然和电影特效都爱这招。",
+        app_a_title: "西兰花与蕨类",
+        app_a_desc: "掰一小朵罗马花椰菜，它就是整颗的迷你版。蕨类叶子也是一层套一层的自相似。",
+        app_b_title: "肺和血管",
+        app_b_desc: "气管分两支，再分两支……分形结构让肺把一个网球场大的表面积塞进胸腔。",
+        app_c_title: "电影里的山",
+        app_c_desc: "特效师不用一块块捏山——一条分形噪声就能长出乱真的山脉、云层和海岸线。",
+        app_d_title: "分形天线",
+        app_d_desc: "手机天线折成自相似的形状，一根就能同时接收多个频段——小身材全靠分形。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "纯随机却拼出同一个图案——分形的世界里还有更多惊喜。",
@@ -142,6 +155,17 @@
         points: "Dots so far", formal_name: "Fractal Geometry · the Sierpiński Triangle & Chaos Game",
         concept_title: "OK, the gist",
         concept: "Play the 'chaos game' on a triangle: start anywhere, keep picking a random corner, step halfway, and dot. Looks like pure flailing — yet it always builds the Sierpinski triangle, a shape that looks the same no matter how far you zoom in. The takeaway: simple rules + randomness can still make something super ordered and repeatable. Bump the corners up to 4, 5 or 6 for totally different patterns — try it!",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Fractals are secretly everywhere",
+        apps_subtitle: "Zoom in and the piece looks like the whole — nature and VFX studios both adore this trick.",
+        app_a_title: "Broccoli & ferns",
+        app_a_desc: "Snap off a floret of Romanesco and it's a mini copy of the whole head. Fern leaves nest the same way.",
+        app_b_title: "Lungs & blood vessels",
+        app_b_desc: "Airways split, then split again. That fractal branching packs a tennis court of surface area inside your chest.",
+        app_c_title: "CGI mountains",
+        app_c_desc: "VFX artists don't sculpt peaks by hand — fractal noise grows convincing mountains, clouds and coastlines on its own.",
+        app_d_title: "Fractal antennas",
+        app_d_desc: "Fold an antenna into a self-similar shape and one tiny strip picks up many bands at once. Your phone does this.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "Pure randomness, same shape every time — the world of fractals has plenty more.",
@@ -222,7 +246,12 @@
     };
 
     window.onLangChange = () => { document.getElementById('play-text').textContent = HSSIM.t(playing ? 'pause' : 'play'); };
-    HSSIM.mount({ icon: 'fa-shapes', gradient: 'from-cyan-500 to-blue-500' });
+    HSSIM.mount({ icon: 'fa-shapes', gradient: 'from-cyan-500 to-blue-500', apps: [
+      { icon: 'fa-seedling', grad: 'from-lime-500 to-emerald-500', k: 'app_a' },
+      { icon: 'fa-lungs', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-mountain', grad: 'from-sky-500 to-indigo-500', k: 'app_c' },
+      { icon: 'fa-tower-cell', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     document.getElementById('vv').textContent = vcount;
     setVerts(); clear();
   </script>

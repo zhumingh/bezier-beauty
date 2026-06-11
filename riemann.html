@@ -78,6 +78,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -133,6 +135,17 @@
         formal_name: "曲线下面积与黎曼和",
         concept_title: "说人话就是",
         concept: "求“直边图形”的面积很容易，可曲线下的面积没有现成公式。黎曼的招数很朴素：把区间切成 n 段，每段上立一个长方形，宽是 Δx、高取这一段某点的函数值，然后把 n 个 “高 × 宽” 加起来当作估计。用左端、右端还是中点取高度会略有差别，但只要不停把方块切细（n 越来越大），这些差别都会消失，总和收敛到同一个精确值——那个值就是定积分 ∫f(x)dx，也就是曲线下的真实面积。距离、体积、概率、做功……全是“某个东西在曲线下的面积”。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "切条求和，其实无处不在",
+        apps_subtitle: "把不规则的东西切成小条再加起来——这一个想法撑起了半个现代科学。",
+        app_a_title: "速度算路程",
+        app_a_desc: "速度一直在变，总路程怎么算？速度-时间曲线下的面积就是答案，跟这页的小方块一模一样。",
+        app_b_title: "不规则土地",
+        app_b_desc: "河边弯弯曲曲的地块怎么报面积？切成一条条窄带分别量再加总。测绘员的日常就是黎曼和。",
+        app_c_title: "手机充了多少电",
+        app_c_desc: "充进的电量是把充电电流对时间累积出来的——电量百分比就是一个正在实时计算的积分。",
+        app_d_title: "药物浓度",
+        app_d_desc: "药效看的是血药浓度曲线下的面积，医学里就叫 AUC。药的剂量怎么定？切条，求和，积分。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "积分是导数的逆操作——这条联系就是大名鼎鼎的微积分基本定理。",
         ref_for: "送给 Sunday",
@@ -152,6 +165,17 @@
         formal_name: "Area Under a Curve · Riemann Sums",
         concept_title: "OK, the gist",
         concept: "Finding the area of a straight-edged shape is easy, but the area under a curve has no off-the-shelf formula. Riemann's trick is humble: chop the interval into n slices, stand a rectangle on each one — width Δx, height the function value at some point in that slice — and add up all the 'height × width' pieces as an estimate. Taking the height at the left, right, or midpoint gives slightly different answers, but as you keep slicing thinner (n → ∞), those differences vanish and the total converges to one exact value — the definite integral ∫f(x)dx, the true area under the curve. Distance, volume, probability, work done — they're all 'the area under some curve'.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Slice-and-add is secretly everywhere",
+        apps_subtitle: "Chop the irregular thing into strips and add them up — this one idea props up half of modern science.",
+        app_a_title: "Distance from speed",
+        app_a_desc: "Speed keeps changing — so what's the total distance? The area under the speed-time curve, summed exactly like the bars on this page.",
+        app_b_title: "Odd-shaped land",
+        app_b_desc: "A plot with a curvy river edge? Slice it into narrow strips, measure each, add. A surveyor's day job is a Riemann sum.",
+        app_c_title: "Charging your phone",
+        app_c_desc: "Charge gained is current accumulated over time. That battery percentage is an integral being computed live.",
+        app_d_title: "Drug dosing",
+        app_d_desc: "Effectiveness tracks the area under the blood-concentration curve — medicine literally calls it AUC. Dosages come from slicing and summing.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Integration undoes differentiation — that link is the celebrated Fundamental Theorem of Calculus.",
         ref_for: "for Sunday",
@@ -242,7 +266,12 @@
     document.getElementById('sn').oninput = e => { N = parseInt(e.target.value); update(); };
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-chart-column', gradient: 'from-cyan-500 to-teal-500' });
+    HSSIM.mount({ icon: 'fa-chart-column', gradient: 'from-cyan-500 to-teal-500', apps: [
+      { icon: 'fa-car', grad: 'from-sky-500 to-blue-500', k: 'app_a' },
+      { icon: 'fa-draw-polygon', grad: 'from-emerald-500 to-teal-500', k: 'app_b' },
+      { icon: 'fa-battery-half', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-pills', grad: 'from-rose-500 to-pink-500', k: 'app_d' },
+    ] });
     refreshBtns(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

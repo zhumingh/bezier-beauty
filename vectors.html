@@ -84,6 +84,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -139,6 +141,17 @@
         formal_name: "向量加法与点积",
         concept_title: "说人话就是",
         concept: "向量就是一个“带方向的箭头”，用 (x, y) 记它走了多远、朝哪走。两个向量相加：把第二个的尾巴接到第一个的尖端，从最开始走到最后到的地方，就是和——画出来正好是个平行四边形的对角线。点积 a·b = |a||b|cosθ 衡量两个箭头有多“同向”：完全同向时最大，垂直时是 0，反向时变负。它等于 a 在 b 上影子的长度乘以 |b|。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "箭头其实无处不在",
+        apps_subtitle: "凡是既有大小又有方向的东西，都归向量管。",
+        app_a_title: "游戏角色移动",
+        app_a_desc: "角色每帧的位移都是速度向量。同时被风吹、被推、往前跑？向量加法一锅端。",
+        app_b_title: "飞机顶风飞",
+        app_b_desc: "机头方向加上风的向量，才是真实航迹。飞行员每天都在用向量加法修正航向。",
+        app_c_title: "受力分析",
+        app_c_desc: "物理题里画的每一个力都是向量，合力就是把箭头首尾相接——平衡就是它们正好绕回原点。",
+        app_d_title: "3D 光照",
+        app_d_desc: "游戏画面里一个面有多亮？光线向量和法线向量做个点积就知道——GPU 每秒做几十亿次。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "游戏、物理、AI 里的“相似度”，全靠向量和点积。",
         ref_for: "送给 Sunday",
@@ -158,6 +171,17 @@
         formal_name: "Vector Addition & the Dot Product",
         concept_title: "OK, the gist",
         concept: "A vector is just an arrow with direction, written (x, y) for how far it goes and which way. To add two of them, stick the tail of the second onto the tip of the first; where you end up is the sum — drawn out, it's the diagonal of a parallelogram. The dot product a·b = |a||b|cosθ measures how much they point the same way: biggest when aligned, 0 when perpendicular, negative when opposed. It equals the length of a's shadow on b times |b|.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Arrows are secretly everywhere",
+        apps_subtitle: "Anything with both a size and a direction is vector business.",
+        app_a_title: "Moving game characters",
+        app_a_desc: "Each frame's movement is a velocity vector. Wind plus push plus run at once? Vector addition handles the pile-up.",
+        app_b_title: "Planes vs wind",
+        app_b_desc: "Heading plus wind vector equals the real track. Pilots correct course with vector addition every single flight.",
+        app_c_title: "Forces in physics",
+        app_c_desc: "Every force in a physics diagram is a vector; the net force is tip-to-tail addition — equilibrium means the arrows loop home.",
+        app_d_title: "3D lighting",
+        app_d_desc: "How bright is that surface? Dot the light vector with the surface normal. Your GPU does this billions of times a second.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Games, physics, and 'similarity' in AI all run on vectors and the dot product.",
         ref_for: "for Sunday",
@@ -327,7 +351,12 @@
     window.addEventListener('touchend', () => drag = null);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-emerald-500 to-sky-500' });
+    HSSIM.mount({ icon: 'fa-arrows-up-down-left-right', gradient: 'from-emerald-500 to-sky-500', apps: [
+      { icon: 'fa-gamepad', grad: 'from-violet-500 to-fuchsia-500', k: 'app_a' },
+      { icon: 'fa-plane', grad: 'from-sky-500 to-cyan-500', k: 'app_b' },
+      { icon: 'fa-arrows-to-dot', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-lightbulb', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
     update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->
