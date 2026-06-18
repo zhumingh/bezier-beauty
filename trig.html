@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -59,6 +60,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -112,6 +115,17 @@
         formal_name: "三角函数 · 单位圆与正弦、余弦",
         concept_title: "说人话就是",
         concept: "单位圆就是个半径为 1 的圆。上面一个点对应角度 θ：它的高度（纵坐标）就是 sin θ，左右位置（横坐标）就是 cos θ，tan θ 就是两者相除。让 θ 一直变大，把这个高度顺着时间画下来，就得到一条平滑起伏的波浪。你听的每段声音、手机收的每个信号，本质上都是这种波叠在一起。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这道波浪其实无处不在",
+        apps_subtitle: "凡是会重复的东西——声音、电流、潮汐——背后都是正弦波。",
+        app_a_title: "你听到的每个音",
+        app_a_desc: "每个音符都是空气在按正弦规律振动。音高是频率，音量是振幅。",
+        app_b_title: "插座里的电",
+        app_b_desc: "墙上插座的电压每秒按正弦波摆动 50~60 次——整张电网就是一条巨大的 sin 曲线。",
+        app_c_title: "潮汐与白昼",
+        app_c_desc: "海水涨落、白天长短、四季气温，全在画又慢又稳的正弦波。",
+        app_d_title: "Wi-Fi 与电台",
+        app_d_desc: "手机信号、Wi-Fi、广播全是高频正弦波，靠改变幅度或频率把信息驮出去。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "如果“转圈变波浪”让你觉得神奇，下面这几个视频和网站能让你看得更过瘾。",
@@ -138,6 +152,17 @@
         formal_name: "Trigonometry · the Unit Circle, Sine & Cosine",
         concept_title: "OK, the gist",
         concept: "The unit circle is just a circle with radius 1. A point on it sits at angle θ: its height (y) is sin θ, its left/right position (x) is cos θ, and tan θ is one divided by the other. Let θ keep growing and plot that height over time — you get a smooth rolling wave. Every sound you hear and every signal your phone catches is basically a stack of these waves.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This wave is secretly everywhere",
+        apps_subtitle: "Anything that repeats — sound, current, tides — is riding a sine wave.",
+        app_a_title: "Every sound you hear",
+        app_a_desc: "Each note is air vibrating in sine fashion. Pitch is the frequency, loudness is the amplitude.",
+        app_b_title: "The power grid",
+        app_b_desc: "The voltage in your wall socket swings as a sine wave 50–60 times a second. The grid is one giant sin curve.",
+        app_c_title: "Tides & daylight",
+        app_c_desc: "Tides rise and fall, days stretch and shrink, seasons warm and cool — all slow, steady sine waves.",
+        app_d_title: "Wi-Fi & radio",
+        app_d_desc: "Phone signals, Wi-Fi and radio are high-speed sine waves, smuggling information by tweaking amplitude or frequency.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "If circles-turning-into-waves blew your mind, these videos and pages take it further.",
@@ -251,7 +276,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = render;
-    HSSIM.mount({ icon: 'fa-wave-square', gradient: 'from-rose-500 to-pink-500' });
+    HSSIM.mount({ icon: 'fa-wave-square', gradient: 'from-rose-500 to-pink-500', apps: [
+      { icon: 'fa-music', grad: 'from-rose-500 to-pink-500', k: 'app_a' },
+      { icon: 'fa-bolt', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-water', grad: 'from-sky-500 to-cyan-500', k: 'app_c' },
+      { icon: 'fa-wifi', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     syncSlider(); render();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

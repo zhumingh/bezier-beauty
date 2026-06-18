@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -85,6 +86,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -140,6 +143,17 @@
         formal_name: "导数与切线斜率",
         concept_title: "说人话就是",
         concept: "“割线”穿过曲线上的两个点，它的斜率是 (f(x+h)−f(x)) / h，也就是“涨了多少 ÷ 走了多远”。当你把两点的间距 h 越缩越小，这条割线就越来越贴着曲线，最后变成只碰一点的“切线”。这条切线的斜率，就是导数 f′(x)——它告诉你曲线在那一点到底有多陡、是往上冲还是往下掉。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "变化率其实无处不在",
+        apps_subtitle: "只要有人问现在变得多快，他问的就是导数。",
+        app_a_title: "车上的速度表",
+        app_a_desc: "速度表显示的就是位置对时间的导数——此刻你跑多快，而不是平均多快。",
+        app_b_title: "最划算的点",
+        app_b_desc: "利润什么时候最大、材料什么时候最省？导数等于 0 的地方就是山顶和谷底。",
+        app_c_title: "物理全家桶",
+        app_c_desc: "速度是位置的导数，加速度是速度的导数。牛顿当年就是为了算这些才发明微积分。",
+        app_d_title: "AI 下山法",
+        app_d_desc: "训练 AI 就是不停沿着导数指的下坡方向挪一小步。名字很酷：梯度下降。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "速度、加速度、最优解……导数是整个微积分的开门钥匙。",
         ref_for: "送给 Sunday",
@@ -159,6 +173,17 @@
         formal_name: "The Derivative & Tangent Slope",
         concept_title: "OK, the gist",
         concept: "A 'secant' line cuts the curve at two points; its slope is (f(x+h)−f(x)) / h — literally 'how much it rose ÷ how far you walked'. Shrink the gap h smaller and smaller and the secant hugs the curve until it touches at just one point: the tangent. That tangent's slope is the derivative f′(x) — it tells you exactly how steep the curve is right there, and whether it's climbing or falling.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Rates of change are secretly everywhere",
+        apps_subtitle: "Any time someone asks how fast something is changing right now, they're asking for a derivative.",
+        app_a_title: "Your speedometer",
+        app_a_desc: "The dial shows the derivative of position with respect to time — how fast right now, not on average.",
+        app_b_title: "Best-deal hunting",
+        app_b_desc: "Maximum profit, minimum material — the peaks and valleys live exactly where the derivative hits zero.",
+        app_c_title: "Physics, all of it",
+        app_c_desc: "Velocity is the derivative of position; acceleration, of velocity. Newton invented calculus precisely to compute these.",
+        app_d_title: "AI's downhill walk",
+        app_d_desc: "Training an AI means repeatedly stepping the way the derivative points downhill. Cool name: gradient descent.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Speed, acceleration, finding the best answer — the derivative is the front door to all of calculus.",
         ref_for: "for Sunday",
@@ -322,7 +347,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-indigo-500' });
+    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-indigo-500', apps: [
+      { icon: 'fa-gauge-high', grad: 'from-sky-500 to-blue-500', k: 'app_a' },
+      { icon: 'fa-sack-dollar', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-rocket', grad: 'from-rose-500 to-pink-500', k: 'app_c' },
+      { icon: 'fa-brain', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     refreshFnBtns(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

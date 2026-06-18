@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -80,6 +81,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -136,6 +139,17 @@
         formal_name: "二次函数与抛物线",
         concept_title: "说人话就是",
         concept: "任何二次函数画出来都是这种弧线，名字叫抛物线。顶点式 y = a(x−h)² + k 特别贴心：直接告诉你最高/最低点在 (h, k)。h 管左右、k 管上下、a 管开口朝哪儿和胖瘦。展开一下就是课本里那个 y = ax² + bx + c。弧线碰到横轴的地方，就是方程的“解”（也叫根）。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这条弧线其实无处不在",
+        apps_subtitle: "只要有东西被扔出去、有光被聚起来，抛物线就在场。",
+        app_a_title: "投篮与喷泉",
+        app_a_desc: "篮球出手后的飞行路线、公园喷泉的水柱，全是标准抛物线——重力亲手画的。",
+        app_b_title: "卫星锅与车灯",
+        app_b_desc: "抛物面有个绝活：把平行进来的信号全反射到同一个焦点。卫星天线收信号、车灯打远光，用的都是它。",
+        app_c_title: "拱桥与悬索",
+        app_c_desc: "很多大桥的主缆和拱形结构都贴着抛物线设计，受力最均匀，所以又稳又省料。",
+        app_d_title: "游戏物理",
+        app_d_desc: "愤怒的小鸟、马里奥的跳跃……游戏引擎里每一次起跳和投掷，背后都是一条二次函数。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "投篮、喷泉、跳水都在画这条线——再看看它还藏在哪些地方。",
@@ -165,6 +179,17 @@
         formal_name: "Quadratic Functions & the Parabola",
         concept_title: "OK, the gist",
         concept: "Every quadratic draws this same arc — a parabola. Vertex form y = a(x−h)² + k is the friendly one: it straight-up tells you the highest/lowest point is at (h, k). h moves it sideways, k moves it up/down, and a decides which way it opens and how chunky it is. Expand it and you get the textbook y = ax² + bx + c. Where the arc touches the x-axis = the answers (a.k.a. roots).",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This arc is secretly everywhere",
+        apps_subtitle: "Anywhere something gets thrown or light gets focused, a parabola is on the scene.",
+        app_a_title: "Basketball shots & fountains",
+        app_a_desc: "A ball's flight after it leaves your hands and every fountain's water jet are textbook parabolas — drawn by gravity itself.",
+        app_b_title: "Satellite dishes & headlights",
+        app_b_desc: "A parabolic dish has one superpower: it bounces incoming parallel rays to a single focus. Dishes collect, headlights blast — same trick, reversed.",
+        app_c_title: "Bridges & arches",
+        app_c_desc: "Suspension-bridge cables and many arches hug a parabola because it spreads the load evenly — strong and material-cheap.",
+        app_d_title: "Game physics",
+        app_d_desc: "Angry Birds' flings and Mario's jumps — every leap and lob in a game engine is a quadratic doing the math.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "Free throws, fountains, dives — they all draw this curve. See where else it hides.",
@@ -303,7 +328,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = update;
-    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-cyan-500' });
+    HSSIM.mount({ icon: 'fa-chart-line', gradient: 'from-sky-500 to-cyan-500', apps: [
+      { icon: 'fa-basketball', grad: 'from-orange-500 to-amber-500', k: 'app_a' },
+      { icon: 'fa-satellite-dish', grad: 'from-sky-500 to-blue-500', k: 'app_b' },
+      { icon: 'fa-archway', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-gamepad', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     syncSliders(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

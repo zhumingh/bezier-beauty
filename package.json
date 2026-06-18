@@ -1,0 +1,24 @@
+{
+  "name": "bezier-beauty",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HSSIM — a growing playground of interactive, bilingual (简体中文 / English) math toys for high-schoolers.",
+  "scripts": {
+    "serve": "python3 -m http.server 8765",
+    "test": "node tests/validate.mjs",
+    "test:runtime": "node tests/runtime.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhumingh/bezier-beauty.git"
+  },
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zhumingh/bezier-beauty/issues"
+  },
+  "homepage": "https://github.com/zhumingh/bezier-beauty#readme",
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

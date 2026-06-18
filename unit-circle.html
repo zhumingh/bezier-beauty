@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -73,6 +74,8 @@
         </div>
       </div>
 
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -127,6 +130,17 @@
         formal_name: "单位圆与三角函数",
         concept_title: "说人话就是",
         concept: "画一个半径是 1 的圆（单位圆）。让一个点绕着它跑，跑到角度 θ 的时候：这个点的“高度”就是 sin θ，它的“横向位置”就是 cos θ。所以圆和波浪根本是同一件事——把绕圈的高度沿时间摊平，就得到了你在声音、潮汐、弹簧、交流电里看到的那条波。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "转圈这件事，其实无处不在",
+        apps_subtitle: "凡是绕圈的运动，投影出来都是 sin 和 cos。",
+        app_a_title: "摩天轮的高度",
+        app_a_desc: "摩天轮上你的高度随时间画出正弦波——cos 管水平，sin 管竖直，跟这页的圆一模一样。",
+        app_b_title: "时钟与齿轮",
+        app_b_desc: "钟表指针尖的坐标就是半径乘 (cos θ, sin θ)。所有旋转机械都靠这套坐标。",
+        app_c_title: "游戏瞄准",
+        app_c_desc: "游戏里朝任意方向开火，子弹速度就是速度乘 (cos θ, sin θ)——引擎每帧都在查单位圆。",
+        app_d_title: "GPS 与航海",
+        app_d_desc: "把航向角拆成东西、南北两个分量，靠的还是单位圆。水手们用三角表干了几百年。",
         ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
         ref_subtitle: "声音、潮汐、秋千、交流电……全是这条波。再看看它还藏在哪儿。",
         ref_for: "送给 Sunday",
@@ -145,6 +159,17 @@
         formal_name: "The Unit Circle & Trig Functions",
         concept_title: "OK, the gist",
         concept: "Draw a circle of radius 1 (the unit circle). Send a dot around it. At angle θ, the dot's height is sin θ and its sideways position is cos θ. So a circle and a wave are the same thing — unroll the height over time and you get the exact wave behind sound, tides, springs and AC electricity.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Going in circles is secretly everywhere",
+        apps_subtitle: "Anything that spins casts sin and cos as its shadow.",
+        app_a_title: "Ferris-wheel height",
+        app_a_desc: "Your height on a Ferris wheel traces a sine wave over time — cos handles horizontal, sin vertical, exactly like this circle.",
+        app_b_title: "Clocks & gears",
+        app_b_desc: "A clock hand's tip sits at radius × (cos θ, sin θ). Every rotating machine is steered with these coordinates.",
+        app_c_title: "Aiming in games",
+        app_c_desc: "Fire in any direction and the bullet's velocity is speed × (cos θ, sin θ). Game engines consult the unit circle every frame.",
+        app_d_title: "Navigation",
+        app_d_desc: "Turning a compass heading into east-west and north-south components is unit-circle work. Sailors did it with trig tables for centuries.",
         ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
         ref_subtitle: "Sound, tides, swings, AC power — all this same wave. See where else it hides.",
         ref_for: "for Sunday",
@@ -327,7 +352,12 @@
     window.addEventListener('touchend', () => dragging = false);
 
     window.onLangChange = () => { document.getElementById('play-label').textContent = HSSIM.t(playing ? 'pause' : 'play'); update(); };
-    HSSIM.mount({ icon: 'fa-circle-notch', gradient: 'from-rose-500 to-pink-500' });
+    HSSIM.mount({ icon: 'fa-circle-notch', gradient: 'from-rose-500 to-pink-500', apps: [
+      { icon: 'fa-circle-dot', grad: 'from-rose-500 to-pink-500', k: 'app_a' },
+      { icon: 'fa-clock', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-crosshairs', grad: 'from-violet-500 to-fuchsia-500', k: 'app_c' },
+      { icon: 'fa-compass', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
     refreshCurveBtns(); update();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四个数字，扭曲整个空间 · Matrix Transformations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">MATRIX TRANSFORMATIONS</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">四个数字，扭曲整个空间</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">2×2 矩阵对网格的变换</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">一个 2×2 矩阵就能把整张方格纸旋转、拉伸、剪切。看两个基向量 î、ĵ 被搬到哪里，整个网格就跟着去哪里。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="700"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl"
+                  style="aspect-ratio: 900 / 700;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-rose-400">a</span><span id="va" class="font-mono text-rose-400"></span></div>
+                <input type="range" id="sa" min="-2" max="2" step="0.1" value="1" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-emerald-400">b</span><span id="vb" class="font-mono text-emerald-400"></span></div>
+                <input type="range" id="sb" min="-2" max="2" step="0.1" value="0" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-rose-400">c</span><span id="vc" class="font-mono text-rose-400"></span></div>
+                <input type="range" id="sc" min="-2" max="2" step="0.1" value="0" class="w-full">
+              </div>
+              <div>
+                <div class="flex justify-between text-xs mb-1"><span class="text-emerald-400">d</span><span id="vd" class="font-mono text-emerald-400"></span></div>
+                <input type="range" id="sd" min="-2" max="2" step="0.1" value="1" class="w-full">
+              </div>
+            </div>
+            <div>
+              <div class="text-xs text-slate-400 mb-2" data-i18n="presets">现成的几种变换</div>
+              <div class="flex flex-wrap gap-2">
+                <button data-p="id" class="ps-btn px-2.5 py-1 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="p_id">单位</button>
+                <button data-p="rot" class="ps-btn px-2.5 py-1 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="p_rot">旋转90°</button>
+                <button data-p="scale" class="ps-btn px-2.5 py-1 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="p_scale">放大2×</button>
+                <button data-p="shear" class="ps-btn px-2.5 py-1 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="p_shear">剪切</button>
+                <button data-p="flip" class="ps-btn px-2.5 py-1 rounded-2xl text-xs font-medium border border-slate-700 bg-slate-800" data-i18n="p_flip">水平翻转</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400">î → </span><span id="r-i" class="font-mono text-rose-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400">ĵ → </span><span id="r-j" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_det">行列式 = 面积倍数</span><span id="r-det" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_orient">是否翻面</span><span id="r-orient" class="font-mono text-violet-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">矩阵的两列就是 î、ĵ 变换后落到的新位置。空间里其它所有点都按同样的规则被搬走。</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="hssim-apps"></div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=kYB8IZa5AuE" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/matrix-transform.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="vectors.html" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">站内 · HSSIM</span><i class="fa-solid fa-arrow-right text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-arrows-up-down-left-right text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Transformation_matrix" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "四个数字，扭曲整个空间 · HSSIM", nav_title: "扭曲空间", nav_subtitle: "2×2 矩阵变换",
+        kicker: "矩阵变换 · 线性代数", title: "四个数字，扭曲整个空间",
+        intro: "一个 2×2 矩阵就是一台“空间变形机”：旋转、拉伸、剪切、翻转，全靠四个数字。秘诀只有一句——矩阵的两列，就是基向量 î 和 ĵ 变换后落到的新位置；其它所有点都按同样规则跟着搬。",
+        formula_title: "现场公式",
+        controls: "控制台", presets: "现成的几种变换",
+        p_id: "单位", p_rot: "旋转90°", p_scale: "放大2×", p_shear: "剪切", p_flip: "水平翻转",
+        readout_title: "当前战况", r_det: "行列式 = 面积倍数", r_orient: "是否翻面",
+        formal_name: "2×2 矩阵对网格的变换",
+        concept_title: "说人话就是",
+        concept: "把平面想成一张橡皮方格纸。一个 2×2 矩阵 [[a,b],[c,d]] 规定了怎么拉这张纸：第一列 (a,c) 是“向右一格”的箭头 î 被搬到的新地方，第二列 (b,d) 是“向上一格”的箭头 ĵ 的新落点。只要知道这两个箭头去哪了，整张纸（每一个点）就都确定了——这就是“线性”。行列式 ad−bc 是个魔法数字：它的绝对值告诉你面积被放大了几倍，正负号告诉你纸有没有被翻面（镜像）；若它等于 0，整张纸被压成一条线，空间塌了一维。电子游戏、3D 图形、机器人、AI 里的运算，骨子里都是这套矩阵变换。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这四个数其实无处不在",
+        apps_subtitle: "旋转、拉伸、压扁整个世界——图形学、游戏和 AI 的底层全是矩阵。",
+        app_a_title: "3D 游戏",
+        app_a_desc: "游戏里每转一下视角，引擎就用矩阵把几百万个顶点全部重新摆一遍——每秒 60 次，不带喘的。",
+        app_b_title: "修图滤镜",
+        app_b_desc: "旋转照片、倾斜校正、透视变形——修图软件的几何操作就是把每个像素坐标乘一个矩阵。",
+        app_c_title: "机械臂",
+        app_c_desc: "每节关节转多少度，末端会停在哪？一连串矩阵乘法算出来的。工业机器人的脑子里全是矩阵。",
+        app_d_title: "AI 的心脏",
+        app_d_desc: "神经网络的每一层都是一次巨型矩阵乘法。GPU 之所以成为 AI 标配，就因为它天生擅长乘矩阵。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "把变换一个接一个地做下去（矩阵相乘），就能凑出任意复杂的运动。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown", ref_a_title: "线性变换与矩阵", ref_a_desc: "“矩阵就是动词”——这一集会彻底改变你看矩阵的方式。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "矩阵变换", ref_b_desc: "用具体例子演示旋转、缩放、剪切怎么写成矩阵。",
+        ref_c_tag: "站内 · HSSIM", ref_c_title: "先看懂向量", ref_c_desc: "î、ĵ 就是向量——没玩过向量的话先去那边热身。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "变换矩阵（维基）", ref_d_desc: "常见变换矩阵、齐次坐标、组合变换，全套都在这里。",
+      },
+      en: {
+        page_title: "Four numbers warp all of space · HSSIM", nav_title: "Warp space", nav_subtitle: "2×2 matrix transforms",
+        kicker: "MATRIX TRANSFORMATIONS", title: "Four numbers warp all of space",
+        intro: "A 2×2 matrix is a space-warping machine: rotate, stretch, shear, flip — all from four numbers. The one secret: the matrix's two columns are exactly where the basis vectors î and ĵ land after the transform, and every other point follows the same rule.",
+        formula_title: "Live formula",
+        controls: "Controls", presets: "Ready-made transforms",
+        p_id: "Identity", p_rot: "Rotate 90°", p_scale: "Scale 2×", p_shear: "Shear", p_flip: "Flip X",
+        readout_title: "Live stats", r_det: "Determinant = area factor", r_orient: "Flipped?",
+        formal_name: "2×2 Matrix Transformations of a Grid",
+        concept_title: "OK, the gist",
+        concept: "Picture the plane as a stretchy sheet of graph paper. A 2×2 matrix [[a,b],[c,d]] says how to pull it: the first column (a,c) is where the 'one step right' arrow î lands, and the second column (b,d) is where the 'one step up' arrow ĵ lands. Once you know where those two arrows go, the entire sheet — every single point — is pinned down. That's what 'linear' means. The determinant ad−bc is a magic number: its size tells you how much area is scaled, its sign tells you whether the sheet got flipped (mirrored), and if it's 0 the whole sheet is squashed onto a line — a dimension collapses. Video games, 3D graphics, robotics, and the math inside AI all run on transforms like this.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "These four numbers are secretly everywhere",
+        apps_subtitle: "Rotating, stretching and squashing whole worlds — graphics, games and AI all run on matrices.",
+        app_a_title: "3D games",
+        app_a_desc: "Every camera turn makes the engine re-place millions of vertices with a matrix — 60 times a second, no sweat.",
+        app_b_title: "Photo filters",
+        app_b_desc: "Rotate, straighten, perspective-warp — a photo app's geometry tools multiply every pixel coordinate by a matrix.",
+        app_c_title: "Robot arms",
+        app_c_desc: "Turn each joint so many degrees — where does the hand end up? A chain of matrix multiplications. Industrial robots think in matrices.",
+        app_d_title: "The heart of AI",
+        app_d_desc: "Every neural-network layer is one giant matrix multiply. GPUs rule AI precisely because multiplying matrices is their party trick.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Chain transforms one after another (multiply the matrices) and you can build any complex motion.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown", ref_a_title: "Linear transformations & matrices", ref_a_desc: "'A matrix is a verb' — this episode will change how you see matrices forever.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Matrix transformations", ref_b_desc: "Concrete examples of writing rotation, scaling, and shear as matrices.",
+        ref_c_tag: "ON SITE · HSSIM", ref_c_title: "Get vectors first", ref_c_desc: "î and ĵ are vectors — warm up next door if you haven't played with vectors.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Transformation matrix (Wikipedia)", ref_d_desc: "Standard transform matrices, homogeneous coordinates, and composing them.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const VIEW = 5.5;
+    const sc = (W / 2) / VIEW;
+    const PX = x => W / 2 + x * sc;
+    const PY = y => H / 2 - y * sc;
+
+    let M = { a: 1, b: 0, c: 0, d: 1 };
+    const T = (x, y) => ({ x: M.a * x + M.b * y, y: M.c * x + M.d * y });
+    const fmt = n => { const r = Math.round(n * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString(); };
+
+    // an asymmetric "flag" shape (unit-ish) so flips are visible
+    const SHAPE = [[0,0],[0,2],[1.4,1.5],[0.5,1.1],[0.5,0]];
+
+    function arrow(x0, y0, x1, y1, color, lw) {
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw;
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      const ang = Math.atan2(y1 - y0, x1 - x0), s = 12;
+      ctx.beginPath(); ctx.moveTo(x1, y1);
+      ctx.lineTo(x1 - s * Math.cos(ang - 0.4), y1 - s * Math.sin(ang - 0.4));
+      ctx.lineTo(x1 - s * Math.cos(ang + 0.4), y1 - s * Math.sin(ang + 0.4));
+      ctx.closePath(); ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const R = Math.ceil(VIEW) + 1;
+
+      // faint original grid
+      ctx.strokeStyle = 'rgba(71,85,105,0.25)'; ctx.lineWidth = 1;
+      for (let k = -R; k <= R; k++) {
+        ctx.beginPath(); ctx.moveTo(PX(k), 0); ctx.lineTo(PX(k), H); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, PY(k)); ctx.lineTo(W, PY(k)); ctx.stroke();
+      }
+
+      // transformed grid (cyan)
+      ctx.strokeStyle = 'rgba(56,189,248,0.45)'; ctx.lineWidth = 1.2;
+      for (let k = -R; k <= R; k++) {
+        // image of vertical line x=k
+        let p0 = T(k, -R), p1 = T(k, R);
+        ctx.beginPath(); ctx.moveTo(PX(p0.x), PY(p0.y)); ctx.lineTo(PX(p1.x), PY(p1.y)); ctx.stroke();
+        // image of horizontal line y=k
+        let q0 = T(-R, k), q1 = T(R, k);
+        ctx.beginPath(); ctx.moveTo(PX(q0.x), PY(q0.y)); ctx.lineTo(PX(q1.x), PY(q1.y)); ctx.stroke();
+      }
+
+      // unit-square image (parallelogram) → area = |det|
+      const o = T(0,0), i = T(1,0), j = T(0,1), ij = T(1,1);
+      ctx.fillStyle = 'rgba(167,139,250,0.18)';
+      ctx.beginPath(); ctx.moveTo(PX(o.x), PY(o.y)); ctx.lineTo(PX(i.x), PY(i.y)); ctx.lineTo(PX(ij.x), PY(ij.y)); ctx.lineTo(PX(j.x), PY(j.y)); ctx.closePath(); ctx.fill();
+
+      // transformed shape (amber outline) to show orientation
+      ctx.strokeStyle = 'rgba(251,191,36,0.95)'; ctx.fillStyle = 'rgba(251,191,36,0.18)'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      SHAPE.forEach((p, idx) => { const q = T(p[0], p[1]); const X = PX(q.x), Y = PY(q.y); idx === 0 ? ctx.moveTo(X, Y) : ctx.lineTo(X, Y); });
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      // basis vectors
+      arrow(PX(0), PY(0), PX(i.x), PY(i.y), '#fb7185', 3.5);  // î
+      arrow(PX(0), PY(0), PX(j.x), PY(j.y), '#34d399', 3.5);  // ĵ
+      ctx.fillStyle = '#fb7185'; ctx.font = 'bold 15px -apple-system, sans-serif';
+      ctx.fillText('î', PX(i.x) + 8, PY(i.y) - 6);
+      ctx.fillStyle = '#34d399'; ctx.fillText('ĵ', PX(j.x) + 8, PY(j.y) - 6);
+    }
+
+    function renderFormula() {
+      const det = M.a * M.d - M.b * M.c;
+      katex.render(
+        `\\begin{bmatrix} ${fmt(M.a)} & ${fmt(M.b)} \\\\ ${fmt(M.c)} & ${fmt(M.d)} \\end{bmatrix}\\begin{bmatrix} x \\\\ y \\end{bmatrix},\\quad \\det = ad-bc = ${fmt(det)}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const det = M.a * M.d - M.b * M.c;
+      const i = T(1,0), j = T(0,1);
+      document.getElementById('va').textContent = fmt(M.a);
+      document.getElementById('vb').textContent = fmt(M.b);
+      document.getElementById('vc').textContent = fmt(M.c);
+      document.getElementById('vd').textContent = fmt(M.d);
+      document.getElementById('r-i').textContent = `(${fmt(i.x)}, ${fmt(i.y)})`;
+      document.getElementById('r-j').textContent = `(${fmt(j.x)}, ${fmt(j.y)})`;
+      document.getElementById('r-det').textContent = `${fmt(det)}  (×${fmt(Math.abs(det))})`;
+      document.getElementById('r-orient').textContent = det < 0 ? (HSSIM.getLang() === 'zh' ? '翻面了' : 'yes (mirror)') : det === 0 ? (HSSIM.getLang() === 'zh' ? '塌成线' : 'collapsed') : (HSSIM.getLang() === 'zh' ? '没翻' : 'no');
+      ['a','b','c','d'].forEach(k => document.getElementById('s' + k).value = M[k]);
+      draw(); renderFormula();
+    }
+
+    ['a','b','c','d'].forEach(k => document.getElementById('s' + k).oninput = e => { M[k] = parseFloat(e.target.value); update(); });
+
+    const PRESETS = {
+      id:    { a: 1, b: 0, c: 0, d: 1 },
+      rot:   { a: 0, b: -1, c: 1, d: 0 },
+      scale: { a: 2, b: 0, c: 0, d: 2 },
+      shear: { a: 1, b: 1, c: 0, d: 1 },
+      flip:  { a: -1, b: 0, c: 0, d: 1 },
+    };
+    document.querySelectorAll('.ps-btn').forEach(b => b.onclick = () => { M = Object.assign({}, PRESETS[b.dataset.p]); update(); });
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-table-cells', gradient: 'from-violet-500 to-indigo-500', apps: [
+      { icon: 'fa-cube', grad: 'from-sky-500 to-indigo-500', k: 'app_a' },
+      { icon: 'fa-wand-magic-sparkles', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-robot', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-brain', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

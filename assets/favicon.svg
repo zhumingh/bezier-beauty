@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#1d1d1f"/>
+  <!-- axes -->
+  <path d="M12 52 H52 M12 52 V12" stroke="#3a3a3c" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- an exponential-ish curve, Apple blue -->
+  <path d="M13 50 C26 49 34 44 42 30 C46 23 49 17 51 12" stroke="#0071e3" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- node dot -->
+  <circle cx="42" cy="30" r="3.6" fill="#fff"/>
+</svg>

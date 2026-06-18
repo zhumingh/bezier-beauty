@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>平均数一样，差别可大了 · Standard Deviation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">STANDARD DEVIATION</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">平均数一样，差别可大了</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">标准差与离散程度</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">拖动数据点，或用“离散度”滑块整体收紧 / 散开。平均数不变，但标准差——也就是那两条 σ 带的宽窄——会跟着变。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="520"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 520;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div id="f-main" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-4">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_spread">离散度（收紧 ↔ 散开）</span><span id="vs" class="font-mono text-fuchsia-400"></span></div>
+              <input type="range" id="ss" min="0.1" max="2.5" step="0.05" value="1" class="w-full">
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="tight" class="px-3 py-1.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium transition-colors" data-i18n="btn_tight">挤成一团</button>
+              <button id="wide" class="px-3 py-1.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium transition-colors" data-i18n="btn_wide">散得到处都是</button>
+              <button id="rand" class="px-3 py-1.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors" data-i18n="btn_rand">随机一组</button>
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="hint">提示：图上的点都能左右拖。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_mean">平均数 μ</span><span id="r-mean" class="font-mono text-emerald-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_range">极差（最大−最小）</span><span id="r-range" class="font-mono text-slate-200"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_var">方差 σ²</span><span id="r-var" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_std">标准差 σ</span><span id="r-std" class="font-mono text-fuchsia-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">标准差量的是“数据通常离平均数多远”。它把每个偏差平方、取平均、再开方。</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="hssim-apps"></div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=MRqtXL2WX2M" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · Khan</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/data/standard-deviation.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="probability.html" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">站内 · HSSIM</span><i class="fa-solid fa-arrow-right text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-dice text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Standard_deviation" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "平均数一样，差别可大了 · HSSIM", nav_title: "差别可大了", nav_subtitle: "标准差与离散程度",
+        kicker: "标准差 · 离散程度", title: "平均数一样，差别可大了",
+        intro: "两组数可以平均分一模一样，却一组挤成一团、一组散得到处都是。标准差就是用来量这个“散”的。拖动数据点，或用滑块整体收紧 / 散开——平均数 μ 不动，σ 带却会跟着胖瘦。",
+        formula_title: "现场公式",
+        controls: "控制台", param_spread: "离散度（收紧 ↔ 散开）",
+        btn_tight: "挤成一团", btn_wide: "散得到处都是", btn_rand: "随机一组", hint: "偷懒提示：图上的点都能左右拖。",
+        readout_title: "当前战况", r_mean: "平均数 μ", r_range: "极差（最大−最小）", r_var: "方差 σ²", r_std: "标准差 σ",
+        formal_name: "标准差与离散程度",
+        concept_title: "说人话就是",
+        concept: "只看平均数会骗人：两个班平均分都是 70，可能一个班大家都考 68~72，另一个班有人 40 有人 100。标准差回答的是“数据通常离平均数多远”。算法是：每个数减去平均数得到“偏差”，把偏差平方（这样正负不抵消、离得越远惩罚越重），求平均得到方差 σ²，再开平方变回原来的单位，就是标准差 σ。图中浅色带是 μ±σ，更浅的是 μ±2σ——绝大多数数据都落在 2σ 之内。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "稳不稳这件事，其实无处不在",
+        apps_subtitle: "平均数只讲一半故事，另一半全靠标准差。",
+        app_a_title: "两个射手",
+        app_a_desc: "两个选手平均环数一样：一个枪枪 9 环，一个忽而 10 忽而 6。教练选谁？看标准差。",
+        app_b_title: "海边 vs 内陆",
+        app_b_desc: "两座城年平均温度可能一样，但内陆冬夏能差 40 度。宜居不宜居，不看平均看离散。",
+        app_c_title: "薯片克重",
+        app_c_desc: "每包差几克没事，差几十克就得停机检修。工厂的质检红线就画在几个标准差上。",
+        app_d_title: "投资风险",
+        app_d_desc: "金融里的波动率就是收益的标准差。两只基金收益一样，标准差小的那只让你睡得着觉。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "考试分数、股票波动、产品质检……凡是要谈“稳不稳定”，都在说标准差。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · Khan", ref_a_title: "标准差怎么算", ref_a_desc: "从偏差到平方再到开方，一步一步带你过一遍。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "标准差", ref_b_desc: "用一组狗的身高当例子，把公式讲得超亲切。",
+        ref_c_tag: "站内 · HSSIM", ref_c_title: "去看钟形曲线", ref_c_desc: "标准差正是钟形曲线胖瘦的旋钮，顺路去玩玩高尔顿板。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "标准差（维基百科）", ref_d_desc: "总体 vs 样本、各种公式与性质，查证就来这儿。",
+      },
+      en: {
+        page_title: "Same average, totally different vibe · HSSIM", nav_title: "Different vibe", nav_subtitle: "standard deviation & spread",
+        kicker: "STANDARD DEVIATION", title: "Same average, totally different vibe",
+        intro: "Two data sets can share the exact same mean yet one is tightly packed and the other is all over the place. Standard deviation measures that spread. Drag the dots, or squeeze/spread them with the slider — the mean μ stays put, but the σ bands grow and shrink.",
+        formula_title: "Live formula",
+        controls: "Controls", param_spread: "Spread (tight ↔ wide)",
+        btn_tight: "Pack them tight", btn_wide: "Spread them out", btn_rand: "Random set", hint: "Lazy tip: every dot can be dragged left/right.",
+        readout_title: "Live stats", r_mean: "Mean μ", r_range: "Range (max − min)", r_var: "Variance σ²", r_std: "Std deviation σ",
+        formal_name: "Standard Deviation & Spread",
+        concept_title: "OK, the gist",
+        concept: "The average alone can lie: two classes both average 70, but one might be everyone scoring 68–72 while the other has 40s and 100s. Standard deviation answers 'how far from the average do the values usually sit?'. The recipe: subtract the mean from each value to get a deviation, square it (so signs don't cancel and far-out points get punished harder), average those to get the variance σ², then square-root it back to the original units — that's σ. The lighter band is μ±σ, the fainter one μ±2σ — almost all data lands within 2σ.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "The how-spread-out question is secretly everywhere",
+        apps_subtitle: "The average tells half the story. Standard deviation tells the other half.",
+        app_a_title: "Two archers",
+        app_a_desc: "Same average score: one hits 9 every single time, the other swings between 10 and 6. Coaches pick by standard deviation.",
+        app_b_title: "Coastal vs inland",
+        app_b_desc: "Same yearly average temperature — but inland swings 40 degrees between seasons. Comfort is about spread, not the mean.",
+        app_c_title: "Factory tolerances",
+        app_c_desc: "A few grams of bag-to-bag wiggle is fine; dozens means stop the line. Factory limits are drawn at a few standard deviations.",
+        app_d_title: "Investment risk",
+        app_d_desc: "Finance's volatility is the standard deviation of returns. Same gains, smaller deviation — that's the fund that lets you sleep.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Test scores, stock volatility, quality control — anytime you talk about 'how consistent', you're talking standard deviation.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · Khan", ref_a_title: "Computing standard deviation", ref_a_desc: "From deviations to squares to the square root, step by careful step.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Standard deviation", ref_b_desc: "Uses a pack of dogs' heights to make the formula genuinely friendly.",
+        ref_c_tag: "ON SITE · HSSIM", ref_c_title: "Meet the bell curve", ref_c_desc: "Standard deviation is the knob that sets a bell curve's width — go play the Galton board.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Standard deviation (Wikipedia)", ref_d_desc: "Population vs sample, every formula and property when you need to check.",
+      },
+    });
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD = 50, AXIS = H - 90;
+    const VMIN = 0, VMAX = 100;
+    const PX = v => PAD + (v - VMIN) / (VMAX - VMIN) * (W - 2 * PAD);
+    const wv = px => VMIN + (px - PAD) / (W - 2 * PAD) * (VMAX - VMIN);
+    const fmt = n => (Math.round(n * 100) / 100).toString();
+
+    let values = [];
+    let meanSnap = 50, devSnap = [];        // snapshot for the spread slider
+
+    function snapshot() {
+      meanSnap = values.reduce((a, b) => a + b, 0) / values.length;
+      devSnap = values.map(v => v - meanSnap);
+      document.getElementById('ss').value = 1;
+    }
+    function applySpread(s) {
+      values = devSnap.map(d => Math.max(2, Math.min(98, meanSnap + d * s)));
+    }
+    function genRandom(spreadPx) {
+      values = [];
+      for (let i = 0; i < 12; i++) {
+        let v = 50 + (Math.random() + Math.random() + Math.random() - 1.5) * spreadPx;
+        values.push(Math.max(3, Math.min(97, v)));
+      }
+      snapshot();
+    }
+
+    function stats() {
+      const n = values.length;
+      const mean = values.reduce((a, b) => a + b, 0) / n;
+      const variance = values.reduce((a, b) => a + (b - mean) ** 2, 0) / n;
+      const sd = Math.sqrt(variance);
+      const range = Math.max(...values) - Math.min(...values);
+      return { n, mean, variance, sd, range };
+    }
+    const jitterY = i => AXIS - 30 - ((i * 53) % 7) * 30;     // stable vertical stagger
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const s = stats();
+      // sigma bands
+      const band = (k, col) => {
+        const lo = PX(Math.max(VMIN, s.mean - k * s.sd)), hi = PX(Math.min(VMAX, s.mean + k * s.sd));
+        ctx.fillStyle = col; ctx.fillRect(lo, PAD, hi - lo, AXIS - PAD);
+      };
+      band(2, 'rgba(217,70,239,0.07)');
+      band(1, 'rgba(217,70,239,0.13)');
+
+      // axis
+      ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(PAD, AXIS); ctx.lineTo(W - PAD, AXIS); ctx.stroke();
+      ctx.fillStyle = '#64748b'; ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'center';
+      for (let v = 0; v <= 100; v += 20) {
+        ctx.strokeStyle = '#334155'; ctx.beginPath(); ctx.moveTo(PX(v), AXIS - 5); ctx.lineTo(PX(v), AXIS + 5); ctx.stroke();
+        ctx.fillText(v, PX(v), AXIS + 22);
+      }
+
+      // mean line
+      ctx.strokeStyle = '#34d399'; ctx.lineWidth = 2.5; ctx.setLineDash([6, 5]);
+      ctx.beginPath(); ctx.moveTo(PX(s.mean), PAD); ctx.lineTo(PX(s.mean), AXIS); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#34d399'; ctx.fillText('μ', PX(s.mean), PAD - 8);
+      // sigma edge labels
+      ctx.fillStyle = '#d946ef';
+      if (s.mean - s.sd > VMIN) ctx.fillText('−σ', PX(s.mean - s.sd), AXIS + 40);
+      if (s.mean + s.sd < VMAX) ctx.fillText('+σ', PX(s.mean + s.sd), AXIS + 40);
+
+      // dots + deviation drop lines
+      values.forEach((v, i) => {
+        const x = PX(v), y = jitterY(i);
+        ctx.strokeStyle = 'rgba(148,163,184,0.25)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, AXIS); ctx.stroke();
+        // deviation segment to mean
+        ctx.strokeStyle = 'rgba(217,70,239,0.5)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(PX(s.mean), y); ctx.stroke();
+        ctx.fillStyle = '#d946ef'; ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill();
+      });
+    }
+
+    function renderFormula() {
+      const s = stats();
+      katex.render(`\\sigma = \\sqrt{\\dfrac{1}{n}\\sum (x_i - \\mu)^2} = \\sqrt{${fmt(s.variance)}} = ${fmt(s.sd)}`,
+        document.getElementById('f-main'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      const s = stats();
+      document.getElementById('vs').textContent = '×' + parseFloat(document.getElementById('ss').value).toFixed(2);
+      document.getElementById('r-mean').textContent = fmt(s.mean);
+      document.getElementById('r-range').textContent = fmt(s.range);
+      document.getElementById('r-var').textContent = fmt(s.variance);
+      document.getElementById('r-std').textContent = fmt(s.sd);
+      draw(); renderFormula();
+    }
+
+    document.getElementById('ss').oninput = e => { applySpread(parseFloat(e.target.value)); update(); };
+    document.getElementById('tight').onclick = () => { genRandom(6); update(); };
+    document.getElementById('wide').onclick = () => { genRandom(24); update(); };
+    document.getElementById('rand').onclick = () => { genRandom(14); update(); };
+
+    // drag dots horizontally
+    let drag = -1;
+    function pos(e) { const r = canvas.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; }
+    function pick(p) { for (let i = 0; i < values.length; i++) if (Math.hypot(p.x - PX(values[i]), p.y - jitterY(i)) < 18) return i; return -1; }
+    function moveTo(p) { if (drag < 0) return; values[drag] = Math.max(2, Math.min(98, wv(p.x))); update(); }
+    canvas.addEventListener('mousedown', e => { drag = pick(pos(e)); });
+    window.addEventListener('mousemove', e => { if (drag >= 0) moveTo(pos(e)); });
+    window.addEventListener('mouseup', () => { if (drag >= 0) { drag = -1; snapshot(); update(); } });
+    canvas.addEventListener('touchstart', e => { drag = pick(pos(e.touches[0])); if (drag >= 0) e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (drag >= 0) { moveTo(pos(e.touches[0])); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => { if (drag >= 0) { drag = -1; snapshot(); update(); } });
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-arrows-left-right-to-line', gradient: 'from-fuchsia-500 to-purple-500', apps: [
+      { icon: 'fa-bullseye', grad: 'from-rose-500 to-pink-500', k: 'app_a' },
+      { icon: 'fa-temperature-half', grad: 'from-sky-500 to-cyan-500', k: 'app_b' },
+      { icon: 'fa-industry', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-arrow-trend-up', grad: 'from-emerald-500 to-teal-500', k: 'app_d' },
+    ] });
+    genRandom(14); update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

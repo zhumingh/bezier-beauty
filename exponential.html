@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一开始慢吞吞，后来吓死人 · Exponential Growth</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="assets/hssim.css">
+</head>
+<body class="bg-slate-950 text-slate-200">
+  <div class="min-h-screen flex flex-col">
+    <div id="hssim-header"></div>
+
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 pt-8 pb-12">
+      <div class="mb-6">
+        <div class="section-title mb-2" data-i18n="kicker">EXPONENTIAL GROWTH</div>
+        <h1 class="font-display text-3xl font-semibold tracking-tighter" data-i18n="title">一开始慢吞吞，后来吓死人</h1>
+        <div class="mt-3 inline-flex items-center gap-x-2 text-xs sm:text-sm px-3 py-1 rounded-full bg-slate-900 border border-slate-700 text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-violet-400"></i>
+          <span class="font-medium" data-i18n="formal_name">指数增长与复利</span>
+        </div>
+        <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="intro">让一笔钱按“每年加固定数”和“每年乘固定倍”同时长，看直线怎么被指数远远甩开。</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-8 min-w-0 space-y-5">
+          <canvas id="canvas" width="900" height="620"
+                  class="w-full h-auto bg-slate-900 border border-slate-700 rounded-3xl cursor-pointer"
+                  style="aspect-ratio: 900 / 620;"></canvas>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="formula_title">实时公式</div>
+            <div class="space-y-3">
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="lin_form">直线增长（单利）</div>
+                <div id="f-lin" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+              <div>
+                <div class="text-xs text-slate-400 mb-1" data-i18n="exp_form">指数增长（复利）</div>
+                <div id="f-exp" class="bg-slate-950 border border-slate-700 rounded-2xl p-3 katex-formula"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 min-w-0 space-y-5">
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 space-y-5">
+            <div class="section-title" data-i18n="controls">控制台</div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_rate">年利率 r</span><span id="vr" class="font-mono text-orange-400"></span></div>
+              <input type="range" id="sr" min="2" max="40" step="1" value="12" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_years">总年数</span><span id="vn" class="font-mono text-violet-400"></span></div>
+              <input type="range" id="sn" min="5" max="40" step="1" value="25" class="w-full">
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1.5"><span data-i18n="param_t">看第几年</span><span id="vt" class="font-mono text-amber-400"></span></div>
+              <input type="range" id="st" min="0" max="25" step="1" value="10" class="w-full">
+            </div>
+            <p class="text-[11px] text-slate-500" data-i18n="drag_hint">提示：直接在图上左右拖，也能挪动那条竖线。</p>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-3" data-i18n="readout_title">关键信息</div>
+            <ul class="space-y-2 text-sm">
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_start">起始本金</span><span id="r-start" class="font-mono text-slate-200"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_lin">单利结果</span><span id="r-lin" class="font-mono text-amber-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_exp">复利结果</span><span id="r-exp" class="font-mono text-orange-400"></span></li>
+              <li class="flex justify-between"><span class="text-slate-400" data-i18n="r_gap">指数多赚了</span><span id="r-gap" class="font-mono text-rose-400"></span></li>
+            </ul>
+          </div>
+
+          <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5">
+            <div class="section-title mb-2" data-i18n="concept_title">核心概念</div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="concept">每年加固定数是直线；每年乘固定倍是指数。指数前期看着差不多，后期会拐头直冲云霄。</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="hssim-apps"></div>
+
+      <!-- ================= Dive deeper · reference zone ================= -->
+      <section class="mt-14 pt-10 border-t border-slate-800">
+        <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+          <div>
+            <div class="section-title mb-2" data-i18n="ref_kicker">DIVE DEEPER</div>
+            <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="ref_title">想再多看一眼？</h2>
+            <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="ref_subtitle"></p>
+          </div>
+          <div class="text-xs text-slate-500 px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:flex items-center gap-x-2">
+            <i class="fa-solid fa-heart text-rose-400"></i><span data-i18n="ref_for">送给 Sunday</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <a href="https://www.youtube.com/watch?v=Kas0tIxDvrg" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_a_tag">视频 · 3Blue1Brown</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-youtube text-rose-400"></i><span class="text-sm font-semibold" data-i18n="ref_a_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_a_desc"></p>
+          </a>
+          <a href="https://www.mathsisfun.com/algebra/exponential-growth.html" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_b_tag">入门 · Math Is Fun</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-book-open text-emerald-400"></i><span class="text-sm font-semibold" data-i18n="ref_b_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_b_desc"></p>
+          </a>
+          <a href="https://www.desmos.com/calculator" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_c_tag">动手玩 · Desmos</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-solid fa-sliders text-sky-300"></i><span class="text-sm font-semibold" data-i18n="ref_c_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_c_desc"></p>
+          </a>
+          <a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener noreferrer" class="control-card group bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-2 hover:border-sky-500/60">
+            <div class="flex items-center justify-between"><span class="text-[10px] font-mono tracking-[0.15em] text-slate-500" data-i18n="ref_d_tag">百科 · Wikipedia</span><i class="fa-solid fa-arrow-up-right-from-square text-slate-600 group-hover:text-sky-400 text-xs transition-colors"></i></div>
+            <div class="flex items-center gap-x-2"><i class="fa-brands fa-wikipedia-w text-slate-300"></i><span class="text-sm font-semibold" data-i18n="ref_d_title"></span></div>
+            <p class="text-xs text-slate-400 leading-relaxed" data-i18n="ref_d_desc"></p>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <div id="hssim-footer"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="assets/hssim.js"></script>
+  <script>
+    HSSIM.registerDict({
+      zh: {
+        page_title: "一开始慢吞吞，后来吓死人 · HSSIM", nav_title: "慢吞吞→吓死人", nav_subtitle: "指数增长与复利",
+        kicker: "指数增长 · 复利", title: "一开始慢吞吞，后来吓死人",
+        intro: "拿 ¥100 当本金，让它同时按两种方式长：一种每年加固定的钱（单利，画出直线），另一种每年按比例利滚利（复利，画出指数）。前几年几乎看不出差别，越往后指数越离谱。",
+        formula_title: "现场公式", lin_form: "直线增长（单利）", exp_form: "指数增长（复利）",
+        controls: "控制台", param_rate: "年利率 r", param_years: "总年数", param_t: "看第几年",
+        drag_hint: "偷懒提示：直接在图上左右拖，那条竖线就跟着走。",
+        readout_title: "当前战况", r_start: "起始本金", r_lin: "单利结果", r_exp: "复利结果", r_gap: "指数多赚了",
+        formal_name: "指数增长与复利",
+        concept_title: "说人话就是",
+        concept: "“每年加同样多的钱”是单利，画出来是一条笔直的斜线。“每年在现有总额上再涨百分之几”是复利——今年的利息明年也会生利息，于是越滚越快。复利前期跟单利几乎贴在一起，让人以为差不多；可一旦时间拉长，指数那条线会突然拐头往上冲，把直线远远甩在身后。这就是为什么“越早开始存钱”威力惊人。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "指数其实无处不在",
+        apps_subtitle: "凡是越多就长得越快的东西，都在指数曲线上飞。",
+        app_a_title: "复利滚雪球",
+        app_a_desc: "利息生利息，雪球越滚越快。爱因斯坦（据说）管复利叫世界第八大奇迹。",
+        app_b_title: "病毒传播",
+        app_b_desc: "一传三、三传九……疫情早期的确诊曲线就是指数。翻倍时间是流行病学家最盯的数字。",
+        app_c_title: "碳定年",
+        app_c_desc: "放射性原子按指数衰减，每过一个半衰期剩一半。考古学家靠碳-14 算出木乃伊几岁。",
+        app_d_title: "摩尔定律",
+        app_d_desc: "芯片晶体管数量大约每两年翻一倍，翻了半个多世纪——你的手机比登月计算机强一百万倍就是这么来的。",
+        ref_kicker: "想再多看一眼", ref_title: "继续往下玩",
+        ref_subtitle: "病毒传播、人口、利息、摩尔定律……指数增长是理解现代世界的关键直觉。",
+        ref_for: "送给 Sunday",
+        ref_a_tag: "视频 · 3Blue1Brown", ref_a_title: "指数增长到底多吓人", ref_a_desc: "用真实数据把“指数”这件事讲到你后背发凉。",
+        ref_b_tag: "入门 · Math Is Fun", ref_b_title: "指数增长，慢慢看懂", ref_b_desc: "从公式到例子，干净利落地讲清增长与衰减。",
+        ref_c_tag: "动手玩 · Desmos", ref_c_title: "自己画两条线", ref_c_desc: "在 Desmos 里同时画 100(1+r·t) 和 100(1+r)^t，拖着比一比。",
+        ref_d_tag: "百科 · Wikipedia", ref_d_title: "复利（维基百科）", ref_d_desc: "公式、复利频率、实际年利率，要查就来这儿。",
+      },
+      en: {
+        page_title: "Starts slow, then terrifying · HSSIM", nav_title: "Slow → terrifying", nav_subtitle: "exponential growth & interest",
+        kicker: "EXPONENTIAL GROWTH", title: "Starts slow, then terrifying",
+        intro: "Take ¥100 and grow it two ways at once: one adds a fixed amount every year (simple interest → a straight line), the other compounds by a percentage every year (→ an exponential). For a few years they look the same — then the exponential goes wild.",
+        formula_title: "Live formula", lin_form: "Linear growth (simple interest)", exp_form: "Exponential growth (compound interest)",
+        controls: "Controls", param_rate: "Annual rate r", param_years: "Total years", param_t: "View year",
+        drag_hint: "Lazy tip: drag left/right on the chart to move the vertical line.",
+        readout_title: "Live stats", r_start: "Starting amount", r_lin: "Simple interest", r_exp: "Compound interest", r_gap: "Exponential's extra",
+        formal_name: "Exponential Growth & Compound Interest",
+        concept_title: "OK, the gist",
+        concept: "Adding the same amount of money every year is simple interest — a perfectly straight line. Earning a fixed percentage on your whole balance every year is compound interest: this year's interest earns interest next year, so it snowballs. Early on, compound hugs the straight line and feels no different. But stretch the time out and the exponential line suddenly hooks upward and rockets past it. That's exactly why starting to save early is so absurdly powerful.",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "Exponentials are secretly everywhere",
+        apps_subtitle: "Anything that grows faster the bigger it gets is riding an exponential.",
+        app_a_title: "Compound interest",
+        app_a_desc: "Interest earns interest, and the snowball accelerates. Einstein (allegedly) called it the eighth wonder of the world.",
+        app_b_title: "How outbreaks spread",
+        app_b_desc: "One infects three, three infect nine. Early epidemic curves are exponential — doubling time is the number epidemiologists watch.",
+        app_c_title: "Carbon dating",
+        app_c_desc: "Radioactive atoms decay exponentially — half gone per half-life. That's how archaeologists age a mummy with carbon-14.",
+        app_d_title: "Moore's law",
+        app_d_desc: "Transistor counts doubled roughly every two years for half a century. That's why your phone out-computes the Apollo guidance computer a million-fold.",
+        ref_kicker: "DIVE DEEPER", ref_title: "Want to go further?",
+        ref_subtitle: "Viral spread, population, interest, Moore's law — exponential growth is core intuition for the modern world.",
+        ref_for: "for Sunday",
+        ref_a_tag: "VIDEO · 3Blue1Brown", ref_a_title: "Exponential growth, felt", ref_a_desc: "Uses real data to make 'exponential' genuinely send a chill down your spine.",
+        ref_b_tag: "READ · Math Is Fun", ref_b_title: "Exponential growth, explained", ref_b_desc: "From formula to examples — a clean walk through growth and decay.",
+        ref_c_tag: "PLAY · Desmos", ref_c_title: "Plot both lines yourself", ref_c_desc: "Graph 100(1+r·t) and 100(1+r)^t together in Desmos and drag to compare.",
+        ref_d_tag: "REFERENCE · Wikipedia", ref_d_title: "Compound interest (Wikipedia)", ref_d_desc: "Formulas, compounding frequency, and effective annual rate when you need them.",
+      },
+    });
+
+    const P0 = 100;
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const PAD_L = 70, PAD_R = 30, PAD_T = 30, PAD_B = 50;
+
+    let rate = 0.12, N = 25, t = 10;
+
+    const fmt = n => (Math.round(n * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const lin = yr => P0 * (1 + rate * yr);
+    const exp = yr => P0 * Math.pow(1 + rate, yr);
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const yMax = exp(N) * 1.05;
+      const PX = yr => PAD_L + (yr / N) * (W - PAD_L - PAD_R);
+      const PY = v => H - PAD_B - (v / yMax) * (H - PAD_T - PAD_B);
+
+      // gridlines + y labels
+      ctx.strokeStyle = '#1e2937'; ctx.lineWidth = 1;
+      ctx.fillStyle = '#64748b'; ctx.font = '13px -apple-system, sans-serif'; ctx.textAlign = 'right';
+      for (let i = 0; i <= 5; i++) {
+        const v = (yMax / 5) * i, y = PY(v);
+        ctx.beginPath(); ctx.moveTo(PAD_L, y); ctx.lineTo(W - PAD_R, y); ctx.stroke();
+        ctx.fillText('¥' + fmt(v), PAD_L - 8, y + 4);
+      }
+      // x labels
+      ctx.textAlign = 'center';
+      for (let yr = 0; yr <= N; yr += Math.ceil(N / 8)) {
+        ctx.fillText(yr + 'y', PX(yr), H - PAD_B + 20);
+      }
+
+      // linear curve (amber)
+      ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 3; ctx.beginPath();
+      for (let yr = 0; yr <= N; yr += 0.2) { const x = PX(yr), y = PY(lin(yr)); yr === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke();
+
+      // exponential curve (orange)
+      ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 3.5; ctx.beginPath();
+      for (let yr = 0; yr <= N; yr += 0.1) { const x = PX(yr), y = PY(exp(yr)); yr === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+      ctx.stroke();
+      // shade the gap
+      ctx.fillStyle = 'rgba(251,113,36,0.12)'; ctx.beginPath();
+      ctx.moveTo(PX(0), PY(lin(0)));
+      for (let yr = 0; yr <= N; yr += 0.2) ctx.lineTo(PX(yr), PY(exp(yr)));
+      for (let yr = N; yr >= 0; yr -= 0.2) ctx.lineTo(PX(yr), PY(lin(yr)));
+      ctx.closePath(); ctx.fill();
+
+      // scrub line
+      const sx = PX(t);
+      ctx.strokeStyle = 'rgba(148,163,184,0.7)'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+      ctx.beginPath(); ctx.moveTo(sx, PAD_T); ctx.lineTo(sx, H - PAD_B); ctx.stroke(); ctx.setLineDash([]);
+      // dots
+      ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(sx, PY(lin(t)), 7, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fb923c'; ctx.beginPath(); ctx.arc(sx, PY(exp(t)), 7, 0, 7); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(sx, PY(lin(t)), 3, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(sx, PY(exp(t)), 3, 0, 7); ctx.fill();
+    }
+
+    function renderFormulas() {
+      katex.render(`L(t) = ${P0}\\,(1 + ${rate.toFixed(2)}\\,t) = ${fmt(lin(t))}`,
+        document.getElementById('f-lin'), { throwOnError: false, displayMode: true });
+      katex.render(`A(t) = ${P0}\\,(1 + ${rate.toFixed(2)})^{t} = ${fmt(exp(t))}`,
+        document.getElementById('f-exp'), { throwOnError: false, displayMode: true });
+    }
+
+    function update() {
+      document.getElementById('vr').textContent = Math.round(rate * 100) + '%';
+      document.getElementById('vn').textContent = N + (HSSIM.getLang() === 'zh' ? ' 年' : ' yr');
+      document.getElementById('vt').textContent = t + (HSSIM.getLang() === 'zh' ? ' 年' : ' yr');
+      document.getElementById('r-start').textContent = '¥' + fmt(P0);
+      document.getElementById('r-lin').textContent = '¥' + fmt(lin(t));
+      document.getElementById('r-exp').textContent = '¥' + fmt(exp(t));
+      document.getElementById('r-gap').textContent = '¥' + fmt(exp(t) - lin(t));
+      draw(); renderFormulas();
+    }
+
+    const sr = document.getElementById('sr'), sn = document.getElementById('sn'), st = document.getElementById('st');
+    sr.oninput = e => { rate = parseFloat(e.target.value) / 100; update(); };
+    sn.oninput = e => { N = parseInt(e.target.value); if (t > N) t = N; st.max = N; st.value = t; update(); };
+    st.oninput = e => { t = parseInt(e.target.value); update(); };
+
+    // drag scrub line on canvas
+    let dragging = false;
+    function moveScrub(e) {
+      const rect = canvas.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      const frac = (mx - PAD_L) / (W - PAD_L - PAD_R);
+      t = Math.max(0, Math.min(N, Math.round(frac * N)));
+      st.value = t; update();
+    }
+    canvas.addEventListener('mousedown', e => { dragging = true; moveScrub(e); });
+    window.addEventListener('mousemove', e => { if (dragging) moveScrub(e); });
+    window.addEventListener('mouseup', () => dragging = false);
+    canvas.addEventListener('touchstart', e => { dragging = true; moveScrub(e.touches[0]); e.preventDefault(); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { if (dragging) { moveScrub(e.touches[0]); e.preventDefault(); } }, { passive: false });
+    window.addEventListener('touchend', () => dragging = false);
+
+    window.onLangChange = update;
+    HSSIM.mount({ icon: 'fa-rocket', gradient: 'from-orange-500 to-red-500', apps: [
+      { icon: 'fa-piggy-bank', grad: 'from-emerald-500 to-teal-500', k: 'app_a' },
+      { icon: 'fa-virus', grad: 'from-rose-500 to-pink-500', k: 'app_b' },
+      { icon: 'fa-radiation', grad: 'from-amber-500 to-orange-500', k: 'app_c' },
+      { icon: 'fa-microchip', grad: 'from-sky-500 to-indigo-500', k: 'app_d' },
+    ] });
+    update();
+  </script>
+  <!-- tiny corner feedback widget (self-contained) -->
+  <script src="assets/feedback.js" defer></script>
+</body>
+</html>

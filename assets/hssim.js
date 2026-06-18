@@ -131,6 +131,36 @@
     </div>`;
   }
 
+  /* ---- "where it hides in real life" applications section -------- */
+  // opts.apps = [{ icon: 'fa-…', grad: 'from-… to-…', k: 'app_a' }, …]
+  // Each card reads `${k}_title` / `${k}_desc` from the page dictionary;
+  // the section header reads apps_kicker / apps_title / apps_subtitle.
+  function appsHTML(apps) {
+    const cards = apps.map((a) => `
+      <div class="control-card bg-slate-900 border border-slate-700 rounded-3xl p-5 flex flex-col gap-y-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br ${a.grad || 'from-violet-500 to-fuchsia-500'} flex items-center justify-center shadow-lg shadow-violet-500/20">
+          <i class="fa-solid ${a.icon} text-white text-sm"></i>
+        </div>
+        <div class="text-sm font-semibold" data-i18n="${a.k}_title"></div>
+        <p class="text-xs text-slate-400 leading-relaxed flex-1" data-i18n="${a.k}_desc"></p>
+      </div>`).join('');
+
+    return `
+    <section class="mt-14 pt-10 border-t border-slate-800">
+      <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <div class="section-title mb-2" data-i18n="apps_kicker">它都藏在哪儿</div>
+          <h2 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter" data-i18n="apps_title"></h2>
+          <p class="text-sm text-slate-400 mt-2 max-w-2xl" data-i18n="apps_subtitle"></p>
+        </div>
+        <div class="text-xs text-slate-500 font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-700 hidden sm:block">
+          IRL
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">${cards}</div>
+    </section>`;
+  }
+
   function footerHTML() {
     return `
     <footer class="border-t border-slate-800 mt-12">
@@ -148,8 +178,10 @@
     opts = opts || {};
     const h = document.getElementById('hssim-header');
     const f = document.getElementById('hssim-footer');
+    const a = document.getElementById('hssim-apps');
     if (h) h.innerHTML = headerHTML(opts);
     if (f) f.innerHTML = footerHTML();
+    if (a && opts.apps && opts.apps.length) a.innerHTML = appsHTML(opts.apps);
     apply();
   }
 

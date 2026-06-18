@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/hssim.css">
 </head>
 <body class="bg-slate-950 text-slate-200">
@@ -52,6 +53,8 @@
           </div>
         </div>
       </div>
+      <div id="hssim-apps"></div>
+
       <!-- ================= Dive deeper · reference zone ================= -->
       <section class="mt-14 pt-10 border-t border-slate-800">
         <div class="mb-8 flex items-end justify-between flex-wrap gap-3">
@@ -105,6 +108,17 @@
         formal_name: "勾股定理（毕达哥拉斯定理）",
         concept_title: "说人话就是",
         concept: "只要是直角三角形，两条直角边 a、b 和最长的斜边 c 永远满足 a² + b² = c²。这里的 a²、b²、c² 不是抽象符号——就是画在三条边上的正方形的真实面积。随你怎么拖，绿色加蓝色永远等于橙色。这条两千多年前的“暗号”，今天的 GPS、盖房子都还在用。",
+        apps_kicker: "它都藏在哪儿",
+        apps_title: "这条暗号其实无处不在",
+        apps_subtitle: "只要有人想知道斜着到底有多长，就得找它帮忙。",
+        app_a_title: "电视尺寸",
+        app_a_desc: "65 英寸大屏量的是对角线。知道长和宽，勾股定理一秒算出你家电视到底多大。",
+        app_b_title: "盖房放线",
+        app_b_desc: "工人拉一条 3-4-5 的绳圈，就能放出完美直角。古埃及人盖金字塔用的也是这招。",
+        app_c_title: "抄近道",
+        app_c_desc: "横着走加竖着走 vs 斜穿草坪，能省多少步？c 比 a+b 短多少，勾股定理算得明明白白。",
+        app_d_title: "GPS 测距",
+        app_d_desc: "地图算两点的直线距离，就是把东西向、南北向的差当两条直角边，再来一次 a²+b²。",
         ref_kicker: "想再多看一眼",
         ref_title: "继续往下玩",
         ref_subtitle: "如果三个正方形的面积让你觉得神奇，下面这几个一定要看看。",
@@ -131,6 +145,17 @@
         formal_name: "The Pythagorean Theorem",
         concept_title: "OK, the gist",
         concept: "For any right triangle, the two short sides a, b and the longest side c always obey a² + b² = c². And a², b², c² aren't abstract — they're the actual areas of squares drawn on each side. Drag however you like: green + blue always equals orange. A 2,000-year-old handshake we still lean on today (GPS, building houses, all of it).",
+        apps_kicker: "WHERE IT'S SECRETLY HIDING",
+        apps_title: "This handshake is secretly everywhere",
+        apps_subtitle: "Whenever anyone needs to know how long the diagonal is, this is the tool they reach for.",
+        app_a_title: "TV screen sizes",
+        app_a_desc: "A 65-inch TV is measured along the diagonal. Given width and height, Pythagoras spits out the real size instantly.",
+        app_b_title: "Builders' right angles",
+        app_b_desc: "Stretch a 3-4-5 rope loop and you get a perfect right angle. Ancient Egyptians squared pyramids with the same trick.",
+        app_c_title: "Cutting corners",
+        app_c_desc: "Around the block vs diagonally across the lawn — exactly how many steps you save is a one-line Pythagoras job.",
+        app_d_title: "GPS distances",
+        app_d_desc: "Straight-line distance between two map points? Treat the east-west and north-south gaps as legs, then run a²+b² once more.",
         ref_kicker: "DIVE DEEPER",
         ref_title: "Want to go further?",
         ref_subtitle: "If those three squares clicked for you, you'll love these.",
@@ -240,7 +265,12 @@
     window.addEventListener('touchend', () => drag = null);
 
     window.onLangChange = render;
-    HSSIM.mount({ icon: 'fa-vector-square', gradient: 'from-amber-500 to-orange-500' });
+    HSSIM.mount({ icon: 'fa-vector-square', gradient: 'from-amber-500 to-orange-500', apps: [
+      { icon: 'fa-tv', grad: 'from-sky-500 to-blue-500', k: 'app_a' },
+      { icon: 'fa-trowel-bricks', grad: 'from-amber-500 to-orange-500', k: 'app_b' },
+      { icon: 'fa-route', grad: 'from-emerald-500 to-teal-500', k: 'app_c' },
+      { icon: 'fa-map-location-dot', grad: 'from-violet-500 to-fuchsia-500', k: 'app_d' },
+    ] });
     render();
   </script>
   <!-- tiny corner feedback widget (self-contained) -->
